@@ -1,4 +1,6 @@
 import threading
+import time
+
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 
@@ -18,13 +20,14 @@ GAIN_INC = 5
 class SDRThread (threading.Thread):
     exitFlag = False
 
-    def __init__(self, device, baudrate, mavlinkSystemId):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.device = devtakes 1 positional argument but 2 were givenice
-        self.baudrate = baudrate
-        self.systemId = mavlinkSystemId
+        self.lock = threading.Lock()
+        self.strength = 0
+        self.rgStrength = []
 
     def run(self):
+        self.exitFlag = False
         sdr = RtlSdr()
         sdr.rs = 2.4e6
         sdr.fc = 146e6
@@ -34,12 +37,10 @@ class SDRThread (threading.Thread):
         leadingEdge = False
         rgBeep = []
         noiseThreshold = 50
-        ratioMultiplier = 15
+        ratioMultiplier = 10
         beepLength = (1.0 / 1000.0) * 10.0
 
-        while True:
-            if self.exitFlag:
-                break
+        while not self.exitFlag:
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             mag, freqs = magnitude_spectrum(samples)
             max_mag = max(mag)
@@ -58,8 +59,28 @@ class SDRThread (threading.Thread):
                     leadingEdge = False
                     # Was beep long enough
                     if time.perf_counter() - leadingEdgeStartTime > beepLength:
-                        print(max(rgBeep[1:-1]))
+                        beepStrength = max(rgBeep)
+                        print("rgBeep", rgBeep, beepStrength)
+                        self.rgStrength.append(beepStrength)
                     rgBeep = []
             last_max_mag = max_mag
 
         sdr.close()
+
+    def stop(self):
+        self.exitFlag = True
+
+    def startCapture(self):
+        self.lock.acquire()
+        self.rgStrength = []
+        self.lock.release()
+
+    def stopCapture(self):        
+        self.lock.acquire()
+        cStrength = len(self.rgStrength)
+        if cStrength == 0:
+            retSignalStrength = 0
+        else:
+            retSignalStrength = sum(self.rgStrength) / float(cStrength)
+        self.lock.release()
+        return retSignalStrength

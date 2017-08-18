@@ -7,7 +7,7 @@ def main():
 	parser.add_argument("--device", required=True, help="px4 device")
 	parser.add_argument("--source-system", dest='SOURCE_SYSTEM', type=int, default=255, help='MAVLink source system for this GCS')
 	args = parser.parse_args()
-	mavlinkThread = MavlinkThread.MavlinkThread(args.device, args.baudrate, args.SOURCE_SYSTEM)
+	mavlinkThread = MavlinkThread.MavlinkThread(args.device, args.baudrate, 1)
 	mavlinkThread.start()
 	while True:
 		continue
