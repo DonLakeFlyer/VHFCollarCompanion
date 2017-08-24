@@ -29,9 +29,15 @@ class MavlinkThread (threading.Thread):
 			self.wait_command()
 
 	def wait_heartbeat(self):
-	    print("Waiting for heartbeat from Vehicle")
-	    msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
-	    print("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
+	    print("Waiting for heartbeat from Vehicle autopilot component")
+	    waiting = True
+	    while waiting:
+                    msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
+                    if self.mavlink.target_component == 1:
+                            print("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
+                            self.targetSystemId = self.mavlink.target_system
+                            self.targetComponentId = self.mavlink.target_component
+                            waiting = False
 
 	def wait_command(self):
 	    msg = self.mavlink.recv_match(type=['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT'], blocking=True)
