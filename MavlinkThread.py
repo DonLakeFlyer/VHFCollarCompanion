@@ -18,11 +18,12 @@ class MavlinkThread (threading.Thread):
 		self.capturingValues = False
 		self.waitingForHeading = False
 		self.cancelCommand = False
+		self.sendMessageLock = threading.Lock()
 
 	def run(self):
-		self.sdrThread = SDRThread.SDRThread()
-		self.sdrThread.start()
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=2)
+		self.sdrThread = SDRThread.SDRThread(self)
+		self.sdrThread.start()
 		self.wait_heartbeat()
 		while True:
 			if self.exitFlag:
@@ -47,17 +48,23 @@ class MavlinkThread (threading.Thread):
 		elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_1:
 			if self.capturingValues:
 				print("Start capture: failed in progress")
+				self.sendMessageLock.acquire()
 				self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_FAILED) 
+				self.sendMessageLock.release()
 			else:
 				print("Start capture")
+				self.sendMessageLock.acquire()
 				self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_ACCEPTED)
+				self.sendMessageLock.release()
 				self.startCapture()
 		elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			print("Cancel command")
 			self.capturingValues = False
 			self.waitingForHeading = False
 			self.cancelCommand = True
+			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_2, mavutil.mavlink.MAV_RESULT_ACCEPTED) 
+			self.sendMessageLock.release()
 		elif msg.get_type() == 'COMMAND_ACK':
 			print("COMMAND_ACK:", msg.command, msg.result)
 		elif msg.get_type() == 'STATUSTEXT':
@@ -80,10 +87,12 @@ class MavlinkThread (threading.Thread):
 		rgZeroes = [0] * 16
 		rgValues = rgNormalized + rgZeroes
 		print("rgValues", rgValues)
+		self.sendMessageLock.acquire()
 		self.mavlink.mav.memory_vect_send(0,		# address
 										1,			# ver
 										0,			# type
 										rgValues)	# values
+		self.sendMessageLock.release()
 
 	def captureStrength(self):
 		beepStrength = self.sdrThread.stopCapture()
@@ -120,6 +129,7 @@ class MavlinkThread (threading.Thread):
 		print("change heading", heading)
 		self.targetHeading = heading
 		self.waitingForHeading = True
+		self.sendMessageLock.acquire()
 		self.mavlink.mav.command_long_send(self.targetSystemId, 
 	    									self.targetComponentId,
             	                      		mavutil.mavlink.MAV_CMD_DO_REPOSITION,
@@ -129,4 +139,4 @@ class MavlinkThread (threading.Thread):
                             	      		0,														# reserved
                                 	  		math.radians(heading),									# change heading
                                   			float('nan'), float('nan'), float('NaN'))				# no change lat, lon, alt
-
+		self.sendMessageLock.release()

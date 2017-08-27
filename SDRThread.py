@@ -1,5 +1,6 @@
 import threading
 import time
+import MavlinkThread
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
@@ -20,8 +21,9 @@ GAIN_INC = 5
 class SDRThread (threading.Thread):
     exitFlag = False
 
-    def __init__(self):
+    def __init__(self, mavlinkThread):
         threading.Thread.__init__(self)
+        self.mavlinkThread = mavlinkThread
         self.lock = threading.Lock()
         self.strength = 0
         self.rgStrength = []
@@ -60,6 +62,9 @@ class SDRThread (threading.Thread):
                     # Was beep long enough
                     if time.perf_counter() - leadingEdgeStartTime > beepLength:
                         beepStrength = max(rgBeep)
+                        self.mavlinkThread.sendMessageLock.acquire()
+                        self.mavlinkThread.mavlink.mav.debug_send(0, 0, beepStrength)
+                        self.mavlinkThread.sendMessageLock.release()
                         print("rgBeep", rgBeep, beepStrength)
                         self.rgStrength.append(beepStrength)
                     rgBeep = []
@@ -81,6 +86,6 @@ class SDRThread (threading.Thread):
         if cStrength == 0:
             retSignalStrength = 0
         else:
-            retSignalStrength = sum(self.rgStrength) / float(cStrength)
+            retSignalStrength = max(self.rgStrength)
         self.lock.release()
         return retSignalStrength
