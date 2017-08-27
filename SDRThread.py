@@ -25,8 +25,8 @@ class SDRThread (threading.Thread):
         threading.Thread.__init__(self)
         self.mavlinkThread = mavlinkThread
         self.lock = threading.Lock()
-        self.strength = 0
         self.rgStrength = []
+        self.lastBeepDetectedTime = time.perf_counter()
 
     def run(self):
         self.exitFlag = False
@@ -61,16 +61,24 @@ class SDRThread (threading.Thread):
                     leadingEdge = False
                     # Was beep long enough
                     if time.perf_counter() - leadingEdgeStartTime > beepLength:
+                        self.lastBeepDetectedTime = time.perf_counter()
                         beepStrength = max(rgBeep)
-                        self.mavlinkThread.sendMessageLock.acquire()
-                        self.mavlinkThread.mavlink.mav.debug_send(0, 0, beepStrength)
-                        self.mavlinkThread.sendMessageLock.release()
-                        print("rgBeep", rgBeep, beepStrength)
+                        print("rgBeep", beepStrength, rgBeep)
                         self.rgStrength.append(beepStrength)
+                        self.sendBeepStrength(beepStrength)
                     rgBeep = []
             last_max_mag = max_mag
-
+            if time.perf_counter() - self.lastBeepDetectedTime > 10:
+                # No beeps detected for 10 seconds
+                self.sendBeepStrength(0)
+                self.lastBeepDetectedTime = time.perf_counter()
         sdr.close()
+
+    def sendBeepStrength(self, strength):
+        print("sendBeepStrength", strength)
+        self.mavlinkThread.sendMessageLock.acquire()
+        self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
+        self.mavlinkThread.sendMessageLock.release()
 
     def stop(self):
         self.exitFlag = True
