@@ -17,11 +17,12 @@ class MavlinkThread (threading.Thread):
 		self.targetComponentId = 1
 		self.capturingValues = False
 		self.waitingForHeading = False
+		self.cancelCommand = False
 
 	def run(self):
 		self.sdrThread = SDRThread.SDRThread()
 		self.sdrThread.start()
-		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.systemId)
+		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=2)
 		self.wait_heartbeat()
 		while True:
 			if self.exitFlag:
@@ -40,21 +41,27 @@ class MavlinkThread (threading.Thread):
                             waiting = False
 
 	def wait_command(self):
-	    msg = self.mavlink.recv_match(type=['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT'], blocking=True)
-	    if msg.get_type() == 'VFR_HUD':
-	    	self.checkCurrentHeading(msg.heading)
-	    elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_1:
-	    	if self.capturingValues:
-	    		print("Start capture: failed in progress")
-	    		self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_FAILED) 
-	    	else:
-	    		print("Start capture")
-	    		self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_ACCEPTED)
-	    		self.startCapture()
-	    elif msg.get_type() == 'COMMAND_ACK':
-	    	print("COMMAND_ACK:", msg.command, msg.result)
-	    elif msg.get_type() == 'STATUSTEXT':
-	    	print("STATUSTEXT:", msg.text)
+		msg = self.mavlink.recv_match(type=['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT'], blocking=True)
+		if msg.get_type() == 'VFR_HUD':
+	    		self.checkCurrentHeading(msg.heading)
+		elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_1:
+			if self.capturingValues:
+				print("Start capture: failed in progress")
+				self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_FAILED) 
+			else:
+				print("Start capture")
+				self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_1, mavutil.mavlink.MAV_RESULT_ACCEPTED)
+				self.startCapture()
+		elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_2:
+			print("Cancel command")
+			self.capturingValues = False
+			self.waitingForHeading = False
+			self.cancelCommand = True
+			self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_2, mavutil.mavlink.MAV_RESULT_ACCEPTED) 
+		elif msg.get_type() == 'COMMAND_ACK':
+			print("COMMAND_ACK:", msg.command, msg.result)
+		elif msg.get_type() == 'STATUSTEXT':
+			print("STATUSTEXT:", msg.text)
 
 	def startCapture(self):
 		self.capturingValues = True
@@ -84,7 +91,7 @@ class MavlinkThread (threading.Thread):
 		print("Signal strength", beepStrength)
 		headingIncrement = 360.0 / 16.0
 		newHeading = self.targetHeading + headingIncrement
-		if newHeading == 360:
+		if newHeading == 360 or self.cancelCommand:
 			self.stopCapture()
 		else:
 			self.changeVehicleHeading(newHeading)
