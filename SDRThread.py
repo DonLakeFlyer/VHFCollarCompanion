@@ -22,15 +22,17 @@ FREQ_INC_FINE = 0.1e6
 GAIN_INC = 5
 
 class SDRThread (threading.Thread):
-    def __init__(self, mavlinkThread, exitEvent, simulate):
+    def __init__(self, mavlinkThread, vehicle, exitEvent, simulate):
         threading.Thread.__init__(self)
         self.mavlinkThread = mavlinkThread
+        self.vehicle = vehicle
         self.exitEvent = exitEvent
         self.simulate = simulate
         self.lock = threading.Lock()
         self.rgStrength = []
         self.lastBeepDetectedTime = time.perf_counter()
         self.beepDetectedEvent = threading.Event()
+        self.beepCallback = None
 
     def run(self):
         if self.simulate:
@@ -89,12 +91,15 @@ class SDRThread (threading.Thread):
         self.exitEvent.wait()
 
     def sendBeepStrength(self, strength):
-        print("sendBeepStrength", strength)
+        #print("sendBeepStrength", strength)
         self.mavlinkThread.sendMessageLock.acquire()
         self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
         self.mavlinkThread.sendMessageLock.release()
         self.lastBeepStrength = strength
         self.beepDetectedEvent.set()
+        if self.beepCallback is not None:
+            self.beepCallback(strength)
+            self.beepCallback = None
 
     def startCapture(self):
         self.lock.acquire()
@@ -112,14 +117,14 @@ class SDRThread (threading.Thread):
         return retSignalStrength
 
     def simulateBeep(self):
-        if self.mavlinkThread.homePositionSet:
-            angleToCollar = geo.great_circle_angle(self.mavlinkThread.homePosition,
-                                                   self.mavlinkThread.vehicleCoordinate, 
+        if self.vehicle.homePositionSet:
+            angleToCollar = geo.great_circle_angle(self.vehicle.homePosition,
+                                                   self.vehicle.position, 
                                                    geo.magnetic_northpole)
-            distanceToCollar = geo.distance(self.mavlinkThread.vehicleCoordinate, 
-                                            self.mavlinkThread.homePosition)
-            vehicleHeadingToCollar = self.mavlinkThread.vehicleHeading - angleToCollar
-            print("simulateBeep", angleToCollar, distanceToCollar, self.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
+            distanceToCollar = geo.distance(self.vehicle.position, 
+                                            self.vehicle.homePosition)
+            vehicleHeadingToCollar = self.vehicle.heading - angleToCollar
+            #print("simulateBeep", angleToCollar, distanceToCollar, self.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
             # Start at full strength
             beepStrength = 500.0 
             # Adjust for distance
@@ -132,7 +137,7 @@ class SDRThread (threading.Thread):
                 vehicleHeadingToCollar = 180.0 - (vehicleHeadingToCollar - 180.0)
             vehicleHeadingToCollar = 180.0 - vehicleHeadingToCollar
             beepMultiplier = vehicleHeadingToCollar / 180.0
-            print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
+            #print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
             beepStrength *= beepMultiplier
             self.sendBeepStrength(beepStrength)
         else:
