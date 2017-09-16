@@ -1,6 +1,7 @@
 import threading
 import time
 import MavlinkThread
+import geo
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
@@ -8,6 +9,8 @@ from matplotlib.mlab import magnitude_spectrum
 NFFT = 64 #1024*4
 NUM_SAMPLES_PER_SCAN = NFFT*16
 NUM_BUFFERED_SWEEPS = 100
+
+BPM = 45.0
 
 # change this to control the number of scans that are combined in a single sweep
 # (e.g. 2, 3, 4, etc.) Note that it can slow things down
@@ -19,17 +22,23 @@ FREQ_INC_FINE = 0.1e6
 GAIN_INC = 5
 
 class SDRThread (threading.Thread):
-    exitFlag = False
-
-    def __init__(self, mavlinkThread):
+    def __init__(self, mavlinkThread, exitEvent, simulate):
         threading.Thread.__init__(self)
         self.mavlinkThread = mavlinkThread
+        self.exitEvent = exitEvent
+        self.simulate = simulate
         self.lock = threading.Lock()
         self.rgStrength = []
         self.lastBeepDetectedTime = time.perf_counter()
+        self.beepDetectedEvent = threading.Event()
 
     def run(self):
-        self.exitFlag = False
+        if self.simulate:
+            self.runSimulate()
+        else:
+            self.runSample()
+
+    def runSample(self):
         sdr = RtlSdr()
         sdr.rs = 2.4e6
         sdr.fc = 146e6
@@ -42,7 +51,7 @@ class SDRThread (threading.Thread):
         ratioMultiplier = 10
         beepLength = (1.0 / 1000.0) * 10.0
 
-        while not self.exitFlag:
+        while not self.exitEvent.isSet():
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             mag, freqs = magnitude_spectrum(samples)
             max_mag = max(mag)
@@ -74,14 +83,18 @@ class SDRThread (threading.Thread):
                 self.lastBeepDetectedTime = time.perf_counter()
         sdr.close()
 
+    def runSimulate(self):
+        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulateBeep)
+        self.simulationTimer.start()
+        self.exitEvent.wait()
+
     def sendBeepStrength(self, strength):
         print("sendBeepStrength", strength)
         self.mavlinkThread.sendMessageLock.acquire()
         self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
         self.mavlinkThread.sendMessageLock.release()
-
-    def stop(self):
-        self.exitFlag = True
+        self.lastBeepStrength = strength
+        self.beepDetectedEvent.set()
 
     def startCapture(self):
         self.lock.acquire()
@@ -97,3 +110,32 @@ class SDRThread (threading.Thread):
             retSignalStrength = max(self.rgStrength)
         self.lock.release()
         return retSignalStrength
+
+    def simulateBeep(self):
+        if self.mavlinkThread.homePositionSet:
+            angleToCollar = geo.great_circle_angle(self.mavlinkThread.homePosition,
+                                                   self.mavlinkThread.vehicleCoordinate, 
+                                                   geo.magnetic_northpole)
+            distanceToCollar = geo.distance(self.mavlinkThread.vehicleCoordinate, 
+                                            self.mavlinkThread.homePosition)
+            vehicleHeadingToCollar = self.mavlinkThread.vehicleHeading - angleToCollar
+            print("simulateBeep", angleToCollar, distanceToCollar, self.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
+            # Start at full strength
+            beepStrength = 500.0 
+            # Adjust for distance
+            maxDistance = 2000.0
+            distanceToCollar = min(distanceToCollar, maxDistance)
+            beepStrength *= (maxDistance - distanceToCollar) / maxDistance
+            # Adjust for vehicle heading in relationship to direction to collar
+            vehicleHeadingToCollar = abs(vehicleHeadingToCollar)
+            if vehicleHeadingToCollar > 180.0:
+                vehicleHeadingToCollar = 180.0 - (vehicleHeadingToCollar - 180.0)
+            vehicleHeadingToCollar = 180.0 - vehicleHeadingToCollar
+            beepMultiplier = vehicleHeadingToCollar / 180.0
+            print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
+            beepStrength *= beepMultiplier
+            self.sendBeepStrength(beepStrength)
+        else:
+            print("simulateBeep - home position not set")
+        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulateBeep)
+        self.simulationTimer.start()

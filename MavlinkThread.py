@@ -1,5 +1,6 @@
 import threading
 import math
+import geo
 
 import SDRThread
 
@@ -8,21 +9,24 @@ from pymavlink import mavutil
 class MavlinkThread (threading.Thread):
 	exitFlag = False
 
-	def __init__(self, device, baudrate, mavlinkSystemId):
+	def __init__(self, device, baudrate, mavlinkSystemId, simulate):
 		threading.Thread.__init__(self)
 		self.device = device
 		self.baudrate = baudrate
 		self.systemId = mavlinkSystemId
+		self.simulate = simulate
 		self.targetSystemId = 1
 		self.targetComponentId = 1
 		self.capturingValues = False
 		self.waitingForHeading = False
 		self.cancelCommand = False
 		self.sendMessageLock = threading.Lock()
+		self.homePositionSet = False
 
 	def run(self):
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=2)
-		self.sdrThread = SDRThread.SDRThread(self)
+		self.sdrThreadExitEvent = threading.Event()
+		self.sdrThread = SDRThread.SDRThread(self, self.sdrThreadExitEvent, self.simulate)
 		self.sdrThread.start()
 		self.wait_heartbeat()
 		while True:
@@ -42,9 +46,11 @@ class MavlinkThread (threading.Thread):
                             waiting = False
 
 	def wait_command(self):
-		msg = self.mavlink.recv_match(type=['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT'], blocking=True)
+		rgTypes = ['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT', 'HOME_POSITION', 'GPS_RAW_INT', 'ATTITUDE']
+		msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
 		if msg.get_type() == 'VFR_HUD':
-	    		self.checkCurrentHeading(msg.heading)
+			self.vehicleHeading = msg.heading
+			self.checkCurrentHeading(msg.heading)
 		elif msg.get_type() == 'COMMAND_LONG' and msg.command == mavutil.mavlink.MAV_CMD_USER_1:
 			if self.capturingValues:
 				print("Start capture: failed in progress")
@@ -65,6 +71,11 @@ class MavlinkThread (threading.Thread):
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(mavutil.mavlink.MAV_CMD_USER_2, mavutil.mavlink.MAV_RESULT_ACCEPTED) 
 			self.sendMessageLock.release()
+		elif msg.get_type() == 'GPS_RAW_INT' and msg.fix_type == mavutil.mavlink.GPS_FIX_TYPE_3D_FIX:
+			self.vehicleCoordinate = geo.xyz(msg.lat / 1E7, msg.lon / 1E7)
+		elif msg.get_type() == 'HOME_POSITION':
+			self.homePositionSet = True
+			self.homePosition = geo.xyz(msg.latitude / 1E7, msg.longitude / 1E7)
 		elif msg.get_type() == 'COMMAND_ACK':
 			print("COMMAND_ACK:", msg.command, msg.result)
 		elif msg.get_type() == 'STATUSTEXT':
