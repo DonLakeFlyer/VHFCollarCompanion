@@ -90,8 +90,9 @@ class SDRThread (threading.Thread):
         self.lastBeepStrength = strength
         self.beepDetectedEvent.set()
         if self.beepCallback is not None:
-            self.beepCallback(strength)
+            bc = self.beepCallback
             self.beepCallback = None
+            bc(strength)
 
     def simulateBeep(self):
         if self.vehicle.homePositionSet:

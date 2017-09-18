@@ -74,7 +74,7 @@ class MavlinkThread (threading.Thread):
 			self.directionFinder.findDirection()
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			commandHandled = True
-			print("Cancel Capture")
+			self.directionFinder.cancel()
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(msg.command, commandAck) 
