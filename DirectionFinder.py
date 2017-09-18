@@ -1,5 +1,7 @@
 import Vehicle
 
+from threading import Timer
+
 class DirectionFinder:
 	exitFlag = False
 
@@ -9,6 +11,9 @@ class DirectionFinder:
 		self.sdr = sdr
 		self.rgStrength = []
 		self.cancelCommand = False
+		self.beepTimeoutTimer = None
+		self.beepCount = 0
+		self.rgBeeps = []
 
 	def findDirection(self):
 		self.rgStrength = []
@@ -18,10 +23,21 @@ class DirectionFinder:
 	def headingChangeComplete(self):
 		print("DirectionFinder heading change complete")
 		self.sdr.beepCallback = self.beepCallback
+		self.beepTimeoutTimer = Timer(10, self.beepTimeout)
+		self.beepTimeoutTimer.start()
 
 	def beepCallback(self, beepStrength):
-		print("DirectionFinder.beepCallback heading:strengh", self.targetHeading, beepStrength)
-		self.rgStrength.append(beepStrength)
+		self.beepCount += 1
+		self.rgBeeps.append(beepStrength)
+		self.beepTimeoutTimer.cancel()
+		print("DirectionFinder.beepCallback heading:strengh:beepCount", self.targetHeading, beepStrength, self.beepCount)
+		if self.beepCount == 3:
+			self.rgStrength.append(max(self.rgBeeps))
+			self.nextHeading()
+
+	def nextHeading(self):
+		self.beepCount = 0
+		self.rgBeeps = []
 		headingIncrement = 360.0 / 16.0
 		newHeading = self.targetHeading + headingIncrement
 		if newHeading != 360 and not self.cancelCommand:
@@ -40,6 +56,15 @@ class DirectionFinder:
 			rgValues = rgNormalized + rgZeroes
 			print("rgValues", rgValues)
 			self.mavlink.sendMemoryVect(rgValues)
+
+
+	def beepTimeout(self):
+		# No beep heard
+		print("DirectionFinder.beepTimeout beepCount", self.beepCount)
+		self.sdr.beepCallback = None
+		self.rgBeeps.append(0)
+		self.rgStrength.append(max(self.rgBeeps))
+		self.nextHeading()
 
 	def stopCapture(self):
 		self.capturingValues = False
@@ -103,3 +128,6 @@ class DirectionFinder:
                                 	  		math.radians(heading),									# change heading
                                   			float('nan'), float('nan'), float('NaN'))				# no change lat, lon, alt
 		self.sendMessageLock.release()
+
+		
+

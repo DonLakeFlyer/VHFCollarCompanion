@@ -18,11 +18,9 @@
 from __future__ import division
 import matplotlib.animation as animation
 from matplotlib.mlab import psd
-from matplotlib.mlab import magnitude_spectrum
 import pylab as pyl
 import numpy as np
 import sys
-import time
 from rtlsdr import RtlSdr
 
 # A simple waterfall, spectrum plotter
@@ -34,7 +32,7 @@ from rtlsdr import RtlSdr
 # * Press "+" and "-" to control gain, and space to enable AGC.
 # * Type a frequency (in MHz) and press enter to directly change the center frequency
 
-NFFT = 64 #1024*4
+NFFT = 64 # 1024*4
 NUM_SAMPLES_PER_SCAN = NFFT*16
 NUM_BUFFERED_SWEEPS = 100
 
@@ -139,10 +137,7 @@ class Waterfall(object):
             samples = self.sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             psd_scan, f = psd(samples, NFFT=NFFT)
 
-            psd_values = 10*np.log10(psd_scan)
-            psd_mid = len(psd_values) // 2
-            #print(psd_values[psd_mid], psd_scan[psd_mid])
-            self.image_buffer[0, start_ind: start_ind+NFFT] = psd_values
+            self.image_buffer[0, start_ind: start_ind+NFFT] = 10*np.log10(psd_scan)
 
         # plot entire sweep
         self.image.set_array(self.image_buffer)
@@ -174,40 +169,11 @@ def main():
     wf = Waterfall(sdr)
 
     # some defaults
-    sdr.rs = 2.4e6
+    sdr.rs = 1.2e6 # 2.4e6
     sdr.fc = 146e6
     sdr.gain = 10
 
-    last_max_mag = 0
-    leadingEdge = False
-    rgBeep = []
-    noiseThreshold = 50
-    ratioMultiplier = 15
-    beepLength = (1.0 / 1000.0) * 10.0
-    while True:
-        samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
-        mag, freqs = magnitude_spectrum(samples)
-        max_mag = max(mag)
-        if not leadingEdge:
-            # Detect possible leading edge
-            if max_mag > noiseThreshold and max_mag > last_max_mag * ratioMultiplier:
-                leadingEdge = True
-                rgBeep.append(max_mag)
-                leadingEdgeStartTime = time.perf_counter()
-                print("Leading edge")
-        else:
-            rgBeep.append(max_mag)
-            # Detect trailing edge
-            if max_mag < last_max_mag / ratioMultiplier:
-                print("Trailing edge")
-                leadingEdge = False
-                # Was beep long enough
-                if time.perf_counter() - leadingEdgeStartTime > beepLength:
-                    print(max(rgBeep[1:-1]))
-                rgBeep = []
-        last_max_mag = max_mag
-
-    #wf.start()
+    wf.start()
 
     # cleanup
     sdr.close()
