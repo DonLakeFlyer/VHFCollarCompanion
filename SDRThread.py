@@ -91,7 +91,8 @@ class SDRThread (threading.Thread):
         self.exitEvent.wait()
 
     def sendBeepStrength(self, strength):
-        #print("sendBeepStrength", strength)
+        print("sendBeepStrength", strength)
+        return
         self.mavlinkThread.sendMessageLock.acquire()
         self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
         self.mavlinkThread.sendMessageLock.release()
