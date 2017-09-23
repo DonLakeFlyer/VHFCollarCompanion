@@ -1,5 +1,7 @@
 import Vehicle
 
+from threading import Timer
+
 class DirectionFinder:
 	exitFlag = False
 
@@ -9,19 +11,45 @@ class DirectionFinder:
 		self.sdr = sdr
 		self.rgStrength = []
 		self.cancelCommand = False
+		self.beepTimeoutTimer = None
+		self.beepCount = 0
+		self.rgBeeps = []
+
+	def cancel(self):
+		self.cancelCommand = True
 
 	def findDirection(self):
+		self.cancelCommand = False
 		self.rgStrength = []
+		self.beepCount = 0
+		self.rgBeeps = []
 		self.targetHeading = 0
 		self.vehicle.changeHeading(self.targetHeading, self.headingChangeComplete)
 
 	def headingChangeComplete(self):
 		print("DirectionFinder heading change complete")
+		if self.cancelCommand:
+			return
 		self.sdr.beepCallback = self.beepCallback
+		self.beepTimeoutTimer = Timer(10, self.beepTimeout)
+		self.beepTimeoutTimer.start()
 
 	def beepCallback(self, beepStrength):
-		print("DirectionFinder.beepCallback heading:strengh", self.targetHeading, beepStrength)
-		self.rgStrength.append(beepStrength)
+		self.beepCount += 1
+		self.rgBeeps.append(beepStrength)
+		print("DirectionFinder.beepCallback heading:strengh:beepCount", self.targetHeading, beepStrength, self.beepCount)
+		#if self.cancelCommand:
+		#	return
+		if self.beepCount == 3:
+			self.beepTimeoutTimer.cancel()
+			self.rgStrength.append(max(self.rgBeeps))
+			self.nextHeading()
+		else:
+			self.sdr.beepCallback = self.beepCallback
+
+	def nextHeading(self):
+		self.beepCount = 0
+		self.rgBeeps = []
 		headingIncrement = 360.0 / 16.0
 		newHeading = self.targetHeading + headingIncrement
 		if newHeading != 360 and not self.cancelCommand:
@@ -41,39 +69,16 @@ class DirectionFinder:
 			print("rgValues", rgValues)
 			self.mavlink.sendMemoryVect(rgValues)
 
-	def stopCapture(self):
-		self.capturingValues = False
 
-	def captureStrength(self):
-		beepStrength = self.sdrThread.stopCapture()
-		self.rgStrength.append(beepStrength)
-		print("Signal strength", beepStrength)
-		headingIncrement = 360.0 / 16.0
-		newHeading = self.targetHeading + headingIncrement
-		if newHeading == 360 or self.cancelCommand:
-			self.stopCapture()
-		else:
-			self.changeVehicleHeading(newHeading)
-
-	def checkCurrentHeading(self, heading):
-		if not self.waitingForHeading:
+	def beepTimeout(self):
+		# No beep heard
+		print("DirectionFinder.beepTimeout beepCount", self.beepCount)
+		self.sdr.beepCallback = None
+		self.rgBeeps.append(0)
+		self.rgStrength.append(max(self.rgBeeps))
+		if self.cancelCommand:
 			return
-		if self.fuzzyHeadingCompare(heading, self.targetHeading):
-			print("Heading change complete", self.targetHeading)
-			self.waitingForHeading = False
-			self.sdrThread.startCapture()
-			print("Waiting 10 seconds to capture data")
-			t = threading.Timer(10.0, self.captureStrength)
-			t.start()
-
-	def fuzzyHeadingCompare(self, heading1, heading2):
-		#print(heading1, heading2)
-		if heading1 <= 1 and heading2 >= 359 or heading2 <= 1 and heading1 >= 359:
-			return True
-		if abs(heading1 - heading2) < 1.0:
-			return True
-		else:
-			return False
+		self.nextHeading()
 
 	def changeVehicleHeading(self, heading):
 		print("change heading", heading)
@@ -103,3 +108,6 @@ class DirectionFinder:
                                 	  		math.radians(heading),									# change heading
                                   			float('nan'), float('nan'), float('NaN'))				# no change lat, lon, alt
 		self.sendMessageLock.release()
+
+		
+

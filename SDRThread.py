@@ -1,29 +1,19 @@
 import threading
 import time
-import MavlinkThread
-import geo
+#import MavlinkThread
+#import geo
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 
-NFFT = 64 #1024*4
-NUM_SAMPLES_PER_SCAN = NFFT*16
+NFFT = 64
+NUM_SAMPLES_PER_SCAN = NFFT * 16
 NUM_BUFFERED_SWEEPS = 100
 
 BPM = 45.0
 
-# change this to control the number of scans that are combined in a single sweep
-# (e.g. 2, 3, 4, etc.) Note that it can slow things down
-NUM_SCANS_PER_SWEEP = 1
-
-# these are the increments when scrolling the mouse wheel or pressing '+' or '-'
-FREQ_INC_COARSE = 1e6
-FREQ_INC_FINE = 0.1e6
-GAIN_INC = 5
-
-class SDRThread (threading.Thread):
+class SDRThread:
     def __init__(self, mavlinkThread, vehicle, exitEvent, simulate):
-        threading.Thread.__init__(self)
         self.mavlinkThread = mavlinkThread
         self.vehicle = vehicle
         self.exitEvent = exitEvent
@@ -53,36 +43,33 @@ class SDRThread (threading.Thread):
         ratioMultiplier = 10
         beepLength = (1.0 / 1000.0) * 10.0
 
+        msecs = int(round(time.time() * 1000))
         while not self.exitEvent.isSet():
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             mag, freqs = magnitude_spectrum(samples)
-            max_mag = max(mag)
+            strength = mag[len(mag) // 2]
+            #new_msecs = int(round(time.time() * 1000))
+            #print(strength, new_msecs - msecs)
+            #msecs = new_msecs
+            #continue
             if not leadingEdge:
                 # Detect possible leading edge
-                if max_mag > noiseThreshold and max_mag > last_max_mag * ratioMultiplier:
+                if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
                     leadingEdge = True
-                    rgBeep.append(max_mag)
+                    rgBeep.append(strength)
                     leadingEdgeStartTime = time.perf_counter()
                     print("Leading edge")
             else:
-                rgBeep.append(max_mag)
+                rgBeep.append(strength)
                 # Detect trailing edge
-                if max_mag < last_max_mag / ratioMultiplier:
+                if strength < lastStrength / ratioMultiplier:
                     print("Trailing edge")
                     leadingEdge = False
-                    # Was beep long enough
-                    if time.perf_counter() - leadingEdgeStartTime > beepLength:
-                        self.lastBeepDetectedTime = time.perf_counter()
-                        beepStrength = max(rgBeep)
-                        print("rgBeep", beepStrength, rgBeep)
-                        self.rgStrength.append(beepStrength)
-                        self.sendBeepStrength(beepStrength)
+                    beepStrength = max(rgBeep)
+                    print("rgBeep", beepStrength, rgBeep)
+                    self.sendBeepStrength(beepStrength)
                     rgBeep = []
-            last_max_mag = max_mag
-            if time.perf_counter() - self.lastBeepDetectedTime > 10:
-                # No beeps detected for 10 seconds
-                self.sendBeepStrength(0)
-                self.lastBeepDetectedTime = time.perf_counter()
+            lastStrength = strength
         sdr.close()
 
     def runSimulate(self):
@@ -99,23 +86,9 @@ class SDRThread (threading.Thread):
         self.lastBeepStrength = strength
         self.beepDetectedEvent.set()
         if self.beepCallback is not None:
-            self.beepCallback(strength)
+            bc = self.beepCallback
             self.beepCallback = None
-
-    def startCapture(self):
-        self.lock.acquire()
-        self.rgStrength = []
-        self.lock.release()
-
-    def stopCapture(self):        
-        self.lock.acquire()
-        cStrength = len(self.rgStrength)
-        if cStrength == 0:
-            retSignalStrength = 0
-        else:
-            retSignalStrength = max(self.rgStrength)
-        self.lock.release()
-        return retSignalStrength
+            bc(strength)
 
     def simulateBeep(self):
         if self.vehicle.homePositionSet:
@@ -129,7 +102,7 @@ class SDRThread (threading.Thread):
             # Start at full strength
             beepStrength = 500.0 
             # Adjust for distance
-            maxDistance = 2000.0
+            maxDistance = 500.0
             distanceToCollar = min(distanceToCollar, maxDistance)
             beepStrength *= (maxDistance - distanceToCollar) / maxDistance
             # Adjust for vehicle heading in relationship to direction to collar
@@ -140,7 +113,8 @@ class SDRThread (threading.Thread):
             beepMultiplier = vehicleHeadingToCollar / 180.0
             #print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
             beepStrength *= beepMultiplier
-            self.sendBeepStrength(beepStrength)
+            if beepStrength > 0:
+                self.sendBeepStrength(beepStrength)
         else:
             print("simulateBeep - home position not set")
         self.simulationTimer = threading.Timer(60.0 / BPM, self.simulateBeep)
