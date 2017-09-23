@@ -1,7 +1,7 @@
 import threading
 import time
-import MavlinkThread
-import geo
+#import MavlinkThread
+#import geo
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
@@ -12,18 +12,8 @@ NUM_BUFFERED_SWEEPS = 100
 
 BPM = 45.0
 
-# change this to control the number of scans that are combined in a single sweep
-# (e.g. 2, 3, 4, etc.) Note that it can slow things down
-NUM_SCANS_PER_SWEEP = 1
-
-# these are the increments when scrolling the mouse wheel or pressing '+' or '-'
-FREQ_INC_COARSE = 1e6
-FREQ_INC_FINE = 0.1e6
-GAIN_INC = 5
-
-class SDRThread (threading.Thread):
+class SDRThread:
     def __init__(self, mavlinkThread, vehicle, exitEvent, simulate):
-        threading.Thread.__init__(self)
         self.mavlinkThread = mavlinkThread
         self.vehicle = vehicle
         self.exitEvent = exitEvent
@@ -53,10 +43,15 @@ class SDRThread (threading.Thread):
         ratioMultiplier = 10
         beepLength = (1.0 / 1000.0) * 10.0
 
+        msecs = int(round(time.time() * 1000))
         while not self.exitEvent.isSet():
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             mag, freqs = magnitude_spectrum(samples)
             strength = mag[len(mag) // 2]
+            #new_msecs = int(round(time.time() * 1000))
+            #print(strength, new_msecs - msecs)
+            #msecs = new_msecs
+            #continue
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
@@ -83,7 +78,8 @@ class SDRThread (threading.Thread):
         self.exitEvent.wait()
 
     def sendBeepStrength(self, strength):
-        #print("sendBeepStrength", strength)
+        print("sendBeepStrength", strength)
+        return
         self.mavlinkThread.sendMessageLock.acquire()
         self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
         self.mavlinkThread.sendMessageLock.release()
