@@ -4,8 +4,8 @@ import math
 from pymavlink import mavutil
 
 class Vehicle:
-	def __init__(self, mavlink):
-		self.mavlink = mavlink
+	def __init__(self, tools):
+		self.mavlink = tools.mavlinkThread
 		self.heading = float('NaN')
 		self.targetHeadingRadians = float('NaN')
 		self.position = geo.xyz(0, 0)

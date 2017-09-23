@@ -1,7 +1,6 @@
 import threading
 import time
-#import MavlinkThread
-#import geo
+import geo
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
@@ -12,25 +11,22 @@ NUM_BUFFERED_SWEEPS = 100
 
 BPM = 45.0
 
-class SDRThread:
-    def __init__(self, mavlinkThread, vehicle, exitEvent, simulate):
-        self.mavlinkThread = mavlinkThread
-        self.vehicle = vehicle
-        self.exitEvent = exitEvent
-        self.simulate = simulate
-        self.lock = threading.Lock()
+class PulseDetector:
+    def __init__(self, tools, args):
+        self.tools = tools
+        self.simulateVehicle = args.simulateVehicle
+        self.testPulse = args.testPulse
         self.rgStrength = []
         self.lastBeepDetectedTime = time.perf_counter()
-        self.beepDetectedEvent = threading.Event()
         self.beepCallback = None
 
     def run(self):
-        if self.simulate:
+        if self.simulateVehicle:
             self.runSimulate()
         else:
-            self.runSample()
+            self.sdrSample()
 
-    def runSample(self):
+    def sdrSample(self):
         sdr = RtlSdr()
         sdr.rs = 2.4e6
         sdr.fc = 146e6
@@ -44,7 +40,7 @@ class SDRThread:
         beepLength = (1.0 / 1000.0) * 10.0
 
         msecs = int(round(time.time() * 1000))
-        while not self.exitEvent.isSet():
+        while True:
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             mag, freqs = magnitude_spectrum(samples)
             strength = mag[len(mag) // 2]
@@ -58,47 +54,55 @@ class SDRThread:
                     leadingEdge = True
                     rgBeep.append(strength)
                     leadingEdgeStartTime = time.perf_counter()
-                    print("Leading edge")
+                    if self.testPulse:
+                        print("Leading edge")
             else:
                 rgBeep.append(strength)
                 # Detect trailing edge
                 if strength < lastStrength / ratioMultiplier:
-                    print("Trailing edge")
+                    if self.testPulse:
+                        print("Trailing edge")
                     leadingEdge = False
                     beepStrength = max(rgBeep)
-                    print("rgBeep", beepStrength, rgBeep)
+                    if self.testPulse:
+                        print("rgBeep", beepStrength, rgBeep)
                     self.sendBeepStrength(beepStrength)
                     rgBeep = []
             lastStrength = strength
         sdr.close()
 
     def runSimulate(self):
-        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulateBeep)
+        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()
-        self.exitEvent.wait()
 
     def sendBeepStrength(self, strength):
-        print("sendBeepStrength", strength)
-        return
-        self.mavlinkThread.sendMessageLock.acquire()
-        self.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
-        self.mavlinkThread.sendMessageLock.release()
+        if self.testPulse or self.simulatePulse:
+            print("sendBeepStrength", strength)
+            if self.testPulse:
+                return
+        self.tools.mavlinkThread.sendMessageLock.acquire()
+        self.tools.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
+        #rgZeroes = [0] * 32
+        #self.tools.mavlinkThread.mavlink.mav.memory_vect_send(0,        # address
+        #                                  1,        # ver
+        #                                  0,        # type
+        #                                  rgZeroes) # values
+        self.tools.mavlinkThread.sendMessageLock.release()
         self.lastBeepStrength = strength
-        self.beepDetectedEvent.set()
         if self.beepCallback is not None:
             bc = self.beepCallback
             self.beepCallback = None
             bc(strength)
 
-    def simulateBeep(self):
-        if self.vehicle.homePositionSet:
-            angleToCollar = geo.great_circle_angle(self.vehicle.homePosition,
-                                                   self.vehicle.position, 
+    def simulatePulse(self):
+        if self.tools.vehicle.homePositionSet:
+            angleToCollar = geo.great_circle_angle(self.tools.vehicle.homePosition,
+                                                   self.tools.vehicle.position, 
                                                    geo.magnetic_northpole)
-            distanceToCollar = geo.distance(self.vehicle.position, 
-                                            self.vehicle.homePosition)
-            vehicleHeadingToCollar = self.vehicle.heading - angleToCollar
-            #print("simulateBeep", angleToCollar, distanceToCollar, self.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
+            distanceToCollar = geo.distance(self.tools.vehicle.position, 
+                                            self.tools.vehicle.homePosition)
+            vehicleHeadingToCollar = self.tools.vehicle.heading - angleToCollar
+            #print("simulateBeep", angleToCollar, distanceToCollar, self.tools.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
             # Start at full strength
             beepStrength = 500.0 
             # Adjust for distance
@@ -117,5 +121,5 @@ class SDRThread:
                 self.sendBeepStrength(beepStrength)
         else:
             print("simulateBeep - home position not set")
-        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulateBeep)
+        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()

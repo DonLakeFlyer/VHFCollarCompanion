@@ -2,7 +2,7 @@ import threading
 import math
 import geo
 
-import SDRThread
+import PulseDetector
 import Vehicle
 import DirectionFinder
 
@@ -11,15 +11,15 @@ from pymavlink import mavutil
 class MavlinkThread (threading.Thread):
 	exitFlag = False
 
-	def __init__(self, device, baudrate, mavlinkSystemId, simulate):
+	def __init__(self, tools, args):
 		threading.Thread.__init__(self)
-		self.baudrate = baudrate
-		self.systemId = mavlinkSystemId
-		self.simulate = simulate
-		if simulate:
+		self.tools = tools
+		self.baudrate = args.baudrate
+		self.simulateVehicle = args.simulateVehicle
+		if self.simulateVehicle:
 			self.device = "udp:localhost:14540"
 		else:
-			self.device = device
+			self.device = args.device
 		self.targetSystemId = 1
 		self.targetComponentId = 1
 		self.capturingValues = False
@@ -34,11 +34,6 @@ class MavlinkThread (threading.Thread):
 		# Close initial connection and start new one with correct source_system id
 		self.mavlink.close()
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.targetSystemId)
-		self.vehicle = Vehicle.Vehicle(self)
-		self.sdrThreadExitEvent = threading.Event()
-		self.sdrThread = SDRThread.SDRThread(self, self.vehicle, self.sdrThreadExitEvent, self.simulate)
-		self.sdrThread.start()
-		self.directionFinder = DirectionFinder.DirectionFinder(self, self.vehicle, self.sdrThread)
 		while True:
 			if self.exitFlag:
 				break
@@ -58,7 +53,7 @@ class MavlinkThread (threading.Thread):
 	def wait_command(self):
 		rgTypes = ['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT', 'HOME_POSITION', 'GPS_RAW_INT', 'ATTITUDE']
 		msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
-		self.vehicle.mavlinkMessage(msg)
+		self.tools.vehicle.mavlinkMessage(msg)
 		if msg.get_type() == 'COMMAND_LONG':
 			self.handleCommandLong(msg)
 		elif msg.get_type() == 'COMMAND_ACK':
@@ -71,10 +66,10 @@ class MavlinkThread (threading.Thread):
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
 		if msg.command == mavutil.mavlink.MAV_CMD_USER_1:
 			commandHandled = True
-			self.directionFinder.findDirection()
+			self.tools.directionFinder.findDirection()
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			commandHandled = True
-			self.directionFinder.cancel()
+			self.tools.directionFinder.cancel()
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(msg.command, commandAck) 
@@ -94,6 +89,7 @@ class MavlinkThread (threading.Thread):
 		self.sendMessageLock.release()
 
 	def sendMemoryVect(self, rgValues):
+		print("sendMemoryVect", rgValues)
 		self.sendMessageLock.acquire()
 		self.mavlink.mav.memory_vect_send(0,		# address
 										  1,		# ver
