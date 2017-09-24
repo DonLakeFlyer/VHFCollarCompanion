@@ -16,6 +16,7 @@ class PulseDetector:
         self.tools = tools
         self.simulateVehicle = args.simulateVehicle
         self.testPulse = args.testPulse
+        print("PulseDetector.ini", self.simulateVehicle, self.testPulse)
         self.rgStrength = []
         self.lastBeepDetectedTime = time.perf_counter()
         self.beepCallback = None
