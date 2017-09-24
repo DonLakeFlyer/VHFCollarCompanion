@@ -3,6 +3,7 @@ import MavlinkThread
 import PulseDetector
 import Vehicle
 import DirectionFinder
+import PulseSender
 import sys
 
 from argparse import ArgumentParser
@@ -28,6 +29,7 @@ def main():
 	tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
 	tools.vehicle = Vehicle.Vehicle(tools)
 	tools.directionFinder = DirectionFinder.DirectionFinder(tools)
+	pulseSender = PulseSender.PulseSender(tools)
 
 	tools.mavlinkThread.start()
 	pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)
