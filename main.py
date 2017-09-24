@@ -19,19 +19,19 @@ def main():
 
 	if args.log:
 		timeStr = strftime("%mm_%dd_%Hh_%Mm_%Ss", gmtime())
-		fErr = open('/home/pi/repos/VHFCollarCompanion/err.log.' + timeStr, 'w')
+		fErr = open('/home/pi/logs/err.log.' + timeStr, 'w')
 		sys.stderr = fErr 
-		fOut = open('/home/pi/repos/VHFCollarCompanion/out.log.' + timeStr, 'w')
+		fOut = open('/home/pi/logs/out.log.' + timeStr, 'w')
 		sys.stdout = fOut
 
 	tools = Tools.Tools()
 	tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
-	tools.pulseDetector = PulseDetector.PulseDetector(tools, args)
 	tools.vehicle = Vehicle.Vehicle(tools)
 	tools.directionFinder = DirectionFinder.DirectionFinder(tools)
 
 	tools.mavlinkThread.start()
-	tools.pulseDetector.run()
+	pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)
+	pulseDetector.start()
 
 if __name__ == '__main__':
     main()

@@ -96,3 +96,8 @@ class MavlinkThread (threading.Thread):
 										  0,		# type
 										  rgValues)	# values
 		self.sendMessageLock.release()
+
+	def sendPulseStrength(self, strength):
+		self.tools.mavlinkThread.sendMessageLock.acquire()
+		self.tools.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
+		self.tools.mavlinkThread.sendMessageLock.release()
