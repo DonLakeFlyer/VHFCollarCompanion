@@ -1,3 +1,5 @@
+import time
+
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 from multiprocessing import Process
@@ -22,6 +24,7 @@ class PulseDetector(Process):
         rgPulse = []
         noiseThreshold = 50
         ratioMultiplier = 10
+        lastPulseTime = time.time()
 
         while True:
             samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
@@ -39,6 +42,11 @@ class PulseDetector(Process):
                     leadingEdge = False
                     pulseStrength = max(rgPulse)
                     self.pulseQueue.put(pulseStrength)
+                    lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
+            if time.time() - lastPulseTime > 2:
+                self.pulseQueue.put(0)
+                lastPulseTime = time.time()
+
         sdr.close()
