@@ -30,6 +30,7 @@ def main():
 	tools.vehicle = Vehicle.Vehicle(tools)
 	tools.directionFinder = DirectionFinder.DirectionFinder(tools)
 	pulseSender = PulseSender.PulseSender(tools)
+	pulseSender.start()
 
 	tools.mavlinkThread.start()
 	pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)

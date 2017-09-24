@@ -1,3 +1,5 @@
+import threading
+
 class PulseSender (threading.Thread):
 
 	def __init__(self, tools):
