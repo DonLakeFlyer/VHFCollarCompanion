@@ -1,4 +1,5 @@
 import threading
+import logging
 
 class PulseSender (threading.Thread):
 
@@ -9,5 +10,5 @@ class PulseSender (threading.Thread):
 	def run(self):
 		while True:
 			pulseStrength = self.tools.pulseQueue.get(True)
-			print("PulseSender.pulse", pulseStrength)
+			logging.debug("PulseSender.pulse %d", pulseStrength)
 			self.tools.mavlinkThread.sendPulseStrength(pulseStrength)

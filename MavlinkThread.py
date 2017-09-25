@@ -1,6 +1,6 @@
 import threading
 import math
-import geo
+import logging
 
 import PulseDetector
 import Vehicle
@@ -40,7 +40,7 @@ class MavlinkThread (threading.Thread):
 			self.wait_command()
 
 	def wait_heartbeat(self):
-	    print("Waiting for heartbeat from Vehicle autopilot component")
+	    logging.debug("Waiting for heartbeat from Vehicle autopilot component")
 	    waiting = True
 	    while waiting:
                     msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
@@ -56,10 +56,6 @@ class MavlinkThread (threading.Thread):
 		self.tools.vehicle.mavlinkMessage(msg)
 		if msg.get_type() == 'COMMAND_LONG':
 			self.handleCommandLong(msg)
-		elif msg.get_type() == 'COMMAND_ACK':
-			print("COMMAND_ACK:", msg.command, msg.result)
-		elif msg.get_type() == 'STATUSTEXT':
-			print("STATUSTEXT:", msg.text)
 
 	def handleCommandLong(self, msg):
 		commandHandled = False
@@ -89,7 +85,7 @@ class MavlinkThread (threading.Thread):
 		self.sendMessageLock.release()
 
 	def sendMemoryVect(self, rgValues):
-		print("sendMemoryVect", rgValues)
+		logging.debug("sendMemoryVect %s", string(rgValues))
 		self.sendMessageLock.acquire()
 		self.mavlink.mav.memory_vect_send(0,		# address
 										  1,		# ver

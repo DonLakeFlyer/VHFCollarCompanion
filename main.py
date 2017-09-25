@@ -4,6 +4,8 @@ import PulseDetector
 import Vehicle
 import DirectionFinder
 import PulseSender
+import CollarLogging
+
 import sys
 import logging
 
@@ -16,11 +18,10 @@ def main():
 	parser.add_argument("--device", help="px4 device", default="/dev/ttyS0")
 	parser.add_argument("--simulateVehicle", help="simulate vehicle", default=False)
 	parser.add_argument("--testPulse", help="test PulseDetector", default=False)
-	parser.add_argument("--logfile", help="logfile output", default="")
+	parser.add_argument("--logdir", help="log directory", default="")
 	args = parser.parse_args()
 
-	if logfile:
-		logging.basicConfig(filename=logfile,level=logging.DEBUG)
+	CollarLogging.setupLogging(args.logdir)
 
 	tools = Tools.Tools()
 	tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)

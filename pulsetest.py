@@ -1,4 +1,6 @@
 import PulseDetector
+import CollarLogging
+
 import logging
 
 from multiprocessing import Queue
@@ -10,16 +12,7 @@ def main():
 	parser.add_argument("--logdir", help="log directory", default="")
 	args = parser.parse_args()
 
-	timeStr = strftime("%mm_%dd_%Hh_%Mm_%Ss", localtime())
-	logFormat = '%(asctime)s - (%(module)s:%(lineno)d) %(message)s'
-	if args.logdir:
-		logfile = args.logdir + "/" + "collar.log." + timeStr
-		logging.basicConfig(filename=logfile, 
-							filemode="w", level=logging.DEBUG, 
-							format = logFormat)
-	else:
-		logging.basicConfig(level=logging.DEBUG,
-							format = logFormat)
+	CollarLogging.setupLogging(args.logdir)
 
 	pulseQueue = Queue()
 	pulseDetector = PulseDetector.PulseDetector(pulseQueue)
