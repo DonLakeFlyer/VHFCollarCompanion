@@ -3,14 +3,14 @@ import logging
 
 from multiprocessing import Queue
 from argparse import ArgumentParser
-from time import gmtime, strftime
+from time import localtime, strftime
 
 def main():
 	parser = ArgumentParser(description=__doc__)
 	parser.add_argument("--logdir", help="log directory", default="")
 	args = parser.parse_args()
 
-	timeStr = strftime("%mm_%dd_%Hh_%Mm_%Ss", gmtime())
+	timeStr = strftime("%mm_%dd_%Hh_%Mm_%Ss", localtime())
 	logFormat = '%(asctime)s - (%(module)s:%(lineno)d) %(message)s'
 	if args.logdir:
 		logfile = args.logdir + "/" + "collar.log." + timeStr
