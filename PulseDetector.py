@@ -34,11 +34,24 @@ class PulseDetector(Process):
         pulseCount = 0
 
         while True:
+            sdrReopen = False
             try:
                 samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             except Exception as e:
                 logging.exception("SDR read failed")
-                return
+                sdrReopen = True
+            if sdrReopen:
+                logging.debug("Attempting reopen")
+                try:
+                    sdr.open()
+                except Exception as e:
+                    logging.exception("SDR reopen failed")
+                    return
+                try:
+                    samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
+                except Exception as e:
+                    logging.exception("SDR read failed")
+                    return
             mag, freqs = magnitude_spectrum(samples)
             strength = mag[len(mag) // 2]
             if not leadingEdge:
