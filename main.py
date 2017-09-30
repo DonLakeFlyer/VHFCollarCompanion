@@ -1,6 +1,7 @@
 import Tools
 import MavlinkThread
 import PulseDetector
+import PulseDetectorSimulator
 import Vehicle
 import DirectionFinder
 import PulseSender
@@ -31,8 +32,13 @@ def main():
 	pulseSender.start()
 
 	tools.mavlinkThread.start()
-	pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)
-	pulseDetector.start()
+
+	if args.simulateVehicle:
+		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
+		pulseDetector.start()
+	else:
+		pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)
+		pulseDetector.start()
 
 if __name__ == '__main__':
     main()
