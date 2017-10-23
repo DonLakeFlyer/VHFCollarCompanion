@@ -33,12 +33,12 @@ def main():
 
 	tools.mavlinkThread.start()
 
-	if args.simulateVehicle:
-		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
-		pulseDetector.start()
+	if args.testPulse:
+		tools.pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
+		tools.pulseDetector.start()
 	else:
-		pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue)
-		pulseDetector.start()
+		tools.pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
+		tools.pulseDetector.start()
 
 if __name__ == '__main__':
     main()

@@ -61,11 +61,28 @@ class MavlinkThread (threading.Thread):
 		commandHandled = False
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
 		if msg.command == mavutil.mavlink.MAV_CMD_USER_1:
+			# Start direction finding
 			commandHandled = True
 			self.tools.directionFinder.findDirection()
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
+			# Cancel direction finding
 			commandHandled = True
 			self.tools.directionFinder.cancel()
+		elif msg.command == mavutil.mavlink.MAV_CMD_USER_3:
+			# Set frequency 146e6 146000000
+			commandHandled = True
+			frequency = math.floor(msg.param1 * math.pow(10, 6))
+			intDenom = math.floor(msg.param2)
+			denomString = str(intDenom)
+			frequency += intDenom * math.pow(10, 6 - len(denomString))
+			logging.debug("Set frequency %d", frequency)
+			self.tools.setFreqQueue.put(frequency)
+		elif msg.command == mavutil.mavlink.MAV_CMD_USER_4:
+			# Set gain
+			commandHandled = True
+			gain = math.floor(msg.param1)
+			logging.debug("Set gain %d", gain)
+			self.tools.setGainQueue.put(gain)
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(msg.command, commandAck) 

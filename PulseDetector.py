@@ -4,14 +4,17 @@ import logging
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 from multiprocessing import Process
+from queue import Queue
 
 NFFT = 64
 NUM_SAMPLES_PER_SCAN = NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, pulseQueue):
+    def __init__(self, pulseQueue, setFreqQueue, setGainQueue):
         Process.__init__(self)
         self.pulseQueue = pulseQueue
+        self.setFreqQueue = setFreqQueue
+        self.setGainQueue = setGainQueue
 
     def run(self):
         logging.debug("PulseDetector.run")
@@ -34,6 +37,20 @@ class PulseDetector(Process):
         pulseCount = 0
 
         while True:
+            try:
+                newFrequency = self.setFreqQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                logging.debug("Changing frequency %d", newFrequency)
+                sdr.fc = newFrequency
+            try:
+                newGain = self.setGainQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                sdr.gain = newGain
+                logging.debug("Changing gain %d:%d", newGain, sdr.gain)
             sdrReopen = False
             try:
                 samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
