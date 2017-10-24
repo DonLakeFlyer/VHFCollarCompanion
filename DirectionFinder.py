@@ -87,20 +87,59 @@ class DirectionFinder:
 			if average > bestAverage:
 				bestAverage = average
 				rgHeadings = [ self.fourCornerHeadings[i], self.fourCornerHeadings[nextIndex] ]
+				rgPulses = [ self.fourCornerPulses[i], self.fourCornerPulses[nextIndex] ]
 				bestIndex = i
-		print(rgHeadings)
-		self.bisect(rgHeadings[0], rgHeadings[1])
+		self.bisectCount = 0
+		self.bisect(rgHeadings, rgPulses)
 
-	def bisect(self, heading1, heading2):
-		if heading2 < heading1:
-			heading2 += 360
-		headingRange = heading2 - heading1
+	def bisect(self, rgHeadings, rgPulses):
+		if rgHeadings[1] < rgHeadings[0]:
+			rgHeadings[1] += 360
+		self.rgBisectHeadings = rgHeadings
+		self.rgBisectPulses = rgPulses
+		headingRange = rgHeadings[1] - rgHeadings[0]
 		headingIncrement = headingRange / 2
-		newHeading = heading1 + headingIncrement
+		newHeading = rgHeadings[0] + headingIncrement
+		logging.debug("bisect heading1:heading2:bisect %d:%d:%d", rgHeadings[0], rgHeadings[1], newHeading)
 		self.tools.vehicle.changeHeading(newHeading, self.bisectHeadingComplete)
 
 	def bisectHeadingComplete(self):
-		pass
+		self.startPulseCapture(self.bisectPulseCallback)
+
+	# Called when a pulse is received during Four Corners capture
+	def bisectPulseCallback(self, pulseStrength):
+		vehicleHeading = self.tools.vehicle.heading
+		logging.debug("bisectPulseCallback %d:%d", vehicleHeading, pulseStrength)
+		pulse = self.handlePulse(pulseStrength)
+		if pulse == -1:
+			# Still waiting for more pulses
+			self.tools.pulseSender.pulseCallback = self.bisectPulseCallback
+		else:
+			self.bisectCount += 1
+			logging.debug("bisect capture complete bisectCount:heading:pulse %d:%d:%d", self.bisectCount, vehicleHeading, pulse)
+			if self.bisectCount <= 2:
+				# Determine strongest sector
+				average1 = self.rgBisectHeadings[0] + pulseStrength / 2.0
+				average2 = self.rgBisectHeadings[1] + pulseStrength / 2.0
+				if average1 > average2:
+					self.bisect([ self.rgBisectHeadings[0], vehicleHeading ], [ self.rgBisectPulses[0], pulseStrength] )
+				else:
+					self.bisect([ vehicleHeading, self.rgBisectHeadings[1] ], [ pulseStrength, self.rgBisectPulses[0] ] )
+			else:
+				# Determine strongest heading from final bisect
+				rgPulses = [ self.rgBisectPulses[0], self.rgBisectPulses[1], pulseStrength ]
+				index = rgPulses.index(max(rgPulses))
+				if index == 0:
+					strongestPulse = self.rgBisectPulses[0]
+					strongestHeading = self.rgBisectHeadings[0]
+				elif index == 1:
+					strongestPulse = self.rgBisectPulses[1]
+					strongestHeading = self.rgBisectHeadings[1]
+				else:
+					strongestPulse = pulseStrength
+					strongestHeading = vehicleHeading
+				self.tools.vehicle.changeHeading(strongestHeading, None)
+				logging.debug("Bisect complete heading:pulse %d:%d", strongestHeading, strongestPulse)
 
 	def constrainHeading(self, heading):
 		if heading >= 360:

@@ -48,7 +48,8 @@ class Vehicle:
 				if positiveRadians - delta < self.targetHeadingRadians and self.targetHeadingRadians < positiveRadians + delta:
 					# Heading is within target
 					self.targetHeadingRadians = float('NaN')
-					self.headingCompleteCallback()
+					if self.headingCompleteCallback:
+						self.headingCompleteCallback()
 					print("Vehicle completed turn")
 
 	def changeHeading(self, newHeading, changeCompleteCallback):
