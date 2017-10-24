@@ -22,7 +22,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 40
+            sdr.gain = 10
         except Exception as e:
             logging.exception("SDR init failed")
             return
