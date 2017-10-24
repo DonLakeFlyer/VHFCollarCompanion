@@ -5,7 +5,7 @@ class Tools:
         self.mavlinkThread = None
         self.vehicle = None
         self.directionFinder = None
-        self.pulseDetector = None
+        self.pulseSender= None
         self.pulseQueue = Queue()
         self.setFreqQueue = Queue()
         self.setGainQueue = Queue()

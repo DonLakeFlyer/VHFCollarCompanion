@@ -18,7 +18,7 @@ def main():
 	parser.add_argument("--baudrate", type=int, help="px4 port baud rate", default=57600)
 	parser.add_argument("--device", help="px4 device", default="/dev/ttyS0")
 	parser.add_argument("--simulateVehicle", help="simulate vehicle", default=False)
-	parser.add_argument("--testPulse", help="test PulseDetector", default=False)
+	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
 	parser.add_argument("--logdir", help="log directory", default="")
 	args = parser.parse_args()
 
@@ -28,17 +28,17 @@ def main():
 	tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
 	tools.vehicle = Vehicle.Vehicle(tools)
 	tools.directionFinder = DirectionFinder.DirectionFinder(tools)
-	pulseSender = PulseSender.PulseSender(tools)
-	pulseSender.start()
+	tools.pulseSender = PulseSender.PulseSender(tools)
+	tools.pulseSender.start()
 
 	tools.mavlinkThread.start()
 
-	if args.testPulse:
-		tools.pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
-		tools.pulseDetector.start()
+	if args.simulatePulse:
+		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
+		pulseDetector.start()
 	else:
-		tools.pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
-		tools.pulseDetector.start()
+		pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
+		pulseDetector.start()
 
 if __name__ == '__main__':
     main()

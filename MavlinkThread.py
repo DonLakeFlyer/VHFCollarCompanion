@@ -63,7 +63,7 @@ class MavlinkThread (threading.Thread):
 		if msg.command == mavutil.mavlink.MAV_CMD_USER_1:
 			# Start direction finding
 			commandHandled = True
-			self.tools.directionFinder.findDirection()
+			self.tools.directionFinder.findStrongestHeading()
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			# Cancel direction finding
 			commandHandled = True
