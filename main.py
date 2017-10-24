@@ -19,19 +19,20 @@ def main():
 	parser.add_argument("--device", help="px4 device", default="/dev/ttyS0")
 	parser.add_argument("--simulateVehicle", help="simulate vehicle", default=False)
 	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
+	parser.add_argument("--testPulse", help="Test pulses", default=False)
 	parser.add_argument("--logdir", help="log directory", default="")
 	args = parser.parse_args()
 
 	CollarLogging.setupLogging(args.logdir)
 
 	tools = Tools.Tools()
-	tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
-	tools.vehicle = Vehicle.Vehicle(tools)
-	tools.directionFinder = DirectionFinder.DirectionFinder(tools)
-	tools.pulseSender = PulseSender.PulseSender(tools)
-	tools.pulseSender.start()
-
-	tools.mavlinkThread.start()
+	if not args.testPulse:
+		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
+		tools.vehicle = Vehicle.Vehicle(tools)
+		tools.directionFinder = DirectionFinder.DirectionFinder(tools)
+		tools.pulseSender = PulseSender.PulseSender(tools)
+		tools.pulseSender.start()
+		tools.mavlinkThread.start()
 
 	if args.simulatePulse:
 		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)

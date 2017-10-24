@@ -70,7 +70,8 @@ class PulseDetector(Process):
                     logging.exception("SDR read failed")
                     return
             mag, freqs = magnitude_spectrum(samples)
-            strength = mag[len(mag) // 2]
+            #strength = mag[len(mag) // 2]
+            strength = max(mag)
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
