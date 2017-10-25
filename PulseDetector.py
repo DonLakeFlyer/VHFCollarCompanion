@@ -22,7 +22,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 10
+            sdr.gain = 20
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -74,9 +74,9 @@ class PulseDetector(Process):
             strength = max(mag)
             if not leadingEdge:
                 # Detect possible leading edge
-                if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
+                if strength > noiseThreshold:
                     leadingEdge = True
-                    logging.debug("leading edge")
+                    logging.debug("leading edge %d", strength)
                     rgPulse = [ strength ]
             else:
                 rgPulse.append(strength)
