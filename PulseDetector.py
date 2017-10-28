@@ -5,6 +5,7 @@ from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 from multiprocessing import Process
 from queue import Queue
+from scipy.signal import decimate
 
 NFFT = 64
 NUM_SAMPLES_PER_SCAN = NFFT * 16
@@ -22,7 +23,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 10
+            sdr.gain = 50
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -31,6 +32,7 @@ class PulseDetector(Process):
         leadingEdge = False
         rgPulse = []
         noiseThreshold = 50
+        decimateCount = 4
         ratioMultiplier = 10
         lastPulseTime = time.time()
         timeoutCount = 0
@@ -69,9 +71,13 @@ class PulseDetector(Process):
                 except Exception as e:
                     logging.exception("SDR read failed")
                     return
-            mag, freqs = magnitude_spectrum(samples)
+            #decimateSamples = samples
+            decimateSamples = decimate(samples, decimateCount)
+            noiseThreshold /= float(decimateCount)
+            mag, freqs = magnitude_spectrum(decimateSamples)
             #strength = mag[len(mag) // 2]
             strength = max(mag)
+            #print(sum(mag) / len(mag))            
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
