@@ -80,9 +80,9 @@ class PulseDetector(Process):
             #print(sum(mag) / len(mag))            
             if not leadingEdge:
                 # Detect possible leading edge
-                if strength > noiseThreshold and strength > lastStrength * ratioMultiplier:
+                if strength > noiseThreshold:
                     leadingEdge = True
-                    logging.debug("leading edge")
+                    logging.debug("leading edge %d", strength)
                     rgPulse = [ strength ]
             else:
                 rgPulse.append(strength)
@@ -106,5 +106,4 @@ class PulseDetector(Process):
                     rgPulse = [ ]
                 self.pulseQueue.put(0)
                 lastPulseTime = time.time()
-
         sdr.close()
