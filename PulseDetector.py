@@ -2,12 +2,12 @@ import time
 import logging
 
 from rtlsdr import RtlSdr
-from matplotlib.mlab import magnitude_spectrum
+from matplotlib.mlab import magnitude_spectrum, psd
 from multiprocessing import Process
 from queue import Queue
 from scipy.signal import decimate
 
-NFFT = 64
+NFFT = 1024
 NUM_SAMPLES_PER_SCAN = NFFT * 16
 
 class PulseDetector(Process):
@@ -31,8 +31,8 @@ class PulseDetector(Process):
         last_max_mag = 0
         leadingEdge = False
         rgPulse = []
-        noiseThreshold = 50
-        decimateCount = 4
+        noiseThreshold = 1
+        decimateCount = 8
         ratioMultiplier = 10
         lastPulseTime = time.time()
         timeoutCount = 0
@@ -73,11 +73,12 @@ class PulseDetector(Process):
                     return
             #decimateSamples = samples
             decimateSamples = decimate(samples, decimateCount)
-            noiseThreshold /= float(decimateCount)
-            mag, freqs = magnitude_spectrum(decimateSamples)
+            #noiseThreshold /= float(decimateCount)
+            #mag, freqs = magnitude_spectrum(decimateSamples)
+            mag, freqs = psd(decimateSamples, NFFT=NFFT)
             #strength = mag[len(mag) // 2]
             strength = max(mag)
-            #print(sum(mag) / len(mag))            
+            #print(strength)            
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold:
@@ -91,7 +92,7 @@ class PulseDetector(Process):
                     leadingEdge = False
                     pulseStrength = max(rgPulse)
                     pulseCount += 1
-                    logging.debug("trailing edge pulseStrength:len(rgPulse):pulseCount %d %d %d", pulseStrength, len(rgPulse), pulseCount)
+                    logging.debug("trailing edge pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
                     self.pulseQueue.put(pulseStrength)
                     lastPulseTime = time.time()
                     rgPulse = []

@@ -32,7 +32,7 @@ from rtlsdr import RtlSdr
 # * Press "+" and "-" to control gain, and space to enable AGC.
 # * Type a frequency (in MHz) and press enter to directly change the center frequency
 
-NFFT = 64 # 1024*4
+NFFT = 1024*4
 NUM_SAMPLES_PER_SCAN = NFFT*16
 NUM_BUFFERED_SWEEPS = 100
 
@@ -169,9 +169,9 @@ def main():
     wf = Waterfall(sdr)
 
     # some defaults
-    sdr.rs = 1.2e6 # 2.4e6
+    sdr.rs = 2.4e6
     sdr.fc = 146e6
-    sdr.gain = 50
+    sdr.gain = 20
 
     wf.start()
 
