@@ -7,7 +7,7 @@ from multiprocessing import Process
 from queue import Queue
 from scipy.signal import decimate
 
-NFFT = 1024
+NFFT = 2048
 NUM_SAMPLES_PER_SCAN = NFFT * 16
 
 class PulseDetector(Process):
@@ -32,7 +32,7 @@ class PulseDetector(Process):
         leadingEdge = False
         rgPulse = []
         noiseThreshold = 1
-        decimateCount = 8
+        decimateCount = 1
         ratioMultiplier = 10
         lastPulseTime = time.time()
         timeoutCount = 0
@@ -71,8 +71,8 @@ class PulseDetector(Process):
                 except Exception as e:
                     logging.exception("SDR read failed")
                     return
-            #decimateSamples = samples
-            decimateSamples = decimate(samples, decimateCount)
+            decimateSamples = samples
+            #decimateSamples = decimate(samples, decimateCount)
             #noiseThreshold /= float(decimateCount)
             #mag, freqs = magnitude_spectrum(decimateSamples)
             mag, freqs = psd(decimateSamples, NFFT=NFFT)
