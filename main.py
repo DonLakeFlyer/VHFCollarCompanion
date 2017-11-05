@@ -26,6 +26,7 @@ def main():
 	CollarLogging.setupLogging(args.logdir)
 
 	tools = Tools.Tools()
+	pulseQueue = None
 	if not args.testPulse:
 		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
 		tools.vehicle = Vehicle.Vehicle(tools)
@@ -33,12 +34,13 @@ def main():
 		tools.pulseSender = PulseSender.PulseSender(tools)
 		tools.pulseSender.start()
 		tools.mavlinkThread.start()
+		pulseQueue = tools.pulseQueue
 
-	if args.simulatePulse:
+	if args.simulatePulse or args.simulateVehicle:
 		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseDetector.start()
 	else:
-		pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
+		pulseDetector = PulseDetector.PulseDetector(pulseQueue, tools.setFreqQueue, tools.setGainQueue)
 		pulseDetector.start()
 
 if __name__ == '__main__':

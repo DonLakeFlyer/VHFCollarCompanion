@@ -140,6 +140,7 @@ class DirectionFinder:
 					strongestHeading = vehicleHeading
 				self.tools.vehicle.changeHeading(strongestHeading, None)
 				logging.debug("Bisect complete heading:pulse %d:%d", strongestHeading, strongestPulse)
+				self.tools.mavlinkThread.sendHeadingFound(strongestHeading, strongestPulse)
 
 	def constrainHeading(self, heading):
 		if heading >= 360:

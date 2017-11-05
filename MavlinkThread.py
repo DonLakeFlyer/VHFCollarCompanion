@@ -111,6 +111,12 @@ class MavlinkThread (threading.Thread):
 		self.sendMessageLock.release()
 
 	def sendPulseStrength(self, strength):
-		self.tools.mavlinkThread.sendMessageLock.acquire()
-		self.tools.mavlinkThread.mavlink.mav.debug_send(0, 0, strength)
-		self.tools.mavlinkThread.sendMessageLock.release()
+		self.sendMessageLock.acquire()
+		#self.mavlink.mav.debug_send(0, 0, strength)
+		self.sendMessageLock.release()
+
+	def sendHeadingFound(self, heading, strength):
+		self.sendMessageLock.acquire()
+		self.mavlink.mav.debug_send(heading, 1, strength)
+		logging.debug("sendHeadingFound %d %f", heading, strength)
+		self.sendMessageLock.release()
