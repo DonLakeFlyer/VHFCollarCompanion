@@ -7,8 +7,8 @@ from multiprocessing import Process
 from queue import Queue
 from scipy.signal import decimate
 
-NFFT = 2048
-NUM_SAMPLES_PER_SCAN = NFFT * 16
+NFFT = 64
+NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
     def __init__(self, pulseQueue, setFreqQueue, setGainQueue):
@@ -23,7 +23,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 50
+            sdr.gain = 25
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -74,11 +74,11 @@ class PulseDetector(Process):
             decimateSamples = samples
             #decimateSamples = decimate(samples, decimateCount)
             #noiseThreshold /= float(decimateCount)
-            #mag, freqs = magnitude_spectrum(decimateSamples)
-            mag, freqs = psd(decimateSamples, NFFT=NFFT)
+            mag, freqs = magnitude_spectrum(decimateSamples, Fs=sdr.rs)
+            #mag, freqs = psd(decimateSamples, NFFT=NFFT)
             #strength = mag[len(mag) // 2]
             strength = max(mag)
-            #print(strength)            
+            #print(strength)
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold:
@@ -88,11 +88,11 @@ class PulseDetector(Process):
             else:
                 rgPulse.append(strength)
                 # Detect trailing edge
-                if strength < lastStrength / ratioMultiplier:
+                if strength < noiseThreshold:
                     leadingEdge = False
                     pulseStrength = max(rgPulse)
                     pulseCount += 1
-                    logging.debug("trailing edge pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
+                    logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
                     self.pulseQueue.put(pulseStrength)
                     lastPulseTime = time.time()
                     rgPulse = []
