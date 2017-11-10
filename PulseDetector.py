@@ -31,7 +31,7 @@ class PulseDetector(Process):
         last_max_mag = 0
         leadingEdge = False
         rgPulse = []
-        noiseThreshold = 1
+        noiseThreshold = 10
         decimateCount = 1
         ratioMultiplier = 10
         lastPulseTime = time.time()
@@ -93,7 +93,8 @@ class PulseDetector(Process):
                     pulseStrength = max(rgPulse)
                     pulseCount += 1
                     logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
-                    self.pulseQueue.put(pulseStrength)
+                    if self.pulseQueue:
+                        self.pulseQueue.put(pulseStrength)
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
@@ -105,6 +106,7 @@ class PulseDetector(Process):
                 else:
                     logging.debug("no pulse for two seconds - timeoutCount %d", timeoutCount)
                     rgPulse = [ ]
-                self.pulseQueue.put(0)
+                    if self.pulseQueue:
+                        self.pulseQueue.put(0)
                 lastPulseTime = time.time()
         sdr.close()
