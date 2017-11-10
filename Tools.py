@@ -6,6 +6,7 @@ class Tools:
         self.vehicle = None
         self.directionFinder = None
         self.pulseSender= None
+        self.sampleQueue = Queue()
         self.pulseQueue = Queue()
         self.setFreqQueue = Queue()
         self.setGainQueue = Queue()

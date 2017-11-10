@@ -5,6 +5,7 @@ import PulseDetectorSimulator
 import Vehicle
 import DirectionFinder
 import PulseSender
+import PulseProcess
 import CollarLogging
 
 import sys
@@ -34,13 +35,14 @@ def main():
 		tools.pulseSender = PulseSender.PulseSender(tools)
 		tools.pulseSender.start()
 		tools.mavlinkThread.start()
-		pulseQueue = tools.pulseQueue
 
 	if args.simulatePulse or args.simulateVehicle:
 		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseDetector.start()
 	else:
-		pulseDetector = PulseDetector.PulseDetector(pulseQueue, tools.setFreqQueue, tools.setGainQueue)
+		pulseProcess = PulseProcess.PulseProcess(tools.sampleQueue, tools.pulseQueue)
+		pulseProcess.start()
+		pulseDetector = PulseDetector.PulseDetector(tools.sampleQueue, tools.setFreqQueue, tools.setGainQueue)
 		pulseDetector.start()
 
 if __name__ == '__main__':
