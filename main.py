@@ -40,10 +40,10 @@ def main():
 		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseDetector.start()
 	else:
-		pulseProcess = PulseProcess.PulseProcess(tools.sampleQueue, tools.pulseQueue)
-		pulseProcess.start()
 		pulseDetector = PulseDetector.PulseDetector(tools.sampleQueue, tools.setFreqQueue, tools.setGainQueue)
 		pulseDetector.start()
+		pulseProcess = PulseProcess.PulseProcess(pulseDetector.sampleRate, tools.sampleQueue, tools.pulseQueue)
+		pulseProcess.start()
 
 if __name__ == '__main__':
     main()

@@ -16,12 +16,14 @@ class PulseDetector(Process):
         self.sampleQueue = sampleQueue
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
+        self.sampleRate = 0
 
     def run(self):
         logging.debug("PulseDetector.run")
         try:
             sdr = RtlSdr()
             sdr.rs = 2.4e6
+            self.sampleRate = sdr.rs
             sdr.fc = 146e6
             sdr.gain = 10
         except Exception as e:

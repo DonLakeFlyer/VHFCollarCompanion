@@ -8,8 +8,9 @@ from queue import Queue
 from scipy.signal import decimate
 
 class PulseProcess(Process):
-    def __init__(self, sampleQueue, pulseQueue):
+    def __init__(self, sampleRate, sampleQueue, pulseQueue):
         Process.__init__(self)
+        self.sampleRate = sampleRate
         self.sampleQueue = sampleQueue
         self.pulseQueue = pulseQueue
 
@@ -30,7 +31,7 @@ class PulseProcess(Process):
             decimateSamples = samples
             #decimateSamples = decimate(samples, decimateCount)
             #noiseThreshold /= float(decimateCount)
-            mag, freqs = magnitude_spectrum(decimateSamples)
+            mag, freqs = magnitude_spectrum(decimateSamples, Fs=self.sampleRate)
             #mag, freqs = psd(decimateSamples, NFFT=NFFT)
             #strength = mag[len(mag) // 2]
             strength = max(mag)
