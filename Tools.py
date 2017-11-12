@@ -9,3 +9,4 @@ class Tools:
         self.pulseQueue = Queue()
         self.setFreqQueue = Queue()
         self.setGainQueue = Queue()
+        self.setAmpQueue = Queue()

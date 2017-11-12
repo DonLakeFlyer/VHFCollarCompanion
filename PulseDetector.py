@@ -5,17 +5,32 @@ from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum, psd
 from multiprocessing import Process
 from queue import Queue
-from scipy.signal import decimate
 
 NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, pulseQueue, setFreqQueue, setGainQueue):
+    def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
         Process.__init__(self)
+        self.amp = False
         self.pulseQueue = pulseQueue
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
+        self.setAmpQueue = setAmpQueue
+        self.minNoiseThresholdAmp = 15
+        self.maxNoiseThresholdAmp = 110
+        self.minNoiseThreshold = 1
+        self.maxNoiseThreshold = 15
+
+    def calcNoiseThreshold(self, amp, gain):
+        if amp:
+            minNoiseThreshold = self.minNoiseThresholdAmp
+            maxNoiseThreshold = self.maxNoiseThresholdAmp
+        else:
+            minNoiseThreshold = self.minNoiseThreshold
+            maxNoiseThreshold = self.maxNoiseThreshold
+        noiseRange = maxNoiseThreshold - minNoiseThreshold
+        return minNoiseThreshold + (noiseRange * (gain / 50.0))
 
     def run(self):
         logging.debug("PulseDetector.run")
@@ -24,7 +39,6 @@ class PulseDetector(Process):
             sdr.rs = 2.4e6
             sdr.fc = 146e6
             sdr.gain = 1
-            logging.debug("Gain %f", sdr.gain)
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -32,14 +46,12 @@ class PulseDetector(Process):
         last_max_mag = 0
         leadingEdge = False
         rgPulse = []
-        noiseThreshold = 1
-        decimateCount = 1
-        ratioMultiplier = 10
         lastPulseTime = time.time()
         timeoutCount = 0
         pulseCount = 0
 
         while True:
+            # Handle change in frequency    
             try:
                 newFrequency = self.setFreqQueue.get_nowait()
             except Exception as e:
@@ -47,14 +59,31 @@ class PulseDetector(Process):
             else:
                 logging.debug("Changing frequency %d", newFrequency)
                 sdr.fc = newFrequency
+
+            # Handle change in gain
             try:
                 newGain = self.setGainQueue.get_nowait()
             except Exception as e:
                 pass
             else:
                 sdr.gain = newGain
-                logging.debug("Changing gain %d:%d", newGain, sdr.gain)
+                logging.debug("Changing gain %d:%f", newGain, sdr.gain)
+
+            # Handle change in amp
+            try:
+                newAmp = self.setAmpQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                self.amp = newAmp
+                logging.debug("Changing amp %s", self.amp)
+
+            # Adjust noise threshold
             sdrReopen = False
+            noiseThreshold = self.calcNoiseThreshold(self.amp, sdr.gain)
+            #logging.debug("Noise threshold %f", noiseThreshold)
+
+            # Read samples
             try:
                 samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             except Exception as e:
@@ -72,14 +101,11 @@ class PulseDetector(Process):
                 except Exception as e:
                     logging.exception("SDR read failed")
                     return
-            decimateSamples = samples
-            #decimateSamples = decimate(samples, decimateCount)
-            #noiseThreshold /= float(decimateCount)
-            mag, freqs = magnitude_spectrum(decimateSamples, Fs=sdr.rs)
-            #mag, freqs = psd(decimateSamples, NFFT=NFFT)
-            #strength = mag[len(mag) // 2]
+
+            # Process samples        
+            mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
-            print(strength)
+            #print(strength)
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold:
@@ -99,6 +125,8 @@ class PulseDetector(Process):
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
+
+            # Check for no pulse
             if time.time() - lastPulseTime > 2:
                 timeoutCount += 1
                 if leadingEdge:

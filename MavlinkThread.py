@@ -69,12 +69,9 @@ class MavlinkThread (threading.Thread):
 			commandHandled = True
 			self.tools.directionFinder.cancel()
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_3:
-			# Set frequency 146e6 146000000
+			# New frequence is in param 1 as int ###### which reads as ###.###
 			commandHandled = True
-			frequency = math.floor(msg.param1 * math.pow(10, 6))
-			intDenom = math.floor(msg.param2)
-			denomString = str(intDenom)
-			frequency += intDenom * math.pow(10, 6 - len(denomString))
+			frequency = math.floor(msg.param1 * math.pow(10, 3))
 			logging.debug("Set frequency %d", frequency)
 			self.tools.setFreqQueue.put(frequency)
 		elif msg.command == mavutil.mavlink.MAV_CMD_USER_4:
@@ -83,6 +80,15 @@ class MavlinkThread (threading.Thread):
 			gain = math.floor(msg.param1)
 			logging.debug("Set gain %d", gain)
 			self.tools.setGainQueue.put(gain)
+		elif msg.command == mavutil.mavlink.MAV_CMD_USER_5:
+			# Set amplifier
+			commandHandled = True
+			if math.floor(msg.param1):
+				amp = True
+			else:
+				amp = False
+			logging.debug("Set amp %d", amp)
+			self.tools.setAmpQueue.put(amp)
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(msg.command, commandAck) 
