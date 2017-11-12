@@ -21,7 +21,7 @@ def main():
 	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
 	parser.add_argument("--testPulse", help="Test pulses", default=False)
 	parser.add_argument("--logdir", help="log directory", default="")
-	parser.add_argument("--gain", default="0")
+	parser.add_argument("--gain", type=int, default="0")
 	parser.add_argument("--amp", default=False)
 	args = parser.parse_args()
 

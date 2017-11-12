@@ -118,11 +118,18 @@ class MavlinkThread (threading.Thread):
 
 	def sendPulseStrength(self, strength):
 		self.sendMessageLock.acquire()
-		#self.mavlink.mav.debug_send(0, 0, strength)
+		self.mavlink.mav.debug_send(0, 1, strength)
 		self.sendMessageLock.release()
 
 	def sendHeadingFound(self, heading, strength):
+		self.reallyHeading = heading
+		self.reallyStrength = strength
+		self.simulationTimer = threading.Timer(1, self.reallySendHeadingFound)
+		self.simulationTimer.start()
+
+	def reallySendHeadingFound(self):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_send(heading, 1, strength)
-		logging.debug("sendHeadingFound %d %f", heading, strength)
+		self.mavlink.mav.debug_send(self.reallyHeading, 0, self.reallyStrength)
+		logging.debug("sendHeadingFound %d %f", self.reallyHeading, self.reallyStrength)
 		self.sendMessageLock.release()
+

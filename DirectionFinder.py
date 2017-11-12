@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import Vehicle
 
@@ -12,9 +13,19 @@ class DirectionFinder:
 		self.cancelCommand = False
 		self.pulseCount = 0
 		self.rgPulse = []
+		self.pulseCallback = None
+#		self.simulationTimer = threading.Timer(2, self.testFound)
+#		self.simulationTimer.start()
 
 	def cancel(self):
 		self.cancelCommand = True
+
+	# Called when a new pulse comes through from PulseSender
+	def pulse(self, pulseStrength):
+		if self.pulseCallback:
+			self.saveCallback = self.pulseCallback
+			self.pulseCallback = None
+			self.saveCallback(pulseStrength)
 
 	# Find the strongest pulse heading
 	def findStrongestHeading(self):
@@ -36,7 +47,7 @@ class DirectionFinder:
 	def startPulseCapture(self, pulseCallback):
 		self.pulseCount = 0
 		self.rgPulse = []
-		self.tools.pulseSender.pulseCallback = pulseCallback
+		self.pulseCallback = pulseCallback
 
 	# Called when the vehicle completes a heading change during four corner capture
 	def fourCornerHeadingComplete(self):
@@ -62,7 +73,7 @@ class DirectionFinder:
 		pulse = self.handlePulse(pulseStrength)
 		if pulse == -1:
 			# Still waiting for more pulses
-			self.tools.pulseSender.pulseCallback = self.fourCornerPulseCallback
+			self.pulseCallback = self.fourCornerPulseCallback
 		else:
 			logging.debug("corner capture complete index:heading:pulse %d:%d:%d", self.fourCornerCurrentCorner, self.tools.vehicle.heading, pulse)
 			self.fourCornerPulses.append(pulse)
@@ -75,6 +86,7 @@ class DirectionFinder:
 				self.tools.vehicle.changeHeading(self.fourCornerHeadings[self.fourCornerCurrentCorner], self.fourCornerHeadingComplete)
 
 	def startBisect(self):
+		logging.debug("startBisect")
 		# Determine which corner is the strongest
 		bestAverage = -1
 		bestIndex = -1
@@ -89,6 +101,7 @@ class DirectionFinder:
 				rgHeadings = [ self.fourCornerHeadings[i], self.fourCornerHeadings[nextIndex] ]
 				rgPulses = [ self.fourCornerPulses[i], self.fourCornerPulses[nextIndex] ]
 				bestIndex = i
+				logging.debug("Best index %d", bestIndex)
 		self.bisectCount = 0
 		self.bisect(rgHeadings, rgPulses)
 
@@ -113,18 +126,19 @@ class DirectionFinder:
 		pulse = self.handlePulse(pulseStrength)
 		if pulse == -1:
 			# Still waiting for more pulses
-			self.tools.pulseSender.pulseCallback = self.bisectPulseCallback
+			self.pulseCallback = self.bisectPulseCallback
 		else:
 			self.bisectCount += 1
 			logging.debug("bisect capture complete bisectCount:heading:pulse %d:%d:%d", self.bisectCount, vehicleHeading, pulse)
-			if self.bisectCount <= 2:
+			logging.debug("bisect headings %d %d", self.rgBisectHeadings[0], self.rgBisectHeadings[1])
+			if self.bisectCount <= 3:
 				# Determine strongest sector
-				average1 = self.rgBisectHeadings[0] + pulseStrength / 2.0
-				average2 = self.rgBisectHeadings[1] + pulseStrength / 2.0
+				average1 = (self.rgBisectPulses[0] + pulseStrength) / 2.0
+				average2 = (self.rgBisectPulses[1] + pulseStrength) / 2.0
 				if average1 > average2:
 					self.bisect([ self.rgBisectHeadings[0], vehicleHeading ], [ self.rgBisectPulses[0], pulseStrength] )
 				else:
-					self.bisect([ vehicleHeading, self.rgBisectHeadings[1] ], [ pulseStrength, self.rgBisectPulses[0] ] )
+					self.bisect([ vehicleHeading, self.rgBisectHeadings[1] ], [ pulseStrength, self.rgBisectPulses[1] ] )
 			else:
 				# Determine strongest heading from final bisect
 				rgPulses = [ self.rgBisectPulses[0], self.rgBisectPulses[1], pulseStrength ]
@@ -149,3 +163,10 @@ class DirectionFinder:
 			return heading + 360
 		else:
 			return heading
+
+	def testFound(self):
+		self.tools.mavlinkThread.sendHeadingFound(145, 500)
+		self.simulationTimer = threading.Timer(2, self.testFound)
+		self.simulationTimer.start()
+
+

@@ -1,34 +1,38 @@
 import time
 import logging
 import threading
-
 import geo 
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 from multiprocessing import Process
+from PulseBase import PulseBase
+
 
 BPM = 45
 
-class PulseDetectorSimulator:
+class PulseDetectorSimulator (PulseBase):
     def __init__(self, tools):
-        self.tools = tools
-
-    def start(self):
+        PulseBase.__init__(self, tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue, tools.setAmpQueue)
+        self.vehicle = tools.vehicle
         self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()
 
+#    def run(self):
+#        logging.debug("PulseDetectorSimulator run")
+
     def simulatePulse(self):
-        if self.tools.vehicle.homePositionSet:
-            if self.tools.vehicle.homePosition == self.tools.vehicle.position:
-                self.tools.pulseQueue.put(0)
+        self.checkQueues()
+        if self.vehicle.homePositionSet:
+            if self.vehicle.homePosition == self.vehicle.position:
+                self.pulseQueue.put(0)
             else:
-                angleToCollar = geo.great_circle_angle(self.tools.vehicle.homePosition,
-                                                       self.tools.vehicle.position, 
+                angleToCollar = geo.great_circle_angle(self.vehicle.homePosition,
+                                                       self.vehicle.position, 
                                                        geo.magnetic_northpole)
-                distanceToCollar = geo.distance(self.tools.vehicle.position, 
-                                                self.tools.vehicle.homePosition)
-                vehicleHeadingToCollar = self.tools.vehicle.heading - angleToCollar
+                distanceToCollar = geo.distance(self.vehicle.position, 
+                                                self.vehicle.homePosition)
+                vehicleHeadingToCollar = self.vehicle.heading - angleToCollar
                 #print("simulateBeep", angleToCollar, distanceToCollar, self.tools.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
                 # Start at full strength
                 beepStrength = 600.0 
@@ -44,8 +48,14 @@ class PulseDetectorSimulator:
                 beepMultiplier = vehicleHeadingToCollar / 180.0
                 #print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
                 beepStrength *= beepMultiplier
-                self.tools.pulseQueue.put(beepStrength)
+                self.pulseQueue.put(beepStrength)
         else:
             print("simulateBeep - home position not set")
         self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()
+
+    def changeFrequency(self, frequency):
+        logging.debug("Simulate frequency change %f", frequency)
+
+    def changeGain(self, gain):
+        logging.debug("Simulate gain change %d", gain)
