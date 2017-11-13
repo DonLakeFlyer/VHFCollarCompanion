@@ -29,11 +29,11 @@ class PulseDetectorSimulator (PulseBase):
             else:
                 angleToCollar = geo.great_circle_angle(self.vehicle.homePosition,
                                                        self.vehicle.position, 
-                                                       geo.magnetic_northpole)
+                                                       geo.geographic_northpole)
                 distanceToCollar = geo.distance(self.vehicle.position, 
                                                 self.vehicle.homePosition)
                 vehicleHeadingToCollar = self.vehicle.heading - angleToCollar
-                #print("simulateBeep", angleToCollar, distanceToCollar, self.tools.mavlinkThread.vehicleHeading, vehicleHeadingToCollar)
+                print("simulateBeep", angleToCollar, distanceToCollar, self.vehicle.heading, vehicleHeadingToCollar)
                 # Start at full strength
                 beepStrength = 600.0 
                 # Adjust for distance
@@ -46,7 +46,7 @@ class PulseDetectorSimulator (PulseBase):
                     vehicleHeadingToCollar = 180.0 - (vehicleHeadingToCollar - 180.0)
                 vehicleHeadingToCollar = 180.0 - vehicleHeadingToCollar
                 beepMultiplier = vehicleHeadingToCollar / 180.0
-                #print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
+                print("beepMultiplier", beepMultiplier, vehicleHeadingToCollar)
                 beepStrength *= beepMultiplier
                 self.pulseQueue.put(beepStrength)
         else:

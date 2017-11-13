@@ -130,14 +130,18 @@ class DirectionFinder:
 		else:
 			self.bisectCount += 1
 			logging.debug("bisect capture complete bisectCount:heading:pulse %d:%d:%d", self.bisectCount, vehicleHeading, pulse)
-			logging.debug("bisect headings %d %d", self.rgBisectHeadings[0], self.rgBisectHeadings[1])
+			logging.debug("bisect values heading(%d, %d) pulse (%d, %d)", 
+				self.rgBisectHeadings[0], self.rgBisectHeadings[1],
+				self.rgBisectPulses[0], self.rgBisectPulses[1])
 			if self.bisectCount <= 3:
 				# Determine strongest sector
 				average1 = (self.rgBisectPulses[0] + pulseStrength) / 2.0
 				average2 = (self.rgBisectPulses[1] + pulseStrength) / 2.0
 				if average1 > average2:
+					logging.debug("Next bisect 0")
 					self.bisect([ self.rgBisectHeadings[0], vehicleHeading ], [ self.rgBisectPulses[0], pulseStrength] )
 				else:
+					logging.debug("Next bisect 1")
 					self.bisect([ vehicleHeading, self.rgBisectHeadings[1] ], [ pulseStrength, self.rgBisectPulses[1] ] )
 			else:
 				# Determine strongest heading from final bisect
