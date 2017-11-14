@@ -7,6 +7,3 @@ class Tools:
         self.directionFinder = None
         self.pulseSender= None
         self.pulseQueue = Queue()
-        self.setFreqQueue = Queue()
-        self.setGainQueue = Queue()
-        self.setAmpQueue = Queue()

@@ -23,26 +23,31 @@ def main():
 	parser.add_argument("--logdir", help="log directory", default="")
 	parser.add_argument("--gain", type=int, default="0")
 	parser.add_argument("--amp", default=False)
+	parser.add_argument("--bluetooth", default=False)
 	args = parser.parse_args()
 
 	CollarLogging.setupLogging(args.logdir)
 
 	tools = Tools.Tools()
 	pulseQueue = None
-	if not args.testPulse:
+
+	if not args.testPulse and not args.bluetooth:
 		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
 		tools.vehicle = Vehicle.Vehicle(tools)
 		tools.directionFinder = DirectionFinder.DirectionFinder(tools)
-		tools.pulseSender = PulseSender.PulseSender(tools)
+		tools.pulseSender = PulseSender.PulseSender(args.bluetooth, tools)
 		tools.pulseSender.start()
 		tools.mavlinkThread.start()
-		pulseQueue = tools.pulseQueue
+
+	if args.bluetooth:
+		tools.pulseSender = PulseSender.PulseSender(args.bluetooth, tools)
+		tools.pulseSender.start()
 
 	if args.simulatePulse or args.simulateVehicle:
 		pulseDetector = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseDetector.start()
 	else:
-		pulseDetector = PulseDetector.PulseDetector(pulseQueue, tools.setFreqQueue, tools.setGainQueue, tools.setAmpQueue)
+		pulseDetector = PulseDetector.PulseDetector(tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue, tools.setAmpQueue)
 		pulseDetector.start()
 
 	tools.setAmpQueue.put(args.amp)

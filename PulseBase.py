@@ -1,7 +1,7 @@
 import logging
 
 from multiprocessing import Process
-from queue import Queue
+from Queue import Queue
 
 # Base class for real and simulated pulse handling
 class PulseBase(Process):

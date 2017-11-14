@@ -4,19 +4,19 @@ import logging
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum, psd
 from multiprocessing import Process
-from queue import Queue
+from Queue import Queue
 
 NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
+    def __init__(self, deviceIndex, pulseQueue, freq, gain, amp):
         Process.__init__(self)
-        self.amp = False
+	self.deviceIndex = deviceIndex
+        self.amp = amp
+	self.freq = freq
+	self.gain = gain
         self.pulseQueue = pulseQueue
-        self.setFreqQueue = setFreqQueue
-        self.setGainQueue = setGainQueue
-        self.setAmpQueue = setAmpQueue
         self.minNoiseThresholdAmp = 15
         self.maxNoiseThresholdAmp = 110
         self.minNoiseThreshold = 1
@@ -35,10 +35,10 @@ class PulseDetector(Process):
     def run(self):
         logging.debug("PulseDetector.run")
         try:
-            sdr = RtlSdr()
+            sdr = RtlSdr(device_index = self.deviceIndex)
             sdr.rs = 2.4e6
-            sdr.fc = 146e6
-            sdr.gain = 1
+            sdr.fc = self.freq
+            sdr.gain = self.gain
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -51,33 +51,6 @@ class PulseDetector(Process):
         pulseCount = 0
 
         while True:
-            # Handle change in frequency    
-            try:
-                newFrequency = self.setFreqQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
-                logging.debug("Changing frequency %d", newFrequency)
-                sdr.fc = newFrequency
-
-            # Handle change in gain
-            try:
-                newGain = self.setGainQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
-                sdr.gain = newGain
-                logging.debug("Changing gain %d:%f", newGain, sdr.gain)
-
-            # Handle change in amp
-            try:
-                newAmp = self.setAmpQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
-                self.amp = newAmp
-                logging.debug("Changing amp %s", self.amp)
-
             # Adjust noise threshold
             sdrReopen = False
             noiseThreshold = self.calcNoiseThreshold(self.amp, sdr.gain)
@@ -121,7 +94,7 @@ class PulseDetector(Process):
                     pulseCount += 1
                     logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
                     if self.pulseQueue:
-                        self.pulseQueue.put(pulseStrength)
+                        self.pulseQueue.put((self.deviceIndex, pulseStrength))
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
@@ -136,6 +109,6 @@ class PulseDetector(Process):
                     logging.debug("no pulse for two seconds - timeoutCount %d", timeoutCount)
                     rgPulse = [ ]
                     if self.pulseQueue:
-                        self.pulseQueue.put(0)
+                        self.pulseQueue.put((self.deviceIndex, 0))
                 lastPulseTime = time.time()
         sdr.close()
