@@ -47,7 +47,7 @@ class PulseSender (threading.Thread):
 		logging.debug("Accepted connection from %s", str(address))
 		return True
 
-    def incomingData(self, sock, condition):
-        data = sock.recv(1024)
-        logging.debug("Incoming data %1", str(data))
-        return True
+	def incomingData(self, sock, condition):
+		data = sock.recv(1024)
+		logging.debug("Incoming data %1", str(data))
+		return True
