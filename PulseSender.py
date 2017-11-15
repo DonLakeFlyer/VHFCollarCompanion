@@ -6,10 +6,10 @@ import gobject
 from bluetooth import *
 
 class PulseSender (threading.Thread):
-	def __init__(self, pulseQueue):
+	def __init__(self, tools):
 		threading.Thread.__init__(self)
 		logging.debug("PulseSender init")
-		self.pulseQueue = pulseQueue
+		self.tools = tools
 
 		# Setup bluetooth socket
 		self.serverSocket = bluetooth.BluetoothSocket (bluetooth.RFCOMM)
@@ -27,19 +27,24 @@ class PulseSender (threading.Thread):
 		logging.debug("Waiting for bluetooth connection")
 		self.clientSocket, clientInfo = self.serverSocket.accept()
 		print("Accepted connection from ", clientInfo)
-        source = gobject.io_add_watch (self.clientSocket, gobject.IO_IN, self.incomingData)
+		self.clientSocket.setblocking(False)
 
 	def run(self):
 		while True:
-			pulseInfo = self.pulseQueue.get(True)
+			pulseInfo = self.tools.pulseQueue.get(True)
 			deviceIndex, pulseStrength = pulseInfo
 			logging.debug("pulse (index,strength) (%d, %d) ", deviceIndex, pulseStrength)
 			if deviceIndex == 0:
 				pulseStr = "left " + str(pulseStrength) + "\n"
 			else:
 				pulseStr = "right " + str(pulseStrength) + "\n"
-			logging.debug("pulseStr %s", pulseStr)
 			self.clientSocket.send(pulseStr)
+			try:
+				data = self.clientSocket.recv(1024)
+				if (len(data)):
+					self.incomingData(str(data))
+			except Exception as e:
+				pass
 
 	def incomingConnection(self, source, condition):
 		sock, info = self.serverSocket.accept()
@@ -47,7 +52,22 @@ class PulseSender (threading.Thread):
 		logging.debug("Accepted connection from %s", str(address))
 		return True
 
-	def incomingData(self, sock, condition):
-		data = sock.recv(1024)
-		logging.debug("Incoming data %1", str(data))
-		return True
+	def incomingData(self, commandStr):
+		logging.debug("Incoming command %s", commandStr)
+		command, value = commandStr.split(" ")
+		value = int(value)
+		logging.debug("split %s %d", command, value)
+		if command == "gain":
+			self.tools.leftGainQueue.put(value)
+			self.tools.rightGainQueue.put(value)
+		elif command == "freq":
+			logging.debug("Add to freq queue %d", value)
+			self.tools.leftFreqQueue.put(value)
+			self.tools.rightFreqQueue.put(value)
+		elif command == "amp":
+			if value == 1:
+				value = True
+			else:
+				value = False
+			self.tools.leftAmpQueue.put(value)
+			self.tools.rightAmpQueue.put(value)

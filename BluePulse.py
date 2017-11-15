@@ -9,7 +9,6 @@ import logging
 
 from argparse import ArgumentParser
 from time import gmtime, strftime
-from multiprocessing import Queue
 
 def main():
 	parser = ArgumentParser(description=__doc__)
@@ -27,6 +26,7 @@ def main():
 	pulseDetectorLeft.start()
 	pulseDetectorRight = PulseDetector.PulseDetector(1, tools.pulseQueue, tools.rightFreqQueue, tools.rightGainQueue, tools.rightAmpQueue)
 	pulseDetectorRight.start()
+	tools.leftGainQueue.put(2)
 
 if __name__ == '__main__':
     main()

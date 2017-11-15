@@ -7,7 +7,7 @@ class Tools:
 		self.directionFinder = None
 		self.pulseSender= None
 		self.pulseQueue = Queue()
-		self.leftFregQueue = Queue()
+		self.leftFreqQueue = Queue()
 		self.rightFreqQueue = Queue()
 		self.leftGainQueue = Queue()
 		self.rightGainQueue = Queue()

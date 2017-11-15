@@ -13,13 +13,13 @@ class PulseDetector(Process):
     def __init__(self, deviceIndex, pulseQueue, freqQueue, gainQueue, ampQueue):
         Process.__init__(self)
         self.deviceIndex = deviceIndex
-        self.amp = false
+        self.amp = False
         self.freq = 146000
         self.gain = 1
-        self.pulseQueue = pulseQueue
-        self.freqQueue = freqQueue
-        self.gainQueue = gainQueue
-        self.ampQueue = ampQueue
+	self.pulseQueue = pulseQueue
+	self.freqQueue = freqQueue
+	self.gainQueue = gainQueue
+	self.ampQueue = ampQueue
         self.minNoiseThresholdAmp = 15
         self.maxNoiseThresholdAmp = 110
         self.minNoiseThreshold = 1
@@ -54,30 +54,21 @@ class PulseDetector(Process):
         pulseCount = 0
 
         while True:
-            # Handle change in frequency    
-            try:
+            # Handle change in frequency
+            if not self.freqQueue.empty():
                 newFrequency = self.freqQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
                 logging.debug("Changing frequency %d", newFrequency)
                 sdr.fc = newFrequency
 
             # Handle change in gain
-            try:
+            if not self.gainQueue.empty():
                 newGain = self.gainQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
                 sdr.gain = newGain
                 logging.debug("Changing gain %d:%f", newGain, sdr.gain)
 
             # Handle change in amp
-            try:
+            if not self.ampQueue.empty():
                 newAmp = self.ampQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
                 self.amp = newAmp
                 logging.debug("Changing amp %s", self.amp)
 
@@ -123,8 +114,7 @@ class PulseDetector(Process):
                     pulseStrength = max(rgPulse)
                     pulseCount += 1
                     logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
-                    if self.pulseQueue:
-                        self.pulseQueue.put((self.deviceIndex, pulseStrength))
+                    self.pulseQueue.put((self.deviceIndex, pulseStrength))
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
@@ -138,7 +128,6 @@ class PulseDetector(Process):
                 else:
                     logging.debug("no pulse for two seconds - timeoutCount %d", timeoutCount)
                     rgPulse = [ ]
-                    if self.pulseQueue:
-                        self.pulseQueue.put((self.deviceIndex, 0))
+                    self.pulseQueue.put((self.deviceIndex, 0))
                 lastPulseTime = time.time()
         sdr.close()
