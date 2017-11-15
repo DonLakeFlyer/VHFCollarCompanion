@@ -27,6 +27,7 @@ class PulseSender (threading.Thread):
 		logging.debug("Waiting for bluetooth connection")
 		self.clientSocket, clientInfo = self.serverSocket.accept()
 		print("Accepted connection from ", clientInfo)
+        source = gobject.io_add_watch (self.clientSocket, gobject.IO_IN, self.incomingData)
 
 	def run(self):
 		while True:
@@ -45,3 +46,8 @@ class PulseSender (threading.Thread):
 		address, psm = info
 		logging.debug("Accepted connection from %s", str(address))
 		return True
+
+    def incomingData(self, sock, condition):
+        data = sock.recv(1024)
+        logging.debug("Incoming data %1", str(data))
+        return True

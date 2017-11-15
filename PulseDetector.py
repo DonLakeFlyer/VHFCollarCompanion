@@ -10,13 +10,16 @@ NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, deviceIndex, pulseQueue, freq, gain, amp):
+    def __init__(self, deviceIndex, pulseQueue, freqQueue, gainQueue, ampQueue):
         Process.__init__(self)
-	self.deviceIndex = deviceIndex
-        self.amp = amp
-	self.freq = freq
-	self.gain = gain
+        self.deviceIndex = deviceIndex
+        self.amp = false
+        self.freq = 146000
+        self.gain = 1
         self.pulseQueue = pulseQueue
+        self.freqQueue = freqQueue
+        self.gainQueue = gainQueue
+        self.ampQueue = ampQueue
         self.minNoiseThresholdAmp = 15
         self.maxNoiseThresholdAmp = 110
         self.minNoiseThreshold = 1
@@ -51,6 +54,33 @@ class PulseDetector(Process):
         pulseCount = 0
 
         while True:
+            # Handle change in frequency    
+            try:
+                newFrequency = self.freqQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                logging.debug("Changing frequency %d", newFrequency)
+                sdr.fc = newFrequency
+
+            # Handle change in gain
+            try:
+                newGain = self.gainQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                sdr.gain = newGain
+                logging.debug("Changing gain %d:%f", newGain, sdr.gain)
+
+            # Handle change in amp
+            try:
+                newAmp = self.ampQueue.get_nowait()
+            except Exception as e:
+                pass
+            else:
+                self.amp = newAmp
+                logging.debug("Changing amp %s", self.amp)
+
             # Adjust noise threshold
             sdrReopen = False
             noiseThreshold = self.calcNoiseThreshold(self.amp, sdr.gain)

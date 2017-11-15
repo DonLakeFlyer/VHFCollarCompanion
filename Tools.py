@@ -6,4 +6,10 @@ class Tools:
         self.vehicle = None
         self.directionFinder = None
         self.pulseSender= None
-        self.pulseQueue = Queue()
+		self.pulseQueue = Queue()
+		self.leftFregQueue = Queue()
+		self.rightFreqQueue = Queue()
+		self.leftGainQueue = Queue()
+		self.rightGainQueue = Queue()
+		self.leftAmpQueue = Queue()
+		self.rightAmpQueue = Queue()
