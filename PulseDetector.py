@@ -10,11 +10,12 @@ NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, deviceIndex, pulseQueue, freqQueue, gainQueue, ampQueue):
+    def __init__(self, deviceIndex, testPulse, pulseQueue, freqQueue, gainQueue, ampQueue):
         Process.__init__(self)
         self.deviceIndex = deviceIndex
+        self.testPulse = testPulse
         self.amp = False
-        self.freq = 146000
+        self.freq = 146000000
         self.gain = 1
 	self.pulseQueue = pulseQueue
 	self.freqQueue = freqQueue
@@ -36,14 +37,14 @@ class PulseDetector(Process):
         return minNoiseThreshold + (noiseRange * (gain / 50.0))
 
     def run(self):
-        logging.debug("PulseDetector.run")
+        logging.debug("PulseDetector.run %d", self.deviceIndex)
         try:
             sdr = RtlSdr(device_index = self.deviceIndex)
             sdr.rs = 2.4e6
             sdr.fc = self.freq
             sdr.gain = self.gain
         except Exception as e:
-            logging.exception("SDR init failed")
+            logging.exception("SDR init failed %d, self.deviceIndex")
             return
 
         last_max_mag = 0
@@ -81,22 +82,22 @@ class PulseDetector(Process):
             try:
                 samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
             except Exception as e:
-                logging.exception("SDR read failed")
+                logging.exception("SDR read failed %d, self.deviceIndex")
                 sdrReopen = True
             if sdrReopen:
-                logging.debug("Attempting reopen")
+                logging.debug("Attempting reopen %d", self.deviceIndex)
                 try:
                     sdr.open()
                 except Exception as e:
-                    logging.exception("SDR reopen failed")
+                    logging.exception("SDR reopen failed %d", self.deviceIndex)
                     return
                 try:
                     samples = sdr.read_samples(NUM_SAMPLES_PER_SCAN)
                 except Exception as e:
-                    logging.exception("SDR read failed")
+                    logging.exception("SDR read failed %d", self.deviceIndex)
                     return
 
-            # Process samples        
+            # Process samples
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
             #print(strength)
@@ -104,7 +105,7 @@ class PulseDetector(Process):
                 # Detect possible leading edge
                 if strength > noiseThreshold:
                     leadingEdge = True
-                    logging.debug("leading edge %d", strength)
+                    logging.debug("leading edge index:strength %d:%f", self.deviceIndex, strength)
                     rgPulse = [ strength ]
             else:
                 rgPulse.append(strength)
@@ -113,8 +114,9 @@ class PulseDetector(Process):
                     leadingEdge = False
                     pulseStrength = max(rgPulse)
                     pulseCount += 1
-                    logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
-                    self.pulseQueue.put((self.deviceIndex, pulseStrength))
+                    logging.debug("index:pulseStrength:len(rgPulse):pulseCount %d %f %d %d", self.deviceIndex, pulseStrength, len(rgPulse), pulseCount)
+                    if not self.testPulse:
+	                self.pulseQueue.put((self.deviceIndex, pulseStrength))
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
@@ -124,10 +126,11 @@ class PulseDetector(Process):
                 timeoutCount += 1
                 if leadingEdge:
                     leadingEdge = False
-                    logging.error("failed to detect trailing edge - len(rgPulse):timeoutCount %d %d", len(rgPulse), timeoutCount)
+                    logging.error("failed to detect trailing edge - index:len(rgPulse):timeoutCount %d:%d:%d", self.deviceIndex, len(rgPulse), timeoutCount)
                 else:
-                    logging.debug("no pulse for two seconds - timeoutCount %d", timeoutCount)
+                    logging.debug("no pulse for two seconds - index:timeoutCount %d:%d", self.deviceIndex, timeoutCount)
                     rgPulse = [ ]
-                    self.pulseQueue.put((self.deviceIndex, 0))
+                    if not self.testPulse:
+                        self.pulseQueue.put((self.deviceIndex, 0))
                 lastPulseTime = time.time()
         sdr.close()
