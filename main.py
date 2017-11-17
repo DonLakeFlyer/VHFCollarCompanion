@@ -21,8 +21,9 @@ def main():
 	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
 	parser.add_argument("--testPulse", help="Test pulses", default=False)
 	parser.add_argument("--logdir", help="log directory", default="")
-	parser.add_argument("--gain", type=int, default="0")
+	parser.add_argument("--gain", type=int, default="60")
 	parser.add_argument("--amp", default=False)
+	parser.add_argument("--freq", type=int, default=146728000)
 	args = parser.parse_args()
 
 	CollarLogging.setupLogging(args.logdir)
@@ -46,8 +47,8 @@ def main():
 		pulseDetector.start()
 
 	tools.setAmpQueue.put(args.amp)
-	if args.gain != 0:
-		tools.setGainQueue.put(int(args.gain))
+	tools.setGainQueue.put(args.gain)
+	tools.setFreqQueue.put(args.freq)
 
 if __name__ == '__main__':
     main()
