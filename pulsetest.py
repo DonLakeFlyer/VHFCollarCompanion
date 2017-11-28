@@ -15,7 +15,7 @@ def main():
 	CollarLogging.setupLogging(args.logdir)
 
 	pulseQueue = Queue()
-	pulseDetector = PulseDetector.PulseDetector(pulseQueue)
+	pulseDetector = PulseDetector.PulseDetector(pulseQueue, Queue(), Queue(), Queue())
 	pulseDetector.start()
 	while True:
 		pulseStrength = pulseQueue.get(True)

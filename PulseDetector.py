@@ -12,13 +12,13 @@ NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 class PulseDetector(Process):
     def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
         Process.__init__(self)
-        self.amp = False
+        self.amp = True
         self.pulseQueue = pulseQueue
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
         self.setAmpQueue = setAmpQueue
         self.minNoiseThresholdAmp = 15
-        self.maxNoiseThresholdAmp = 110
+        self.maxNoiseThresholdAmp = 90
         self.minNoiseThreshold = 1
         self.maxNoiseThreshold = 15
 
@@ -38,7 +38,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 1
+            sdr.gain = 60
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -106,6 +106,7 @@ class PulseDetector(Process):
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
             #print(strength)
+            #print(sum(mag))
             if not leadingEdge:
                 # Detect possible leading edge
                 if strength > noiseThreshold:
