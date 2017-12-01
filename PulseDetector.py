@@ -18,9 +18,12 @@ class PulseDetector(Process):
         self.setGainQueue = setGainQueue
         self.setAmpQueue = setAmpQueue
         self.minNoiseThresholdAmp = 15
-        self.maxNoiseThresholdAmp = 90
+        self.maxNoiseThresholdAmp = 130
         self.minNoiseThreshold = 1
         self.maxNoiseThreshold = 15
+        self.backgroundNoise = 15.0
+        self.minBackgroundNoise = 5.0
+        self.minPulseCaptureCount = 3
 
     def calcNoiseThreshold(self, amp, gain):
         if amp:
@@ -31,6 +34,12 @@ class PulseDetector(Process):
             maxNoiseThreshold = self.maxNoiseThreshold
         noiseRange = maxNoiseThreshold - minNoiseThreshold
         return minNoiseThreshold + (noiseRange * (gain / 50.0))
+
+    def adjustBackgroundNoise(self, signalStrength):
+        self.backgroundNoise = (self.backgroundNoise * 0.98) + (signalStrength * 0.02)
+        if self.backgroundNoise < self.minBackgroundNoise:
+            self.backgroundNoise = self.minBackgroundNoise
+        #logging.debug("Background noise:signal %f:%f", self.backgroundNoise, signalStrength)
 
     def run(self):
         logging.debug("PulseDetector.run")
@@ -47,11 +56,11 @@ class PulseDetector(Process):
         leadingEdge = False
         rgPulse = []
         lastPulseTime = time.time()
-        timeoutCount = 0
+        #timeoutCount = 0
         pulseCount = 0
 
         while True:
-            # Handle change in frequency    
+            # Handle change in frequency
             try:
                 newFrequency = self.setFreqQueue.get_nowait()
             except Exception as e:
@@ -80,7 +89,7 @@ class PulseDetector(Process):
 
             # Adjust noise threshold
             sdrReopen = False
-            noiseThreshold = self.calcNoiseThreshold(self.amp, sdr.gain)
+            #noiseThreshold = self.calcNoiseThreshold(self.amp, sdr.gain)
             #logging.debug("Noise threshold %f", noiseThreshold)
 
             # Read samples
@@ -102,41 +111,46 @@ class PulseDetector(Process):
                     logging.exception("SDR read failed")
                     return
 
-            # Process samples        
+            # Process samples
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
             #print(strength)
-            #print(sum(mag))
+            self.adjustBackgroundNoise(strength)
+            noiseThreshold = self.backgroundNoise * 1.5
             if not leadingEdge:
-                # Detect possible leading edge
+                # Detect possible leading edge spiking above background noise
                 if strength > noiseThreshold:
                     leadingEdge = True
-                    logging.debug("leading edge %d", strength)
+                    logging.debug("leading edge strength:background %d %d", strength, self.backgroundNoise)
                     rgPulse = [ strength ]
             else:
                 rgPulse.append(strength)
-                # Detect trailing edge
+                # Detect trailing edge falling below background noise
                 if strength < noiseThreshold:
                     leadingEdge = False
-                    pulseStrength = max(rgPulse)
-                    pulseCount += 1
-                    logging.debug("pulseStrength:len(rgPulse):pulseCount %f %d %d", pulseStrength, len(rgPulse), pulseCount)
-                    if self.pulseQueue:
-                        self.pulseQueue.put(pulseStrength)
-                    lastPulseTime = time.time()
+                    pulseCaptureCount = len(rgPulse)
+                    if pulseCaptureCount >= self.minPulseCaptureCount:
+                        pulseStrength = max(rgPulse)
+                        pulseCount += 1
+                        logging.debug("***** %d %d %d pulseStrength:len(rgPulse):background", pulseStrength, pulseCaptureCount, self.backgroundNoise)
+                        if self.pulseQueue:
+                            self.pulseQueue.put(pulseStrength)
+                        lastPulseTime = time.time()
+                    else:
+                        logging.debug("pulse too short %d", pulseCaptureCount)
                     rgPulse = []
             lastStrength = strength
 
             # Check for no pulse
             if time.time() - lastPulseTime > 2:
-                timeoutCount += 1
+                #timeoutCount += 1
                 if leadingEdge:
                     leadingEdge = False
-                    logging.error("failed to detect trailing edge - len(rgPulse):timeoutCount %d %d", len(rgPulse), timeoutCount)
+                    logging.error("failed to detect trailing edge - len(rgPulse):background %d %d", len(rgPulse), self.backgroundNoise)
                 else:
-                    logging.debug("no pulse for two seconds - timeoutCount %d", timeoutCount)
-                    rgPulse = [ ]
+                    logging.debug("no pulse for two seconds - background %d", self.backgroundNoise)
                     if self.pulseQueue:
                         self.pulseQueue.put(0)
+                rgPulse = [ ]
                 lastPulseTime = time.time()
         sdr.close()
