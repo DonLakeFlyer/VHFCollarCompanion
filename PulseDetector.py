@@ -17,10 +17,10 @@ class PulseDetector(Process):
         self.amp = False
         self.freq = 146000000
         self.gain = 1
-	self.pulseQueue = pulseQueue
-	self.freqQueue = freqQueue
-	self.gainQueue = gainQueue
-	self.ampQueue = ampQueue
+        self.pulseQueue = pulseQueue
+        self.freqQueue = freqQueue
+        self.gainQueue = gainQueue
+        self.ampQueue = ampQueue
         self.minNoiseThresholdAmp = 15
         self.maxNoiseThresholdAmp = 110
         self.minNoiseThreshold = 1
@@ -116,7 +116,7 @@ class PulseDetector(Process):
                     pulseCount += 1
                     logging.debug("index:pulseStrength:len(rgPulse):pulseCount %d %f %d %d", self.deviceIndex, pulseStrength, len(rgPulse), pulseCount)
                     if not self.testPulse:
-	                self.pulseQueue.put((self.deviceIndex, pulseStrength))
+	                    self.pulseQueue.put((self.deviceIndex, pulseStrength))
                     lastPulseTime = time.time()
                     rgPulse = []
             lastStrength = strength
