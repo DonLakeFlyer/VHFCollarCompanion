@@ -1,5 +1,6 @@
 import time
 import logging
+import numpy as np
 
 from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum, psd
@@ -21,7 +22,7 @@ class PulseDetector(Process):
         self.maxNoiseThresholdAmp = 130
         self.minNoiseThreshold = 1
         self.maxNoiseThreshold = 15
-        self.backgroundNoise = 15.0
+        self.backgroundNoise = 1000
         self.minBackgroundNoise = 5.0
         self.minPulseCaptureCount = 3
 
@@ -35,11 +36,11 @@ class PulseDetector(Process):
         noiseRange = maxNoiseThreshold - minNoiseThreshold
         return minNoiseThreshold + (noiseRange * (gain / 50.0))
 
-    def adjustBackgroundNoise(self, signalStrength):
-        self.backgroundNoise = (self.backgroundNoise * 0.98) + (signalStrength * 0.02)
+    def adjustBackgroundNoise(self, strength):
+        self.backgroundNoise = (self.backgroundNoise * 0.8) + (strength * 0.2)
         if self.backgroundNoise < self.minBackgroundNoise:
             self.backgroundNoise = self.minBackgroundNoise
-        #logging.debug("Background noise:signal %f:%f", self.backgroundNoise, signalStrength)
+        #logging.debug("Background noise:signal %f:%f", self.backgroundNoise, strength)
 
     def run(self):
         logging.debug("PulseDetector.run")
@@ -47,7 +48,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 60
+            sdr.gain = 10
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -114,8 +115,7 @@ class PulseDetector(Process):
             # Process samples
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
-            #print(strength)
-            self.adjustBackgroundNoise(strength)
+            #print(min(mag), max(mag), np.std(mag, ddof=1), self.backgroundNoise)
             noiseThreshold = self.backgroundNoise * 1.5
             if not leadingEdge:
                 # Detect possible leading edge spiking above background noise
@@ -123,12 +123,14 @@ class PulseDetector(Process):
                     leadingEdge = True
                     logging.debug("leading edge strength:background %d %d", strength, self.backgroundNoise)
                     rgPulse = [ strength ]
+                else:
+                    self.adjustBackgroundNoise(strength)
             else:
-                rgPulse.append(strength)
                 # Detect trailing edge falling below background noise
                 if strength < noiseThreshold:
                     leadingEdge = False
                     pulseCaptureCount = len(rgPulse)
+                    self.adjustBackgroundNoise(strength)
                     if pulseCaptureCount >= self.minPulseCaptureCount:
                         pulseStrength = max(rgPulse)
                         pulseCount += 1
@@ -138,7 +140,12 @@ class PulseDetector(Process):
                         lastPulseTime = time.time()
                     else:
                         logging.debug("pulse too short %d", pulseCaptureCount)
+                        for skippedStrength in rgPulse:
+                            self.adjustBackgroundNoise(skippedStrength)                            
                     rgPulse = []
+                else:
+                    rgPulse.append(strength)
+
             lastStrength = strength
 
             # Check for no pulse
