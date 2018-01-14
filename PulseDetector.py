@@ -1,7 +1,7 @@
 import time
 import logging
 
-from rtlsdr import RtlSdr
+from Airspy import Airspy
 from matplotlib.mlab import magnitude_spectrum, psd
 from multiprocessing import Process
 from queue import Queue
@@ -41,16 +41,30 @@ class PulseDetector(Process):
             self.backgroundNoise = self.minBackgroundNoise
         #logging.debug("Background noise:signal %f:%f", self.backgroundNoise, signalStrength)
 
+    def _rxCallback(self, values):
+        #logging.debug("_rxCallback %d", len(values))
+        mag, freqs = magnitude_spectrum(values, Fs=3000000)
+        strength = max(mag)
+        print(strength)
+
     def run(self):
         logging.debug("PulseDetector.run")
         try:
-            sdr = RtlSdr()
-            sdr.rs = 2.4e6
-            sdr.fc = 146e6
-            sdr.gain = 60
+            sdr = Airspy()
+            sdr.setFrequency = 146e6
+            sdr.enableLNAAGC(False)
+            sdr.enableMixerAGC(False)
+            sdr.setVGAGain(15)
+            sdr.enableBiasT(True)
+            sdr.startReceive(self._rxCallback)
         except Exception as e:
             logging.exception("SDR init failed")
             return
+
+        while sdr.isStreaming():
+            pass
+
+        return
 
         last_max_mag = 0
         leadingEdge = False
