@@ -18,23 +18,9 @@ class PulseDetector(Process):
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
         self.setAmpQueue = setAmpQueue
-        self.minNoiseThresholdAmp = 15
-        self.maxNoiseThresholdAmp = 130
-        self.minNoiseThreshold = 1
-        self.maxNoiseThreshold = 15
         self.backgroundNoise = 1000
         self.minBackgroundNoise = 5.0
         self.minPulseCaptureCount = 3
-
-    def calcNoiseThreshold(self, amp, gain):
-        if amp:
-            minNoiseThreshold = self.minNoiseThresholdAmp
-            maxNoiseThreshold = self.maxNoiseThresholdAmp
-        else:
-            minNoiseThreshold = self.minNoiseThreshold
-            maxNoiseThreshold = self.maxNoiseThreshold
-        noiseRange = maxNoiseThreshold - minNoiseThreshold
-        return minNoiseThreshold + (noiseRange * (gain / 50.0))
 
     def adjustBackgroundNoise(self, strength):
         self.backgroundNoise = (self.backgroundNoise * 0.8) + (strength * 0.2)
@@ -42,13 +28,35 @@ class PulseDetector(Process):
             self.backgroundNoise = self.minBackgroundNoise
         #logging.debug("Background noise:signal %f:%f", self.backgroundNoise, strength)
 
+    def detectedPulseStrength(self, values):
+        pulseDetected = False
+        noiseThreshold = self.backgroundNoise * 1.5
+        maxIndex = values.argmax()
+        maxStrength = values[maxIndex]
+        #logging.debug("detectedPulseStrength value:index %d:%d", maxStrength, maxIndex)
+        if maxStrength > noiseThreshold:         
+            startIndex = maxIndex
+            while values[startIndex] > noiseThreshold and startIndex > 0:
+                startIndex -= 1
+            stopIndex = maxIndex
+            while values[stopIndex] > noiseThreshold and stopIndex < len(values) - 1:
+                stopIndex += 1
+            if stopIndex - startIndex >= 3:
+                #logging.debug("detectedPulseStrength width:strength %d:%d", stopIndex - startIndex, maxStrength)
+                pulseDetected = True
+        if pulseDetected:
+            return maxStrength
+        else:
+            self.adjustBackgroundNoise(maxStrength)
+            return 0
+
     def run(self):
         logging.debug("PulseDetector.run")
         try:
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 60
+            sdr.gain = 10
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -114,20 +122,19 @@ class PulseDetector(Process):
 
             # Process samples
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
-            strength = max(mag)
-            print(max(mag), min(mag), np.std(mag, ddof=1), self.backgroundNoise)
-            noiseThreshold = self.backgroundNoise * 1.5
             if not leadingEdge:
-                # Detect possible leading edge spiking above background noise
-                if strength > noiseThreshold:
+                # Detect leading edge
+                strength = self.detectedPulseStrength(mag)
+                if strength:
                     leadingEdge = True
-                    logging.debug("leading edge strength:background %d %d", strength, self.backgroundNoise)
+                    #logging.debug("leading edge strength:background %d %d", strength, self.backgroundNoise)
                     rgPulse = [ strength ]
-                else:
-                    self.adjustBackgroundNoise(strength)
             else:
                 # Detect trailing edge falling below background noise
-                if strength < noiseThreshold:
+                strength = self.detectedPulseStrength(mag)
+                if strength:
+                    rgPulse.append(strength)
+                else:
                     leadingEdge = False
                     pulseCaptureCount = len(rgPulse)
                     self.adjustBackgroundNoise(strength)
@@ -143,13 +150,9 @@ class PulseDetector(Process):
                         for skippedStrength in rgPulse:
                             self.adjustBackgroundNoise(skippedStrength)                            
                     rgPulse = []
-                else:
-                    rgPulse.append(strength)
-
-            lastStrength = strength
 
             # Check for no pulse
-            if time.time() - lastPulseTime > 2:
+            if time.time() - lastPulseTime > 3:
                 #timeoutCount += 1
                 if leadingEdge:
                     leadingEdge = False
