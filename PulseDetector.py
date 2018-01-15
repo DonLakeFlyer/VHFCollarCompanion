@@ -48,7 +48,7 @@ class PulseDetector(Process):
             sdr = RtlSdr()
             sdr.rs = 2.4e6
             sdr.fc = 146e6
-            sdr.gain = 10
+            sdr.gain = 60
         except Exception as e:
             logging.exception("SDR init failed")
             return
@@ -115,7 +115,7 @@ class PulseDetector(Process):
             # Process samples
             mag, freqs = magnitude_spectrum(samples, Fs=sdr.rs)
             strength = max(mag)
-            #print(min(mag), max(mag), np.std(mag, ddof=1), self.backgroundNoise)
+            print(max(mag), min(mag), np.std(mag, ddof=1), self.backgroundNoise)
             noiseThreshold = self.backgroundNoise * 1.5
             if not leadingEdge:
                 # Detect possible leading edge spiking above background noise
