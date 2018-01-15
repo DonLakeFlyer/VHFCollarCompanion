@@ -33,7 +33,6 @@ class PulseDetector(Process):
         noiseThreshold = self.backgroundNoise * 1.5
         maxIndex = values.argmax()
         maxStrength = values[maxIndex]
-        #logging.debug("detectedPulseStrength value:index %d:%d", maxStrength, maxIndex)
         if maxStrength > noiseThreshold:         
             startIndex = maxIndex
             while values[startIndex] > noiseThreshold and startIndex > 0:
@@ -41,8 +40,9 @@ class PulseDetector(Process):
             stopIndex = maxIndex
             while values[stopIndex] > noiseThreshold and stopIndex < len(values) - 1:
                 stopIndex += 1
-            if stopIndex - startIndex >= 3:
-                #logging.debug("detectedPulseStrength width:strength %d:%d", stopIndex - startIndex, maxStrength)
+            width = stopIndex - startIndex
+            logging.debug("detectedPulseStrength value:index:width %d:%d:%d", maxStrength, maxIndex, width)
+            if width >= 3:
                 pulseDetected = True
         if pulseDetected:
             return maxStrength
