@@ -47,10 +47,10 @@ class PulseDetector(Process):
         while i < len(values):
             samples = values[i:i+1024]
             i += 1024
-#            mag, freqs = magnitude_spectrum(samples, Fs=3000000)
-            mag, freqs = magnitude_spectrum(samples)
+            mag, freqs = magnitude_spectrum(samples, Fs=3000000)
             strength = max(mag)
-            print(strength)
+            if strength > 1:
+                print(strength)
 
     def run(self):
         logging.debug("PulseDetector.run")
