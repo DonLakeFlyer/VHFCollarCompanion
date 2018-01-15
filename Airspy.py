@@ -152,7 +152,7 @@ class Airspy(object):
         array_type = (c_float*cFloats)
         values = cast(airspyTransfer.contents.samples, POINTER(array_type)).contents
         iq = np.empty(airspyTransfer.contents.sample_count, 'complex')
-        iq.imag, iq.real = values[::2], values[1::2]
+        iq.real, iq.imag = values[::2], values[1::2]
         self.rxCallback(iq)
         return 0
 

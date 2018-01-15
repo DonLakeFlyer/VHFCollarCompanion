@@ -43,9 +43,14 @@ class PulseDetector(Process):
 
     def _rxCallback(self, values):
         #logging.debug("_rxCallback %d", len(values))
-        mag, freqs = magnitude_spectrum(values, Fs=3000000)
-        strength = max(mag)
-        print(strength)
+        i = 0
+        while i < len(values):
+            samples = values[i:i+1024]
+            i += 1024
+#            mag, freqs = magnitude_spectrum(samples, Fs=3000000)
+            mag, freqs = magnitude_spectrum(samples)
+            strength = max(mag)
+            print(strength)
 
     def run(self):
         logging.debug("PulseDetector.run")
@@ -55,7 +60,7 @@ class PulseDetector(Process):
             sdr.enableLNAAGC(False)
             sdr.enableMixerAGC(False)
             sdr.setVGAGain(15)
-            sdr.enableBiasT(True)
+            sdr.enableBiasT(False)
             sdr.startReceive(self._rxCallback)
         except Exception as e:
             logging.exception("SDR init failed")
