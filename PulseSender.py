@@ -53,7 +53,7 @@ class PulseSender (threading.Thread):
 		return True
 
 	def incomingData(self, commandStr):
-		logging.debug("Incoming command %s", commandStr)
+		logging.debug("Incoming command <%s>", commandStr)
 		command, value = commandStr.split(" ")
 		value = int(value)
 		logging.debug("split %s %d", command, value)
