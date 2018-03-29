@@ -156,7 +156,7 @@ class Waterfall(object):
             blit = False
         else:
             blit = True
-        ani = animation.FuncAnimation(self.fig, self.update, interval=50,
+        ani = animation.FuncAnimation(self.fig, self.update, interval=1,
                 blit=blit)
 
         pyl.show()
@@ -171,7 +171,7 @@ def main():
     # some defaults
     sdr.rs = 2.4e6
     sdr.fc = 146e6
-    sdr.gain = 20
+    sdr.gain = 60
 
     wf.start()
 
