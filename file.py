@@ -7,7 +7,7 @@ def main():
     # some defaults
     sdr.rs = 2.4e6
     sdr.fc = 146e6
-    sdr.gain = 10
+    sdr.gain = 50
 
     noiseWindowLength = 20
     noiseWindow = [ ]
