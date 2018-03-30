@@ -6,17 +6,20 @@ def main():
 	rawIntData = np.fromfile("values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
 
+	# We keep a rolling window of samples for background noise calculation
 	noiseWindowLength = 20
 	noiseWindow = [ ]
 
+	# We keep a rolling to detect the ramping up of a pulse
 	rampWindowLength = 5
 	rampWindow = [ ]
 	rampPercent = 1.2
 
 	backgroundNoise = False
-	pulseFound = False
+	pulseValues = [ ]
+	minPulseLength = 3
 
-	f = open("data.csv", "w")
+	f = open("pulse.dat", "w")
 
 	readIndex = 0
 	pulseFoundNotified = False
@@ -29,27 +32,36 @@ def main():
 		noiseWindow.append(maxSignal)
 		if len(noiseWindow) > noiseWindowLength:
 			noiseWindow.pop(0)
+			# Background noise is the average of the current noise sample window
 			backgroundNoise = sum(noiseWindow) / noiseWindowLength
 			rampWindow.append(backgroundNoise)
 
 			if len(rampWindow) > rampWindowLength:
 				rampWindow.pop(0)
 
+				# Check the last value in the ramp window to the first
 				if rampWindow[rampWindowLength - 1] > rampWindow[0] * rampPercent:
-					pulseFound = True
-					if not pulseFoundNotified:
-						pulseFoundNotified = True
-						print("Pulse detected")
+					if len(pulseValues) == 0:
+						# Leading edge of possible pulse
+						pulseValues = [ maxSignal ]
+					else:
+						pulseValues.append(maxSignal)
 				else:
-					pulseFound = False
-					pulseFoundNotified = False
-
-		f.write(str(maxSignal))
-		f.write(",")
-		f.write(str(backgroundNoise))
-		f.write(",")
-		f.write(str(pulseFound))
-		f.write("\n")
+					pulseLength = len(pulseValues)
+					if pulseLength != 0:
+						if pulseLength >= minPulseLength:							
+							pulseAverage = sum(pulseValues) / pulseLength
+							print("True pulse detected pulseAverage:length:backgroundNoise")
+							print(pulseAverage, pulseLength, backgroundNoise)
+							f.write(str(pulseAverage))
+							f.write(",")
+							f.write(str(backgroundNoise))
+							f.write(",")
+							f.write(str(pulseLength))
+							f.write("\n")
+						else:
+							print("False pulse length", pulseLength)
+						pulseValues = [ ]
 
 	f.close()
 
