@@ -2,7 +2,6 @@ import threading
 import math
 import logging
 
-import PulseDetector
 import Vehicle
 import DirectionFinder
 
@@ -15,8 +14,7 @@ class MavlinkThread (threading.Thread):
 		threading.Thread.__init__(self)
 		self.tools = tools
 		self.baudrate = args.baudrate
-		self.simulateVehicle = args.simulateVehicle
-		if self.simulateVehicle:
+		if args.sitl:
 			self.device = "udp:localhost:14540"
 		else:
 			self.device = args.device
