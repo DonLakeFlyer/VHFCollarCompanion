@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib.mlab import magnitude_spectrum
 
 def main():
-	rawIntData = np.fromfile("values.dat", dtype=np.dtype(np.int32))
+	rawIntData = np.fromfile("/home/pi/logs/values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
 
 	# We keep a rolling window of samples for background noise calculation
@@ -19,7 +19,7 @@ def main():
 	pulseValues = [ ]
 	minPulseLength = 3
 
-	f = open("pulse.dat", "w")
+	f = open("/home/pi/logs/pulse.dat", "w")
 
 	readIndex = 0
 	pulseFoundNotified = False

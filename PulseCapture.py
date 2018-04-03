@@ -56,7 +56,7 @@ class PulseCapture(Process):
             #os.remove("pulse.dat")
 
             # Capture 3 seconds worth of data
-            command = "airspy_rx -r values.dat -f {0} -a 3000000 -h {1}  -n 9000000".format(self.freq, self.gain)
+            command = "airspy_rx -r /home/pi/logs/values.dat -f {0} -a 3000000 -h {1}  -n 9000000".format(self.freq, self.gain)
             ret = os.system(command)
             print(ret)
             if ret == 256:
@@ -64,7 +64,7 @@ class PulseCapture(Process):
                 break
 
             # Process raw data for pulses
-            os.system("python3 AirspyProcessData.py")
+            os.system("/usr/bin/python3 /home/pi/repos/VHFCollarCompanion/AirspyProcessData.py")
 
             # Read the processed data and send pulse average if available
             rgPulse = []
