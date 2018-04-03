@@ -39,7 +39,6 @@ class MavlinkThread (threading.Thread):
 
 	def wait_heartbeat(self):
 	    logging.debug("Waiting for heartbeat from Vehicle autopilot component")
-	    waiting = True
 	    while waiting:
                     msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
                     if self.mavlink.target_component == 1:

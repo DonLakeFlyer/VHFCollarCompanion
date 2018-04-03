@@ -17,7 +17,7 @@ def main():
 	parser = ArgumentParser(description=__doc__)
 	parser.add_argument("--baudrate", type=int, help="px4 port baud rate", default=57600)
 	parser.add_argument("--device", help="px4 device", default="/dev/ttyS0")
-	parser.add_argument("--sitl", help="sitl firmware", default=True)
+	parser.add_argument("--sitl", help="sitl firmware", default=False)
 	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
 	parser.add_argument("--testPulse", help="Test pulses", default=False)
 	parser.add_argument("--logDir", help="log directory", default="")
