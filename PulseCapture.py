@@ -10,12 +10,14 @@ NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseCapture(Process):
-    def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
+    def __init__(self, tools):
         Process.__init__(self)
-        self.pulseQueue = pulseQueue
-        self.setFreqQueue = setFreqQueue
-        self.setGainQueue = setGainQueue
-        self.setAmpQueue = setAmpQueue
+        self.pulseQueue = tools.pulseQueue
+        self.setFreqQueue = tools.setFreqQueue
+        self.setGainQueue = tools.setGainQueue
+        self.setAmpQueue = tools.setAmpQueue
+        self.logDir = tools.logDir
+        self.pyDir = tools.pyDir
         self.freq = 146
         self.gain = 21
         self.amp = False
@@ -56,7 +58,8 @@ class PulseCapture(Process):
             #os.remove("pulse.dat")
 
             # Capture 3 seconds worth of data
-            command = "airspy_rx -r /home/pi/logs/values.dat -f {0} -a 3000000 -h {1}  -n 9000000".format(self.freq, self.gain)
+            commandStr = "airspy_rx -r " + self.logDir + "values.dat -f {0} -a 3000000 -h {1}  -n 9000000"
+            command = commandStr.format(self.freq, self.gain)
             ret = os.system(command)
             print(ret)
             if ret == 256:
@@ -64,7 +67,7 @@ class PulseCapture(Process):
                 break
 
             # Process raw data for pulses
-            os.system("/usr/bin/python3 /home/pi/repos/VHFCollarCompanion/AirspyProcessData.py")
+            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --logdir " + self.logDir)
 
             # Read the processed data and send pulse average if available
             rgPulse = []

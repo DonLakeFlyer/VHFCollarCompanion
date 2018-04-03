@@ -29,6 +29,9 @@ def main():
 	CollarLogging.setupLogging(args.logdir)
 
 	tools = Tools.Tools()
+	tools.logDir = args.logdir
+	if tools.logDir == "":
+		tools.logDir = tools.pyDir
 	pulseQueue = None
 	if not args.testPulse:
 		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
@@ -43,7 +46,7 @@ def main():
 		pulseCapture = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseCapture.start()
 	else:
-		pulseCapture = PulseCapture.PulseCapture(pulseQueue, tools.setFreqQueue, tools.setGainQueue, tools.setAmpQueue)
+		pulseCapture = PulseCapture.PulseCapture(tools)
 		pulseCapture.start()
 
 	tools.setAmpQueue.put(args.amp)

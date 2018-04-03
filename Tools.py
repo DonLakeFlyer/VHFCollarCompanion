@@ -1,4 +1,6 @@
 from multiprocessing import Queue
+import inspect
+import os
 
 class Tools:
     def __init__(self):
@@ -10,3 +12,5 @@ class Tools:
         self.setFreqQueue = Queue()
         self.setGainQueue = Queue()
         self.setAmpQueue = Queue()
+        self.logDir = None
+        self.pyDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))

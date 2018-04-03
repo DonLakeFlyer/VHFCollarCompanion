@@ -1,9 +1,14 @@
 import sys
 import numpy as np
 from matplotlib.mlab import magnitude_spectrum
+from argparse import ArgumentParser
 
 def main():
-	rawIntData = np.fromfile("/home/pi/logs/values.dat", dtype=np.dtype(np.int32))
+	parser = ArgumentParser(description=__doc__)
+	parser.add_argument("--logdir", help="log directory", default="")
+	args = parser.parse_args()
+
+	rawIntData = np.fromfile(args.logdir + "/values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
 
 	# We keep a rolling window of samples for background noise calculation
@@ -19,7 +24,7 @@ def main():
 	pulseValues = [ ]
 	minPulseLength = 3
 
-	f = open("/home/pi/logs/pulse.dat", "w")
+	f = open(args.logdir + "/pulse.dat", "w")
 
 	readIndex = 0
 	pulseFoundNotified = False
