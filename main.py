@@ -20,18 +20,22 @@ def main():
 	parser.add_argument("--sitl", help="sitl firmware", default=True)
 	parser.add_argument("--simulatePulse", help="simulate pulses", default=False)
 	parser.add_argument("--testPulse", help="Test pulses", default=False)
-	parser.add_argument("--logdir", help="log directory", default="")
+	parser.add_argument("--logDir", help="log directory", default="")
+	parser.add_argument("--workDir", help="work directory", default="")
 	parser.add_argument("--gain", type=int, default="21")
 	parser.add_argument("--amp", default=False)
 	parser.add_argument("--freq", type=int, default=146)
 	args = parser.parse_args()
 
-	CollarLogging.setupLogging(args.logdir)
+	CollarLogging.setupLogging(args.logDir)
 
 	tools = Tools.Tools()
-	tools.logDir = args.logdir
+	tools.logDir = args.logDir
+	tools.workDir = args.workDir
 	if tools.logDir == "":
 		tools.logDir = tools.pyDir
+	if tools.workDir == "":
+		tools.workDir = tools.pyDir
 	pulseQueue = None
 	if not args.testPulse:
 		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)

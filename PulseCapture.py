@@ -16,7 +16,7 @@ class PulseCapture(Process):
         self.setFreqQueue = tools.setFreqQueue
         self.setGainQueue = tools.setGainQueue
         self.setAmpQueue = tools.setAmpQueue
-        self.logDir = tools.logDir
+        self.workDir = tools.workDir
         self.pyDir = tools.pyDir
         self.freq = 146
         self.gain = 21
@@ -58,7 +58,7 @@ class PulseCapture(Process):
             #os.remove("pulse.dat")
 
             # Capture 3 seconds worth of data
-            commandStr = "airspy_rx -r " + self.logDir + "values.dat -f {0} -a 3000000 -h {1}  -n 9000000"
+            commandStr = "airspy_rx -r " + self.workDir + "/values.dat -f {0} -a 3000000 -h {1}  -n 9000000"
             command = commandStr.format(self.freq, self.gain)
             ret = os.system(command)
             print(ret)
@@ -67,11 +67,12 @@ class PulseCapture(Process):
                 break
 
             # Process raw data for pulses
-            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --logdir " + self.logDir)
+            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --workDir " + self.workDir)
 
             # Read the processed data and send pulse average if available
             rgPulse = []
-            with open("pulse.dat") as csvfile:
+            with open(self.workDir + "/pulse.dat") as csvfile:
+                print("Here")
                 reader = csv.reader(csvfile)
                 for row in reader:
                     rgPulse.append(float(row[0]))
