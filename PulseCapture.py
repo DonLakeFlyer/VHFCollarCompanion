@@ -79,7 +79,7 @@ class PulseCapture(Process):
                 if len(rgPulse) > 0:
                     pulseAvg = sum(rgPulse) / len(rgPulse)
                     # Change to range of 0 - 100
-                    pulseAvg = int((pulseAvg / 65535.0) * 100.0)
+                    pulseAvg = int((pulseAvg / 300000.0) * 100.0)
                 else:
                     pulseAvg = 0
                 logging.debug("***** %d %d pulseAvg:len(rgPulse)", pulseAvg, len(rgPulse))
