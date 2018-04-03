@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 from matplotlib.mlab import magnitude_spectrum
+from matplotlib.mlab import psd
 from argparse import ArgumentParser
 
 def main():
@@ -31,7 +32,8 @@ def main():
 	while readIndex < len(iqData):
 		samples = iqData[readIndex:readIndex+2048]
 		readIndex += 2048
-		curMag, freqs = magnitude_spectrum(samples, Fs=3000000)
+#		curMag, freqs = magnitude_spectrum(samples, Fs=3000000)
+		curMag, freqs = psd(samples, Fs=3000000)
 		maxSignal = max(curMag)
 
 		noiseWindow.append(maxSignal)
