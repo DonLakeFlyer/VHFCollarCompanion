@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 def main():
 	parser = ArgumentParser(description=__doc__)
-	parser.add_argument("--workDir", help="log directory", default="")
+	parser.add_argument("--workDir", help="log directory", default=".")
 	args = parser.parse_args()
 
 	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
