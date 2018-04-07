@@ -2,11 +2,9 @@ import sys
 import numpy as np
 from matplotlib.mlab import magnitude_spectrum
 from matplotlib.mlab import psd
+from scipy.signal import decimate
 
 def main():
-	rawIntData = np.fromfile("values.dat", dtype=np.dtype(np.int32))
-	iqData = packed_bytes_to_iq(rawIntData)
-
 	noiseWindowLength = 20
 	noiseWindow = [ ]
 
@@ -17,13 +15,20 @@ def main():
 	backgroundNoise = False
 	pulseFound = False
 
+	decimateRate = 16
+	sampleCountFFT = 2048
+
+	rawIntData = np.fromfile("values.dat", dtype=np.dtype(np.int32))
+	iqData = packed_bytes_to_iq(rawIntData)
+
 	f = open("data.csv", "w")
 
 	readIndex = 0
 	pulseFoundNotified = False
 	while readIndex < len(iqData):
-		samples = iqData[readIndex:readIndex+2048]
-		readIndex += 2048
+		samples = iqData[readIndex:readIndex+sampleCountFFT*decimateRate]
+		samples = decimate(samples, decimateRate, ftype='fir')
+		readIndex += len(samples)
 #		curMag, freqs = magnitude_spectrum(samples, Fs=3000000)
 		curMag, freqs = psd(samples, Fs=3000000)
 		maxSignal = max(curMag)

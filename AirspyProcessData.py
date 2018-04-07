@@ -3,14 +3,13 @@ import numpy as np
 from matplotlib.mlab import magnitude_spectrum
 from matplotlib.mlab import psd
 from argparse import ArgumentParser
+from scipy.signal import decimate
 
 def main():
 	parser = ArgumentParser(description=__doc__)
 	parser.add_argument("--workDir", help="log directory", default=".")
+	parser.add_argument("--noCSV", default=False)
 	args = parser.parse_args()
-
-	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
-	iqData = packed_bytes_to_iq(rawIntData)
 
 	# We keep a rolling window of samples for background noise calculation
 	noiseWindowLength = 20
@@ -25,13 +24,24 @@ def main():
 	pulseValues = [ ]
 	minPulseLength = 3
 
+	decimateFactor = 16
+	sampleCountFFT = 2048
+
+	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
+	iqData = packed_bytes_to_iq(rawIntData)
+
 	f = open(args.workDir + "/pulse.dat", "w")
+	csvFile = None
+	if not args.noCSV:
+		csvFile = open(args.workDir + "/pulse.csv", "w")
 
 	readIndex = 0
 	pulseFoundNotified = False
 	while readIndex < len(iqData):
-		samples = iqData[readIndex:readIndex+2048]
-		readIndex += 2048
+		rampUpFound = False
+		samples = iqData[readIndex:readIndex + (sampleCountFFT * decimateFactor)]
+		samples = decimate(samples, decimateFactor, ftype='fir')
+		readIndex += len(samples)
 #		curMag, freqs = magnitude_spectrum(samples, Fs=3000000)
 		curMag, freqs = psd(samples, Fs=3000000)
 		maxSignal = max(curMag)
@@ -48,14 +58,17 @@ def main():
 
 				# Check the last value in the ramp window to the first
 				if rampWindow[rampWindowLength - 1] > rampWindow[0] * rampPercent:
+					rampUpFound = True
 					if len(pulseValues) == 0:
 						# Leading edge of possible pulse
 						pulseValues = [ maxSignal ]
 					else:
+						# In the middle of a possible pulse
 						pulseValues.append(maxSignal)
 				else:
 					pulseLength = len(pulseValues)
 					if pulseLength != 0:
+						# We've fallen of the trailing edge of a possible pulse
 						if pulseLength >= minPulseLength:							
 							pulseAverage = sum(pulseValues) / pulseLength
 							print("True pulse detected pulseAverage:length:backgroundNoise")
@@ -70,7 +83,16 @@ def main():
 							print("False pulse length", pulseLength)
 						pulseValues = [ ]
 
+		csvFile.write(str(maxSignal))
+		csvFile.write(",")
+		csvFile.write(str(backgroundNoise))
+		csvFile.write(",")
+		csvFile.write(str(rampUpFound))
+		csvFile.write("\n")
+
 	f.close()
+	if csvFile:
+		csvFile.close()
 
 def packed_bytes_to_iq(ints):
 	# Assume int16 iq packing

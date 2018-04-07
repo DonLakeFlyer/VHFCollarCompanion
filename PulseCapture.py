@@ -67,7 +67,7 @@ class PulseCapture(Process):
                 break
 
             # Process raw data for pulses
-            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --workDir " + self.workDir)
+            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --noCSV --workDir " + self.workDir)
 
             # Read the processed data and send pulse average if available
             rgPulse = []
