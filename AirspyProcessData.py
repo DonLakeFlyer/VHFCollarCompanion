@@ -35,9 +35,19 @@ def main():
 	if not args.noCSV:
 		csvFile = open(args.workDir + "/pulse.csv", "w")
 
-	readIndex = 0
+	# First calculate on overall background noise for all the data	
+	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
+	curMag, freqs = psd(decimatedSamples, Fs=3000000)
+	backgroundNoise = sum(curMag) / len(curMag)
+	print("Background Noise", backgroundNoise)
+
+	# Data close to start/stop seems to be crap
+	stripCount = sampleCountFFT * 2
+	readIndex = stripCount
+	lastIndex = len(iqData) - stripCount
+
 	pulseFoundNotified = False
-	while readIndex < len(iqData):
+	while readIndex < lastIndex:
 		rampUpFound = False
 		samples = iqData[readIndex:readIndex + (sampleCountFFT * decimateFactor)]
 		samples = decimate(samples, decimateFactor, ftype='fir')
@@ -70,10 +80,10 @@ def main():
 					if pulseLength != 0:
 						# We've fallen of the trailing edge of a possible pulse
 						if pulseLength >= minPulseLength:							
-							pulseAverage = sum(pulseValues) / pulseLength
-							print("True pulse detected pulseAverage:length:backgroundNoise")
-							print(pulseAverage, pulseLength, backgroundNoise)
-							f.write(str(pulseAverage))
+							pulseMax = max(pulseValues)
+							print("True pulse detected pulseMax:length:backgroundNoise")
+							print(pulseMax, pulseLength, backgroundNoise)
+							f.write(str(pulseMax))
 							f.write(",")
 							f.write(str(backgroundNoise))
 							f.write(",")
