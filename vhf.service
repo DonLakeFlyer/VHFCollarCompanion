@@ -1,0 +1,10 @@
+[Unit]
+Description=VHF Collar Companion
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/repos/VHFCollarCompanion/main.py --workDir /home/pi/logs --logDir /home/pi/logs
+
+[Install]
+WantedBy=multi-user.target
