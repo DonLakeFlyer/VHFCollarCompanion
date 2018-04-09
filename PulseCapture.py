@@ -78,11 +78,12 @@ class PulseCapture(Process):
                 for row in reader:
                     rgPulse.append(float(row[0]))
                 if len(rgPulse) > 0:
-                    pulseAvg = sum(rgPulse) / len(rgPulse)
+                    maxPulse = 1000000
+                    pulseMax = min(max(rgPulse), maxPulse)
                     # Change to range of 0 - 100
-                    pulseAvg = int((pulseAvg / 300000.0) * 100.0)
+                    pulseMax = int((pulseMax / maxPulse) * 100.0)
                 else:
                     pulseAvg = 0
-                logging.debug("***** %d %d pulseAvg:len(rgPulse)", pulseAvg, len(rgPulse))
+                logging.debug("***** %d %d pulseMax:len(rgPulse)", pulseMax, len(rgPulse))
                 if self.pulseQueue:
-                    self.pulseQueue.put(pulseAvg)
+                    self.pulseQueue.put(pulseMax)
