@@ -60,6 +60,7 @@ class PulseCapture(Process):
             # Capture 3 seconds worth of data
             commandStr = "airspy_rx -r " + self.workDir + "/values.dat -f {0} -a 3000000 -h {1}  -n 9000000"
             command = commandStr.format(self.freq, self.gain)
+            print(command)
             ret = os.system(command)
             print(ret)
             if ret == 256:
@@ -67,7 +68,7 @@ class PulseCapture(Process):
                 break
 
             # Process raw data for pulses
-            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --noCSV --workDir " + self.workDir)
+            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --noCSV True --workDir " + self.workDir)
 
             # Read the processed data and send pulse average if available
             rgPulse = []

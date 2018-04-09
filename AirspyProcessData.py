@@ -93,12 +93,13 @@ def main():
 							print("False pulse length", pulseLength)
 						pulseValues = [ ]
 
-		csvFile.write(str(maxSignal))
-		csvFile.write(",")
-		csvFile.write(str(backgroundNoise))
-		csvFile.write(",")
-		csvFile.write(str(rampUpFound))
-		csvFile.write("\n")
+		if csvFile:
+			csvFile.write(str(maxSignal))
+			csvFile.write(",")
+			csvFile.write(str(backgroundNoise))
+			csvFile.write(",")
+			csvFile.write(str(rampUpFound))
+			csvFile.write("\n")
 
 	f.close()
 	if csvFile:
