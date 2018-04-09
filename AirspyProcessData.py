@@ -37,23 +37,24 @@ def main():
 
 	# First calculate on overall background noise for all the data	
 	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
-	curMag, freqs = psd(decimatedSamples, Fs=3000000)
-	backgroundNoise = sum(curMag) / len(curMag)
-	print("Background Noise", backgroundNoise)
+	#curMag, freqs = psd(decimatedSamples, Fs=3000000)
+	#backgroundNoise = sum(curMag) / len(curMag)
+	#print("Background Noise", backgroundNoise)
 
 	# Data close to start/stop seems to be crap
 	stripCount = sampleCountFFT * 2
 	readIndex = stripCount
-	lastIndex = len(iqData) - stripCount
+#	lastIndex = len(iqData) - stripCount
+	lastIndex = len(decimatedSamples) - stripCount
 
 	pulseFoundNotified = False
 	while readIndex < lastIndex:
 		rampUpFound = False
-		samples = iqData[readIndex:readIndex + (sampleCountFFT * decimateFactor)]
-		samples = decimate(samples, decimateFactor, ftype='fir')
+#		samples = iqData[readIndex:readIndex + (sampleCountFFT * decimateFactor)]
+#		samples = decimate(samples, decimateFactor, ftype='fir')
+		samples = decimatedSamples[readIndex:readIndex + sampleCountFFT]
 		readIndex += len(samples)
-#		curMag, freqs = magnitude_spectrum(samples, Fs=3000000)
-		curMag, freqs = psd(samples, Fs=3000000)
+		curMag, freqs = psd(samples, Fs=3000000/decimateFactor)
 		maxSignal = max(curMag)
 
 		noiseWindow.append(maxSignal)
