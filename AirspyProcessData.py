@@ -19,7 +19,7 @@ def main():
 	# We keep a rolling to detect the ramping up of a pulse
 	rampWindowLength = 5
 	rampWindow = [ ]
-	rampPercent = 1.2
+	rampPercent = 1.5
 
 	backgroundNoise = False
 	pulseValues = [ ]
@@ -56,8 +56,9 @@ def main():
 #		samples = decimate(samples, decimateFactor, ftype='fir')
 		samples = decimatedSamples[readIndex:readIndex + sampleCountFFT]
 		readIndex += len(samples)
-		curMag, freqs = magnitude_spectrum(samples, Fs=3000000, window=window_hanning)
-		maxSignal = max(curMag)
+		curMag, freqs = psd(samples, Fs=3000000)
+		centerMag = curMag[125:131]
+		maxSignal = max(centerMag)
 
 		noiseWindow.append(maxSignal)
 		if len(noiseWindow) > noiseWindowLength:
@@ -75,6 +76,13 @@ def main():
 					if len(pulseValues) == 0:
 						# Leading edge of possible pulse
 						pulseValues = [ maxSignal ]
+						#print(freqs[124], freqs[133])
+						#file = open(args.workDir + "/single.csv", "w")
+						#for value in curMag:
+						#	file.write(str(value))
+						#	file.write("\n")
+						#file.close()
+						#return
 					else:
 						# In the middle of a possible pulse
 						pulseValues.append(maxSignal)
