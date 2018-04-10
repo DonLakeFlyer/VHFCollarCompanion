@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from matplotlib.mlab import magnitude_spectrum
 from matplotlib.mlab import psd
+from matplotlib.mlab import window_hanning
 from argparse import ArgumentParser
 from scipy.signal import decimate
 
@@ -24,8 +25,8 @@ def main():
 	pulseValues = [ ]
 	minPulseLength = 3
 
-	decimateFactor = 16
-	sampleCountFFT = 2048
+	decimateFactor = 1
+	sampleCountFFT = 1024
 
 	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
@@ -36,7 +37,8 @@ def main():
 		csvFile = open(args.workDir + "/pulse.csv", "w")
 
 	# First calculate on overall background noise for all the data	
-	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
+	#decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
+	decimatedSamples = iqData
 	#curMag, freqs = psd(decimatedSamples, Fs=3000000)
 	#backgroundNoise = sum(curMag) / len(curMag)
 	#print("Background Noise", backgroundNoise)
@@ -54,7 +56,7 @@ def main():
 #		samples = decimate(samples, decimateFactor, ftype='fir')
 		samples = decimatedSamples[readIndex:readIndex + sampleCountFFT]
 		readIndex += len(samples)
-		curMag, freqs = psd(samples, Fs=3000000/decimateFactor)
+		curMag, freqs = magnitude_spectrum(samples, Fs=3000000, window=window_hanning)
 		maxSignal = max(curMag)
 
 		noiseWindow.append(maxSignal)
