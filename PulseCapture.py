@@ -83,7 +83,7 @@ class PulseCapture(Process):
                     # Change to range of 0 - 100
                     pulseMax = int((pulseMax / maxPulse) * 100.0)
                 else:
-                    pulseAvg = 0
+                    pulseMax = 0
                 logging.debug("***** %d %d pulseMax:len(rgPulse)", pulseMax, len(rgPulse))
                 if self.pulseQueue:
                     self.pulseQueue.put(pulseMax)
