@@ -26,6 +26,7 @@ def main():
 
 	decimateFactor = 16
 	sampleCountFFT = 2048
+	sampleRate = 3000000
 
 	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
@@ -37,9 +38,6 @@ def main():
 
 	# First calculate on overall background noise for all the data	
 	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
-	#curMag, freqs = psd(decimatedSamples, Fs=3000000)
-	#backgroundNoise = sum(curMag) / len(curMag)
-	#print("Background Noise", backgroundNoise)
 
 	# Data close to start/stop seems to be crap
 	stripCount = sampleCountFFT * 2
@@ -54,7 +52,7 @@ def main():
 #		samples = decimate(samples, decimateFactor, ftype='fir')
 		samples = decimatedSamples[readIndex:readIndex + sampleCountFFT]
 		readIndex += len(samples)
-		curMag, freqs = psd(samples, Fs=3000000/decimateFactor)
+		curMag, freqs = psd(samples, Fs=sampleRate/decimateFactor)
 		maxSignal = max(curMag)
 
 		noiseWindow.append(maxSignal)
