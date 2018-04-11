@@ -12,7 +12,7 @@ def main():
 	args = parser.parse_args()
 
 	# We keep a rolling window of samples for background noise calculation
-	noiseWindowLength = 20
+	noiseWindowLength = 5
 	noiseWindow = [ ]
 
 	# We keep a rolling to detect the ramping up of a pulse
@@ -40,7 +40,7 @@ def main():
 	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
 
 	# Data close to start/stop seems to be crap
-	stripCount = sampleCountFFT * 2
+	stripCount = 0
 	readIndex = stripCount
 #	lastIndex = len(iqData) - stripCount
 	lastIndex = len(decimatedSamples) - stripCount
@@ -60,37 +60,29 @@ def main():
 			noiseWindow.pop(0)
 			# Background noise is the average of the current noise sample window
 			backgroundNoise = sum(noiseWindow) / noiseWindowLength
-			rampWindow.append(backgroundNoise)
 
-			if len(rampWindow) > rampWindowLength:
-				rampWindow.pop(0)
-
-				# Check the last value in the ramp window to the first
-				if rampWindow[rampWindowLength - 1] > rampWindow[0] * rampPercent:
-					rampUpFound = True
-					if len(pulseValues) == 0:
-						# Leading edge of possible pulse
-						pulseValues = [ maxSignal ]
-					else:
-						# In the middle of a possible pulse
-						pulseValues.append(maxSignal)
+			# Check the last value in the ramp window to the first
+			if maxSignal > backgroundNoise * 2:
+				rampUpFound = True
+				if len(pulseValues) == 0:
+					# Leading edge of possible pulse
+					pulseValues = [ maxSignal ]
 				else:
-					pulseLength = len(pulseValues)
-					if pulseLength != 0:
-						# We've fallen of the trailing edge of a possible pulse
-						if pulseLength >= minPulseLength:							
-							pulseMax = max(pulseValues)
-							print("True pulse detected pulseMax:length:backgroundNoise")
-							print(pulseMax, pulseLength, backgroundNoise)
-							f.write(str(pulseMax))
-							f.write(",")
-							f.write(str(backgroundNoise))
-							f.write(",")
-							f.write(str(pulseLength))
-							f.write("\n")
-						else:
-							print("False pulse length", pulseLength)
-						pulseValues = [ ]
+					# In the middle of a possible pulse
+					pulseValues.append(maxSignal)
+			else:
+				pulseLength = len(pulseValues)
+				if pulseLength != 0:
+					pulseMax = max(pulseValues)
+					print("True pulse detected pulseMax:length:backgroundNoise")
+					print(pulseMax, pulseLength, backgroundNoise)
+					f.write(str(pulseMax))
+					f.write(",")
+					f.write(str(backgroundNoise))
+					f.write(",")
+					f.write(str(pulseLength))
+					f.write("\n")
+				pulseValues = [ ]
 
 		if csvFile:
 			csvFile.write(str(maxSignal))
