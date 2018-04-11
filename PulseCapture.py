@@ -78,7 +78,7 @@ class PulseCapture(Process):
                 for row in reader:
                     rgPulse.append(float(row[0]))
                 if len(rgPulse) > 0:
-                    maxPulse = 8000000
+                    maxPulse = 2000000
                     pulseMax = min(max(rgPulse), maxPulse)
                     # Change to range of 0 - 100
                     pulseMax = int((pulseMax / maxPulse) * 100.0)
