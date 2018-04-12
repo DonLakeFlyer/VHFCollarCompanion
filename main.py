@@ -27,6 +27,7 @@ def main():
 	parser.add_argument("--freq", type=int, default=146)
 	args = parser.parse_args()
 
+	CollarLogging.pruneLogs(args.logDir)
 	CollarLogging.setupLogging(args.logDir)
 
 	tools = Tools.Tools()

@@ -1,7 +1,8 @@
 import time
 import logging
-import os
+import subprocess
 import csv
+import AirspyProcessData
 
 from multiprocessing import Process
 from queue import Queue
@@ -58,17 +59,16 @@ class PulseCapture(Process):
             #os.remove("pulse.dat")
 
             # Capture 3 seconds worth of data
-            commandStr = "airspy_rx -r " + self.workDir + "/values.dat -f {0} -a 3000000 -h {1}  -n 9000000"
-            command = commandStr.format(self.freq, self.gain)
-            print(command)
-            ret = os.system(command)
-            print(ret)
-            if ret == 256:
-                logging.debug("airspy_rx returned error %d", ret)
-                break
+            airspyArgs = [ "airspy_rx", "-r ", self.workDir, "/values.dat", "-f", str(self.freq), "-a", "3000000", "-h", str(self.gain), "-n", "9000000" ]
+            try:
+                subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
+            except subprocess.CalledProcessError as e:
+                logging.debug("airspy_rx failed")
+                logging.debug(e.output)
+                return
 
             # Process raw data for pulses
-            os.system("/usr/bin/python3 " + self.pyDir + "/AirspyProcessData.py --noCSV True --workDir " + self.workDir)
+            AirspyProcessData.processValuesFile(self.workDir, True)
 
             # Read the processed data and send pulse average if available
             rgPulse = []

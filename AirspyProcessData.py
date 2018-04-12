@@ -10,7 +10,9 @@ def main():
 	parser.add_argument("--workDir", help="log directory", default=".")
 	parser.add_argument("--noCSV", default=False)
 	args = parser.parse_args()
+	processValuesFile(args.workDir, args.noCSV)
 
+def processValuesFile(workDir, noCSV):
 	# We keep a rolling window of samples for background noise calculation
 	noiseWindowLength = 5
 	noiseWindow = [ ]
@@ -28,13 +30,13 @@ def main():
 	sampleCountFFT = 2048
 	sampleRate = 3000000
 
-	rawIntData = np.fromfile(args.workDir + "/values.dat", dtype=np.dtype(np.int32))
+	rawIntData = np.fromfile(workDir + "/values.dat", dtype=np.dtype(np.int32))
 	iqData = packed_bytes_to_iq(rawIntData)
 
-	f = open(args.workDir + "/pulse.dat", "w")
+	f = open(workDir + "/pulse.dat", "w")
 	csvFile = None
-	if not args.noCSV:
-		csvFile = open(args.workDir + "/pulse.csv", "w")
+	if not noCSV:
+		csvFile = open(workDir + "/pulse.csv", "w")
 
 	# First calculate on overall background noise for all the data	
 	decimatedSamples = decimate(iqData, decimateFactor, ftype='fir')
