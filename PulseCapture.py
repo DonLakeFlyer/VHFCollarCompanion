@@ -3,6 +3,7 @@ import logging
 import subprocess
 import csv
 import AirspyProcessData
+import math
 
 from multiprocessing import Process
 from queue import Queue
@@ -62,10 +63,9 @@ class PulseCapture(Process):
             mixerGain = 15
             lnaGain = 0
 
-
             # Capture 3 seconds worth of data
             airspyArgs = [ "airspy_rx", 
-                            "-r ", self.workDir + "/values.dat", 
+                            "-r", self.workDir + "/values.dat", 
                             "-f", str(self.freq), 
                             "-a", str(sampleRate),
                             "-v", str(ifGain), 
@@ -74,13 +74,15 @@ class PulseCapture(Process):
                             "-b", str(biasTee), 
                             #"-h", str(self.gain), 
                             "-n", str(sampleCount) ]
+#            print(airspyArgs)
             try:
-#                subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
-                subprocess.check_output(airspyArgs, universal_newlines=True)
+                subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
+#                subprocess.check_output(airspyArgs, universal_newlines=True)
             except subprocess.CalledProcessError as e:
                 logging.debug("airspy_rx failed")
                 logging.debug(e.output)
                 return
+#            return
 
             # Process raw data for pulses
             AirspyProcessData.processValuesFile(self.workDir, True)
@@ -92,10 +94,12 @@ class PulseCapture(Process):
                 for row in reader:
                     rgPulse.append(float(row[0]))
                 if len(rgPulse) > 0:
-                    maxPulse = 2000000
-                    pulseMax = min(max(rgPulse), maxPulse)
+#                    maxPulse = 2000000
+                     pulseMax = max(rgPulse)
+#                    pulseMax = min(pulseMax, maxPulse)
                     # Change to range of 0 - 100
-                    pulseMax = int((pulseMax / maxPulse) * 100.0)
+#                    pulseMax = int((pulseMax / maxPulse) * 100.0)
+                     pulseMax = math.ceil(pulseMax)
                 else:
 
                     pulseMax = 0
