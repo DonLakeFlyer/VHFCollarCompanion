@@ -55,11 +55,25 @@ class PulseCapture(Process):
             self.processGainQueue()
             self.processAmpQueue()
 
-            #os.remove("values.dat")
-            #os.remove("pulse.dat")
+            sampleRate = 3000000
+            sampleCount = 9000000
+            biasTee = 1
+            ifGain = 5
+            mixerGain = 15
+            lnaGain = 0
+
 
             # Capture 3 seconds worth of data
-            airspyArgs = [ "airspy_rx", "-r ", self.workDir, "/values.dat", "-f", str(self.freq), "-a", "3000000", "-h", str(self.gain), "-n", "9000000" ]
+            airspyArgs = [ "airspy_rx", 
+                            "-r ", self.workDir, "/values.dat", 
+                            "-f", str(self.freq), 
+                            "-a", str(sampleRate),
+                            "-v", str(ifGain), 
+                            "-m", str(mixerGain), 
+                            "-l", str(lnaGain), 
+                            "-b", str(biasTee), 
+                            #"-h", str(self.gain), 
+                            "-n", str(sampleCount) ]
             try:
                 subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
             except subprocess.CalledProcessError as e:
@@ -73,7 +87,6 @@ class PulseCapture(Process):
             # Read the processed data and send pulse average if available
             rgPulse = []
             with open(self.workDir + "/pulse.dat") as csvfile:
-                print("Here")
                 reader = csv.reader(csvfile)
                 for row in reader:
                     rgPulse.append(float(row[0]))
@@ -83,6 +96,7 @@ class PulseCapture(Process):
                     # Change to range of 0 - 100
                     pulseMax = int((pulseMax / maxPulse) * 100.0)
                 else:
+
                     pulseMax = 0
                 logging.debug("***** %d %d pulseMax:len(rgPulse)", pulseMax, len(rgPulse))
                 if self.pulseQueue:
