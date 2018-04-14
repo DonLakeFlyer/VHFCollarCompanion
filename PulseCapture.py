@@ -75,7 +75,8 @@ class PulseCapture(Process):
                             #"-h", str(self.gain), 
                             "-n", str(sampleCount) ]
             try:
-                subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
+#                subprocess.check_output(airspyArgs, stderr=subprocess.STDOUT, universal_newlines=True)
+                subprocess.check_output(airspyArgs, universal_newlines=True)
             except subprocess.CalledProcessError as e:
                 logging.debug("airspy_rx failed")
                 logging.debug(e.output)
