@@ -65,7 +65,7 @@ class PulseCapture(Process):
 
             # Capture 3 seconds worth of data
             airspyArgs = [ "airspy_rx", 
-                            "-r ", self.workDir, "/values.dat", 
+                            "-r ", self.workDir + "/values.dat", 
                             "-f", str(self.freq), 
                             "-a", str(sampleRate),
                             "-v", str(ifGain), 
