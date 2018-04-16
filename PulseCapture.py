@@ -61,6 +61,7 @@ class PulseCapture(Process):
             ifGain = 5
             mixerGain = 15
             lnaGain = 0
+            firstAirspyCall = True
 
 
             # Capture 3 seconds worth of data
@@ -80,7 +81,9 @@ class PulseCapture(Process):
             except subprocess.CalledProcessError as e:
                 logging.debug("airspy_rx failed")
                 logging.debug(e.output)
-                return
+                if firstAirspyCall:
+                    return
+                firstAirspyCall = False
 
             # Process raw data for pulses
             AirspyProcessData.processValuesFile(self.workDir, True)
