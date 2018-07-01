@@ -1,4 +1,5 @@
 import sys
+import math
 import numpy as np
 from matplotlib.mlab import magnitude_spectrum
 from matplotlib.mlab import psd
@@ -10,9 +11,14 @@ def main():
 	parser.add_argument("--workDir", help="log directory", default=".")
 	parser.add_argument("--noCSV", default=False)
 	args = parser.parse_args()
-	processValuesFile(args.workDir, args.noCSV)
+	processValuesFile(args.workDir, args.noCSV, 2)
+	processValuesFile(args.workDir, args.noCSV, 4)
+	processValuesFile(args.workDir, args.noCSV, 8)
+	processValuesFile(args.workDir, args.noCSV, 16)
+	processValuesFile(args.workDir, args.noCSV, 32)
+	processValuesFile(args.workDir, args.noCSV, 64)
 
-def processValuesFile(workDir, noCSV):
+def processValuesFile(workDir, noCSV, decimateFactor):
 	# We keep a rolling window of samples for background noise calculation
 	noiseWindowLength = 5
 	noiseWindow = [ ]
@@ -26,12 +32,22 @@ def processValuesFile(workDir, noCSV):
 	pulseValues = [ ]
 	minPulseLength = 3
 
-	decimateFactor = 16
-	sampleCountFFT = 2048
-	sampleRate = 3000000
+	#decimateFactor = 16
+	fftSize = 512
 
-	rawIntData = np.fromfile(workDir + "/values.dat", dtype=np.dtype(np.int32))
-	iqData = packed_bytes_to_iq(rawIntData)
+	sampleRate = 3000000
+	decimatedSampleRate = sampleRate / decimateFactor
+	decimatedSampleRatePerMsec = decimatedSampleRate / 1000
+
+	pulseDurationMsecs = 15
+	sampleCountPSD = int(math.ceil(pulseDurationMsecs * decimatedSampleRatePerMsec))
+	secsPerPSDSample = sampleCountPSD * (1 / decimatedSampleRate)
+	print("***decimateFactor", decimateFactor, "psd sample count", sampleCountPSD)
+
+	#rawIntData = np.fromfile(workDir + "/values.dat", dtype=np.dtype(np.int32))
+	#iqData = packed_bytes_int16_to_iq(rawIntData)
+
+	iqData = np.fromfile(workDir + "/values.dat", dtype=np.dtype(np.complex64))
 
 	f = open(workDir + "/pulse.dat", "w")
 	csvFile = None
@@ -48,14 +64,18 @@ def processValuesFile(workDir, noCSV):
 	lastIndex = len(decimatedSamples) - stripCount
 
 	pulseFoundNotified = False
+	loopIndex = 1
+	rgPulseTimes = [ ]
 	while readIndex < lastIndex:
 		rampUpFound = False
 #		samples = iqData[readIndex:readIndex + (sampleCountFFT * decimateFactor)]
 #		samples = decimate(samples, decimateFactor, ftype='fir')
-		samples = decimatedSamples[readIndex:readIndex + sampleCountFFT]
+		samples = decimatedSamples[readIndex:readIndex + sampleCountPSD]
 		readIndex += len(samples)
-		curMag, freqs = psd(samples, Fs=sampleRate/decimateFactor)
+		curMag, freqs = psd(samples, Fs=sampleRate/decimateFactor, NFFT=fftSize)
+		#curMag = 10*np.log10(curMag)
 		maxSignal = max(curMag)
+		#print(maxSignal)
 
 		noiseWindow.append(maxSignal)
 		if len(noiseWindow) > noiseWindowLength:
@@ -76,8 +96,10 @@ def processValuesFile(workDir, noCSV):
 				pulseLength = len(pulseValues)
 				if pulseLength != 0:
 					pulseMax = max(pulseValues)
-					print("True pulse detected pulseMax:length:backgroundNoise")
-					print(pulseMax, pulseLength, backgroundNoise)
+					pulseTime = loopIndex*secsPerPSDSample
+					rgPulseTimes.append(pulseTime)
+					print("True pulse detected pulseMax:msecs:length:backgroundNoise")
+					print(pulseMax, pulseTime, pulseLength, backgroundNoise)
 					f.write(str(pulseMax))
 					f.write(",")
 					f.write(str(backgroundNoise))
@@ -94,14 +116,32 @@ def processValuesFile(workDir, noCSV):
 			csvFile.write(str(rampUpFound))
 			csvFile.write("\n")
 
+		loopIndex = loopIndex + 1
+
+
 	f.close()
 	if csvFile:
 		csvFile.close()
 
-def packed_bytes_to_iq(ints):
-	# Assume int16 iq packing
+	avgInterval = 0
+	if len(rgPulseTimes) > 1:
+		intervalSum = 0
+		for i in range(0, len(rgPulseTimes)-1):
+			intervalSum = intervalSum + (rgPulseTimes[i+1] - rgPulseTimes[i])
+		avgInterval = intervalSum / (len(rgPulseTimes) - 1)
+
+	print ("----pulse count", len(rgPulseTimes), "avg interval", avgInterval)
+
+def packed_bytes_int16_to_iq(ints):
     iq = np.empty(len(ints)//2, 'complex')
     iq.real, iq.imag = ints[::2], ints[1::2]
+    iq /= (32768/2)
+    iq -= (1 + 1j)
+    return iq
+
+def packed_bytes_float32_to_iq(floats):
+    iq = np.empty(len(ints)//2, 'complex')
+    iq.real, iq.imag = floats[::4], floats[1::4]
     iq /= (32768/2)
     iq -= (1 + 1j)
     return iq
