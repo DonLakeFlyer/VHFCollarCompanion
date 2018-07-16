@@ -1,0 +1,576 @@
+<?xml version='1.0' encoding='utf-8'?>
+<?grc format='1' created='3.7.9'?>
+<flow_graph>
+  <timestamp>Wed Mar 15 19:29:45 2017</timestamp>
+  <block>
+    <key>options</key>
+    <param>
+      <key>author</key>
+      <value></value>
+    </param>
+    <param>
+      <key>window_size</key>
+      <value>3072,1024</value>
+    </param>
+    <param>
+      <key>category</key>
+      <value>[GRC Hier Blocks]</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>description</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 8)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>generate_options</key>
+      <value>no_gui</value>
+    </param>
+    <param>
+      <key>hier_block_src_path</key>
+      <value>.:</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>PulseDetectCmdLine</value>
+    </param>
+    <param>
+      <key>max_nouts</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>qt_qss_theme</key>
+      <value></value>
+    </param>
+    <param>
+      <key>realtime_scheduling</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>run_command</key>
+      <value>{python} -u {filename}</value>
+    </param>
+    <param>
+      <key>run_options</key>
+      <value>prompt</value>
+    </param>
+    <param>
+      <key>run</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>thread_safe_setters</key>
+      <value></value>
+    </param>
+    <param>
+      <key>title</key>
+      <value></value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(328, 93)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>final_samp_rate</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>samp_rate/total_decimation</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(200, 93)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>total_decimation</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>4*8*8</value>
+    </param>
+  </block>
+  <block>
+    <key>epy_block</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_io_cache</key>
+      <value>('Embedded Python Block', 'blk', [('sample_rate', '0')], [('0', 'float')], [('0', 'float')], '')</value>
+    </param>
+    <param>
+      <key>_source_code</key>
+      <value>"""
+Embedded Python Blocks:
+
+Each this file is saved, GRC will instantiate the first class it finds to get
+ports and parameters of your block. The arguments to __init__  will be the
+parameters. All of them are required to have default values!
+"""
+import socket
+import struct
+import numpy as np
+from gnuradio import gr
+
+class blk(gr.sync_block):
+    def __init__(self, sample_rate=0):  # only default arguments here
+        gr.sync_block.__init__(
+            self,
+            name='Embedded Python Block',
+            in_sig=[np.float32],
+            out_sig=[np.float32]
+        )
+
+	self.sample_rate = sample_rate
+	self.noiseWindowLength = sample_rate * 2
+	self.noiseWindow = int(self.noiseWindowLength) * [ None ]
+	self.noiseWindowIndex = 0
+	self.noiseWindowFull = False
+	self.noiseWindowSum = 0
+	self.sampleCount = 0
+	self.lastPulseSeconds = 0
+	self.pulseMax = 0
+	self.pulseSampleCount = 0
+	self.pulseTriggerValue = 0
+	self.skipTrailingEdge = 0
+	self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	self.udpAddress = ('localhost', 10000)
+	#self.sock.bind(self.udpAddress)
+
+    def work(self, input_items, output_items):
+	for pulseValue in input_items[0]:
+		self.sampleCount = self.sampleCount + 1
+		lastSampleSeconds = self.sampleCount / self.sample_rate
+
+		previousValue = self.noiseWindow[self.noiseWindowIndex]
+		self.noiseWindowSum = self.noiseWindowSum + pulseValue
+		self.noiseWindow[self.noiseWindowIndex] = pulseValue
+		self.noiseWindowIndex = self.noiseWindowIndex + 1
+		if self.noiseWindowFull:
+			self.noiseWindowSum = self.noiseWindowSum - previousValue
+		if self.noiseWindowIndex &gt;= self.noiseWindowLength:
+			self.noiseWindowIndex = 0
+			self.noiseWindowFull = True
+
+		if self.skipTrailingEdge &gt; 0:
+			self.skipTrailingEdge = self.skipTrailingEdge - 1
+			continue
+
+		if self.noiseWindowFull:
+			# Background noise is the average of the current noise sample window
+			backgroundNoise = self.noiseWindowSum / self.noiseWindowLength
+			#print(backgroundNoise, pulseValue)
+			#self.loopIndex = loopIndex + 1
+			#continue
+
+			pulseTriggered = False
+			if self.pulseSampleCount != 0:
+				if pulseValue &gt;= self.pulseTriggerValue:
+					pulseTriggered = True
+			else: 
+				if pulseValue &gt; backgroundNoise * 5:
+					self.pulseTriggerValue = pulseValue
+					pulseTriggered = True
+
+			if pulseTriggered:
+				self.pulseSampleCount = self.pulseSampleCount + 1
+				if pulseValue &gt; self.pulseMax:
+					self.pulseMax = pulseValue
+			elif self.pulseSampleCount != 0:
+				self.lastPulseSeconds = lastSampleSeconds
+				self.sock.sendto(struct.pack('&lt;ff', lastSampleSeconds, self.pulseMax), self.udpAddress)
+				print("True pulse detected pulseMax:secs:length:backgroundNoise")
+				print(self.pulseMax, self.lastPulseSeconds, self.pulseSampleCount / self.sample_rate * 1000, backgroundNoise)
+				self.pulseSampleCount = 0
+				self.pulseMax = 0
+				self.skipTrailingEdge = self.sample_rate / (1000 / 15)
+
+		if lastSampleSeconds &gt; self.lastPulseSeconds + 2.1:
+			self.lastPulseSeconds = lastSampleSeconds
+			self.sock.sendto(struct.pack('&lt;ff', lastSampleSeconds, 0), self.udpAddress)
+			print("No pulse for 2.1 seconds")
+
+        output_items[0][:] = input_items[0]
+        return len(output_items[0])
+</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(272, 268)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>GRCEmbeddedPulseDetect</value>
+    </param>
+    <param>
+      <key>sample_rate</key>
+      <value>final_samp_rate</value>
+    </param>
+  </block>
+  <block>
+    <key>PulseDetectBase</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>freq_shift</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(16, 249)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>PulseDetectBase</value>
+    </param>
+    <param>
+      <key>lna_gain</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>mixer_gain</key>
+      <value>10</value>
+    </param>
+    <param>
+      <key>wnT</key>
+      <value>math.pi/4.0*0+0.635</value>
+    </param>
+    <param>
+      <key>pulse_freq</key>
+      <value>pulse_freq</value>
+    </param>
+    <param>
+      <key>vga_gain</key>
+      <value>15</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(280, 409)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(568, 273)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(200, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_0</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>import math</value>
+    </param>
+  </block>
+  <block>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(304, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_0_0</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>import cmath</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 102)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pulse_freq</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>146e6</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(104, 102)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>samp_rate</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>6e6</value>
+    </param>
+  </block>
+  <connection>
+    <source_block_id>GRCEmbeddedPulseDetect</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>PulseDetectBase</source_block_id>
+    <sink_block_id>GRCEmbeddedPulseDetect</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>PulseDetectBase</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_0</sink_block_id>
+    <source_key>1</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+</flow_graph>

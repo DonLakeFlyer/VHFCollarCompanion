@@ -1,6 +1,6 @@
 import Tools
 import MavlinkThread
-import PulseCapture
+import PulseCaptureUDP
 import PulseDetectorSimulator
 import Vehicle
 import DirectionFinder
@@ -51,7 +51,7 @@ def main():
 		pulseCapture = PulseDetectorSimulator.PulseDetectorSimulator(tools)
 		pulseCapture.start()
 	else:
-		pulseCapture = PulseCapture.PulseCapture(tools)
+		pulseCapture = PulseCaptureUDP.PulseCaptureUDP(tools)
 		pulseCapture.start()
 
 	tools.setAmpQueue.put(args.amp)
