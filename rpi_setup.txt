@@ -4,10 +4,15 @@ sudo kill ### - kill process
 sudo if config - show ip address
 
 # GNU Radio Install
+
 sudo apt-get install gnuradio
 
 # Custom AirSpy GNU Radio plugin
+
 https://osmocom.org/projects/gr-osmosdr/wiki
+
+sudo apt-get install cmake libairspy0 libairspy-dev swig
+
 cd ~/repos
 git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
 cd gr-airspysdr
@@ -18,9 +23,8 @@ make
 sudo make install
 sudo ldconfig
 
-# Service install
-
 # LCD setup - config.txt file on SD Card
+
 max_usb_current=1
 hdmi_group=2
 hdmi_mode=1
@@ -28,5 +32,8 @@ hdmi_mode=87
 hdmi_cvt 800 480 60 6 0 0 0
 
 # Turn on UART?
+
 enable_uart=1
+
+# Service install
 
