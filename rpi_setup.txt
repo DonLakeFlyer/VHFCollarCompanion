@@ -1,0 +1,32 @@
+Editor - nano
+ps aux - list processes
+sudo kill ### - kill process
+sudo if config - show ip address
+
+# GNU Radio Install
+sudo apt-get install gnuradio
+
+# Custom AirSpy GNU Radio plugin
+https://osmocom.org/projects/gr-osmosdr/wiki
+cd ~/repos
+git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
+cd gr-airspysdr
+mkdir build
+cd build/
+cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
+make
+sudo make install
+sudo ldconfig
+
+# Service install
+
+# LCD setup - config.txt file on SD Card
+max_usb_current=1
+hdmi_group=2
+hdmi_mode=1
+hdmi_mode=87
+hdmi_cvt 800 480 60 6 0 0 0
+
+# Turn on UART?
+enable_uart=1
+
