@@ -2486,7 +2486,7 @@
     </param>
     <param>
       <key>args</key>
-      <value></value>
+      <value>airspy,bias=1</value>
     </param>
     <param>
       <key>_enabled</key>
