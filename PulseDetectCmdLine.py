@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectcmdline
-# Generated: Fri Jul  6 15:22:46 2018
+# Generated: Wed Aug  1 13:17:00 2018
 ##################################################
 
 import os
@@ -24,7 +24,7 @@ import math
 
 class PulseDetectCmdLine(gr.top_block):
 
-    def __init__(self, pulse_freq=146e6, samp_rate=6e6):
+    def __init__(self, pulse_freq=146e6, samp_rate=3e6):
         gr.top_block.__init__(self, "Pulsedetectcmdline")
 
         ##################################################
@@ -52,7 +52,7 @@ class PulseDetectCmdLine(gr.top_block):
             vga_gain=15,
             wnT=math.pi/4.0*0+0.635,
         )
-        self.GRCEmbeddedPulseDetect = blk(sample_rate=final_samp_rate)
+        self.GRCEmbeddedPulseDetect = blk(sample_rate=samp_rate)
 
         ##################################################
         # Connections
@@ -95,7 +95,7 @@ def argument_parser():
         "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
         help="Set pulse_freq [default=%default]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(6e6),
+        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
         help="Set samp_rate [default=%default]")
     return parser
 

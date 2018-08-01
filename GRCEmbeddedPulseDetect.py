@@ -20,68 +20,48 @@ class blk(gr.sync_block):
         )
 
 	self.sample_rate = sample_rate
-	self.noiseWindowLength = sample_rate * 2
-	self.noiseWindow = int(self.noiseWindowLength) * [ None ]
-	self.noiseWindowIndex = 0
-	self.noiseWindowFull = False
-	self.noiseWindowSum = 0
+	self.backgroundNoise = 1000
+	self.snrThreshold = 5
 	self.sampleCount = 0
 	self.lastPulseSeconds = 0
 	self.pulseMax = 0
 	self.pulseSampleCount = 0
 	self.pulseTriggerValue = 0
-	self.skipTrailingEdge = 0
 	self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	self.udpAddress = ('localhost', 10000)
 	#self.sock.bind(self.udpAddress)
+
+    def adjustBackgroundNoise(self, strength):
+        self.backgroundNoise = (self.backgroundNoise * 0.99) + (strength * 0.01)
 
     def work(self, input_items, output_items):
 	for pulseValue in input_items[0]:
 		self.sampleCount = self.sampleCount + 1
 		lastSampleSeconds = self.sampleCount / self.sample_rate
 
-		previousValue = self.noiseWindow[self.noiseWindowIndex]
-		self.noiseWindowSum = self.noiseWindowSum + pulseValue
-		self.noiseWindow[self.noiseWindowIndex] = pulseValue
-		self.noiseWindowIndex = self.noiseWindowIndex + 1
-		if self.noiseWindowFull:
-			self.noiseWindowSum = self.noiseWindowSum - previousValue
-		if self.noiseWindowIndex >= self.noiseWindowLength:
-			self.noiseWindowIndex = 0
-			self.noiseWindowFull = True
+		pulseTriggered = False
+		if self.pulseSampleCount != 0:
+			if pulseValue >= self.pulseTriggerValue:
+				pulseTriggered = True
+		else: 
+			if pulseValue > self.backgroundNoise * self.snrThreshold:
+				self.pulseTriggerValue = pulseValue
+				pulseTriggered = True
 
-		if self.skipTrailingEdge > 0:
-			self.skipTrailingEdge = self.skipTrailingEdge - 1
-			continue
-
-		if self.noiseWindowFull:
-			# Background noise is the average of the current noise sample window
-			backgroundNoise = self.noiseWindowSum / self.noiseWindowLength
-			#print(backgroundNoise, pulseValue)
-			#self.loopIndex = loopIndex + 1
-			#continue
-
-			pulseTriggered = False
-			if self.pulseSampleCount != 0:
-				if pulseValue >= self.pulseTriggerValue:
-					pulseTriggered = True
-			else: 
-				if pulseValue > backgroundNoise * 5:
-					self.pulseTriggerValue = pulseValue
-					pulseTriggered = True
-
-			if pulseTriggered:
-				self.pulseSampleCount = self.pulseSampleCount + 1
-				if pulseValue > self.pulseMax:
-					self.pulseMax = pulseValue
-			elif self.pulseSampleCount != 0:
-				self.lastPulseSeconds = lastSampleSeconds
-				self.sock.sendto(struct.pack('<ff', lastSampleSeconds, self.pulseMax), self.udpAddress)
-				print("True pulse detected pulseMax:secs:length:backgroundNoise")
-				print(self.pulseMax, self.lastPulseSeconds, self.pulseSampleCount / self.sample_rate * 1000, backgroundNoise)
-				self.pulseSampleCount = 0
-				self.pulseMax = 0
-				self.skipTrailingEdge = self.sample_rate / (1000 / 15)
+		if pulseTriggered:
+			self.pulseSampleCount = self.pulseSampleCount + 1
+			if pulseValue > self.pulseMax:
+				self.pulseMax = pulseValue
+		elif self.pulseSampleCount != 0:
+			self.lastPulseSeconds = lastSampleSeconds
+			self.sock.sendto(struct.pack('<ff', lastSampleSeconds, self.pulseMax), self.udpAddress)
+			print("True pulse detected pulseMax:secs:length:backgroundNoise")
+			print(self.pulseMax, self.lastPulseSeconds, self.pulseSampleCount / self.sample_rate * 1000, self.backgroundNoise)
+			self.pulseSampleCount = 0
+			self.pulseMax = 0
+			self.skipTrailingEdge = self.sample_rate / (1000 / 15)
+		else:
+			self.adjustBackgroundNoise(pulseValue)
 
 		if lastSampleSeconds > self.lastPulseSeconds + 2.1:
 			self.lastPulseSeconds = lastSampleSeconds
