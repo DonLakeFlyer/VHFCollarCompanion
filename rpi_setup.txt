@@ -31,6 +31,14 @@ hdmi_mode=1
 hdmi_mode=87
 hdmi_cvt 800 480 60 6 0 0 0
 
+# SITL testing
+
+make posix gazebo_typhoon_h480
+python3 main.py --sitl True
+
+Modify posix-configs/SITL/init/ekf2/typhoon_h480
+mavlink start -x -u 14557 -r 4000000 -m onboard -o 14540 -f
+
 # Turn on UART?
 
 enable_uart=1
