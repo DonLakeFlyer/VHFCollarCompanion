@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectcmdline
-# Generated: Wed Aug  1 14:16:25 2018
+# Generated: Fri Aug  3 08:08:17 2018
 ##################################################
 
 import os
@@ -52,7 +52,7 @@ class PulseDetectCmdLine(gr.top_block):
             vga_gain=15,
             wnT=math.pi/4.0*0+0.635,
         )
-        self.GRCEmbeddedPulseDetect = blk(sample_rate=samp_rate)
+        self.GRCEmbeddedPulseDetect = blk(sample_rate=final_samp_rate)
 
         ##################################################
         # Connections

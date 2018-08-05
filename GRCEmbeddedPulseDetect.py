@@ -32,6 +32,9 @@ class blk(gr.sync_block):
 	self.udpAddress = ('localhost', 10000)
 	#self.sock.bind(self.udpAddress)
 
+	if sample_rate == 0:
+		print("ERROR: Sample rate = 0")
+
     def adjustBackgroundNoise(self, strength):
         self.backgroundNoise = (self.backgroundNoise * 0.99) + (strength * 0.01)
 
