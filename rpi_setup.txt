@@ -23,6 +23,15 @@ make
 sudo make install
 sudo ldconfig
 
+# rPi service setup
+cp vhf.service /lib/systemd/system
+cp grc.service /lib/systemd/system
+sudo chmod 644 /lib/systemd/system/vhf.service
+sudo chmod 644 /lib/systemd/system/grc.service
+sudo systemctl daemon-reload
+sudo systemctl enable vhf.service
+sudo systemctl enable grc.service
+
 # LCD setup - config.txt file on SD Card
 
 max_usb_current=1
