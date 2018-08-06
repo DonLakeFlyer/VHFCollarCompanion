@@ -1,0 +1,10 @@
+[Unit]
+Description=GRC Radio
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLine.py
+
+[Install]
+WantedBy=multi-user.target
