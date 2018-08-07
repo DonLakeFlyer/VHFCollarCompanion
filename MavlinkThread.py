@@ -43,7 +43,7 @@ class MavlinkThread (threading.Thread):
 		while waiting:
 			msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
 			if self.mavlink.target_component == 1:
-				print("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
+				logging.debug("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
 				self.targetSystemId = self.mavlink.target_system
 				self.targetComponentId = self.mavlink.target_component
 				waiting = False
