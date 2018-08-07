@@ -108,6 +108,8 @@ def main(top_block_cls=PulseDetectCmdLine, options=None):
 
     tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
     tb.start()
+    while True:
+        pass
     try:
         raw_input('Press Enter to quit: ')
     except EOFError:
