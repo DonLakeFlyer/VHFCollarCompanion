@@ -3,7 +3,6 @@ import logging
 import threading
 import geo 
 
-from rtlsdr import RtlSdr
 from matplotlib.mlab import magnitude_spectrum
 from multiprocessing import Process
 from PulseBase import PulseBase
