@@ -31,6 +31,7 @@ sudo chmod 644 /lib/systemd/system/grc.service
 sudo systemctl daemon-reload
 sudo systemctl enable vhf.service
 sudo systemctl enable grc.service
+systemctl list-unit-files | grep enabled
 
 # LCD setup - config.txt file on SD Card
 
@@ -42,7 +43,7 @@ hdmi_cvt 800 480 60 6 0 0 0
 
 # SITL testing
 
-make posix gazebo_typhoon_h480
+make posix iris
 python3 main.py --sitl True
 
 Modify posix-configs/SITL/init/ekf2/typhoon_h480
