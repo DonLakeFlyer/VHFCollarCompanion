@@ -7,6 +7,13 @@ import DirectionFinder
 
 from pymavlink import mavutil
 
+DEBUG_TS_VALUE_SET = 			0
+DEBUG_INDEX_VALUE_SET_FREQ = 	0
+DEBUG_INDEX_VALUE_SET_GAIN = 	1
+
+DEBUG_TS_PULSE = 	1
+DEBUG_INDEX_PULSE =	0
+
 class MavlinkThread (threading.Thread):
 	exitFlag = False
 
@@ -59,34 +66,21 @@ class MavlinkThread (threading.Thread):
 		commandHandled = False
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
 		if msg.command == mavutil.mavlink.MAV_CMD_USER_1:
-			# Start direction finding
-			commandHandled = True
-			self.tools.directionFinder.findStrongestHeading()
-		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
-			# Cancel direction finding
-			commandHandled = True
-			self.tools.directionFinder.cancel()
-		elif msg.command == mavutil.mavlink.MAV_CMD_USER_3:
-			# New frequence is in param 1 as int ###### which reads as ###.###
+			# Change frequency
+			# New frequency is in param 1 as int ###### which reads as ###.###
 			commandHandled = True
 			frequency = math.floor(msg.param1 * math.pow(10, 3))
 			logging.debug("Set frequency %d", frequency)
 			self.tools.setFreqQueue.put(frequency)
-		elif msg.command == mavutil.mavlink.MAV_CMD_USER_4:
+			self.sendMessageLock.acquire()
+			self.mavlink.mav.debug_send(DEBUG_TS_VALUE_SET, DEBUG_INDEX_VALUE_SET_FREQ, msg.param1)
+			self.sendMessageLock.release()
+		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			# Set gain
 			commandHandled = True
 			gain = math.floor(msg.param1)
 			logging.debug("Set gain %d", gain)
 			self.tools.setGainQueue.put(gain)
-		elif msg.command == mavutil.mavlink.MAV_CMD_USER_5:
-			# Set amplifier
-			commandHandled = True
-			if math.floor(msg.param1):
-				amp = True
-			else:
-				amp = False
-			logging.debug("Set amp %d", amp)
-			self.tools.setAmpQueue.put(amp)
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			self.mavlink.mav.command_ack_send(msg.command, commandAck) 
@@ -116,7 +110,7 @@ class MavlinkThread (threading.Thread):
 
 	def sendPulseStrength(self, strength):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_send(0, 1, strength)
+		self.mavlink.mav.debug_send(DEBUG_TS_PULSE, DEBUG_INDEX_PULSE, strength)
 		self.sendMessageLock.release()
 
 	def sendHeadingFound(self, heading, strength):
