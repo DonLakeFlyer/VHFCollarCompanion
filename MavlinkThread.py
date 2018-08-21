@@ -1,18 +1,24 @@
 import threading
 import math
 import logging
+import subprocess
 
 import Vehicle
 import DirectionFinder
 
 from pymavlink import mavutil
 
-DEBUG_TS_VALUE_SET = 			0
-DEBUG_INDEX_VALUE_SET_FREQ = 	0
-DEBUG_INDEX_VALUE_SET_GAIN = 	1
+DEBUG_TS_COMMAND_ACK = 			0
+DEBUG_INDEX_COMMAND_ACK_START =	0
+DEBUG_INDEX_COMMAND_ACK_STOP =	1
 
 DEBUG_TS_PULSE = 	1
 DEBUG_INDEX_PULSE =	0
+
+# param1 frequency
+COMMAND_START_CAPTURE = mavutil.mavlink.MAV_CMD_USER_1
+
+COMMAND_STOP_CAPTURE = mavutil.mavlink.MAV_CMD_USER_2
 
 class MavlinkThread (threading.Thread):
 	exitFlag = False
@@ -31,6 +37,7 @@ class MavlinkThread (threading.Thread):
 		self.waitingForHeading = False
 		self.cancelCommand = False
 		self.sendMessageLock = threading.Lock()
+		self.pulseProcess = None
 
 	def run(self):
 		# Start a mavlink connectin to get the system id from the heartbeat
@@ -65,17 +72,13 @@ class MavlinkThread (threading.Thread):
 	def handleCommandLong(self, msg):
 		commandHandled = False
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
-		if msg.command == mavutil.mavlink.MAV_CMD_USER_1:
-			# Change frequency
-			# New frequency is in param 1 as int ###### which reads as ###.###
+		if msg.command == COMMAND_START_CAPTURE:
 			commandHandled = True
-			frequency = math.floor(msg.param1 * math.pow(10, 3))
-			logging.debug("Set frequency %d", frequency)
-			self.tools.setFreqQueue.put(frequency)
-			self.sendMessageLock.acquire()
-			self.mavlink.mav.debug_send(DEBUG_TS_VALUE_SET, DEBUG_INDEX_VALUE_SET_FREQ, msg.param1)
-			self.sendMessageLock.release()
-		elif msg.command == mavutil.mavlink.MAV_CMD_USER_2:
+			self.handleStartCapture(msg)
+		elif msg.command == COMMAND_STOP_CAPTURE:
+			commandHandled = True
+			self.handleStopCapture(msg)
+		elif False: #msg.command == mavutil.mavlink.MAV_CMD_USER_2:
 			# Set gain
 			commandHandled = True
 			gain = math.floor(msg.param1)
@@ -83,21 +86,8 @@ class MavlinkThread (threading.Thread):
 			self.tools.setGainQueue.put(gain)
 		if commandHandled:
 			self.sendMessageLock.acquire()
-			self.mavlink.mav.command_ack_send(msg.command, commandAck) 
+			#self.mavlink.mav.command_ack_send(msg.command, commandAck) 
 			self.sendMessageLock.release()
-
-	def sendDoReposition(self, heading):
-		self.sendMessageLock.acquire()
-		self.mavlink.mav.command_long_send(self.targetSystemId, 
-	    									self.targetComponentId,
-            	                      		mavutil.mavlink.MAV_CMD_DO_REPOSITION,
-                	                  		0,														# first transmission
-                    	              		-1,														# no change in ground speed
-                        	          		mavutil.mavlink.MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,	# reposition flags not used
-                            	      		0,														# reserved
-                                	  		math.radians(heading),									# change heading
-                                  			float('nan'), float('nan'), float('NaN'))				# no change lat, lon, alt
-		self.sendMessageLock.release()
 
 	def sendMemoryVect(self, rgValues):
 		logging.debug("sendMemoryVect %s", string(rgValues))
@@ -113,15 +103,24 @@ class MavlinkThread (threading.Thread):
 		self.mavlink.mav.debug_send(DEBUG_TS_PULSE, DEBUG_INDEX_PULSE, strength)
 		self.sendMessageLock.release()
 
-	def sendHeadingFound(self, heading, strength):
-		self.reallyHeading = heading
-		self.reallyStrength = strength
-		self.simulationTimer = threading.Timer(1, self.reallySendHeadingFound)
-		self.simulationTimer.start()
+	def handleStartCapture(self, msg):
+		# New frequency is in param 1 as int ###### which reads as ###.###
+		frequency = math.floor(msg.param1 * math.pow(10, 3))
+		logging.debug("Start detect frequency %d", frequency)
+		self.tools.setFreqQueue.put(frequency)
+		self.pulseProcess = subprocess.Popen(["/usr/bin/python", "PulseDetectCmdLine.py", "--pulse-freq", str(frequency)])
+		if self.pulseProcess == None:
+			logging.debug("Failed to start PulseDetectCmdLine.py")
+		else:
+			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_START, msg.param1)
 
-	def reallySendHeadingFound(self):
+	def handleStopCapture(self, msg):
+		if self.pulseProcess:
+			self.pulseProcess.terminate()
+			self.pulseProcess = None
+			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_STOP, 0)
+
+	def sendCommandAck(self, command, value):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_send(self.reallyHeading, 0, self.reallyStrength)
-		logging.debug("sendHeadingFound %d %f", self.reallyHeading, self.reallyStrength)
+		self.mavlink.mav.debug_send(DEBUG_TS_COMMAND_ACK, command, value)
 		self.sendMessageLock.release()
-
