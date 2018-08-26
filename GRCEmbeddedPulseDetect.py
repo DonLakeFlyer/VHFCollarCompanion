@@ -22,7 +22,7 @@ class blk(gr.sync_block):
 
 	self.sample_rate = sample_rate
 	self.backgroundNoise = 1000
-	self.snrThreshold = 5
+	self.snrThreshold = 1.5
 	self.sampleCount = 0
 	self.lastPulseSeconds = 0
 	self.pulseMax = 0
@@ -73,7 +73,7 @@ class blk(gr.sync_block):
 		if lastSampleSeconds > self.lastPulseSeconds + 2.1:
 			self.lastPulseSeconds = lastSampleSeconds
 			self.sock.sendto(struct.pack('<ff', lastSampleSeconds, 0), self.udpAddress)
-			print("No pulse for 2.1 seconds")
+			print("No pulse for 2.1 seconds backgroundNoise", self.backgroundNoise)
 
         output_items[0][:] = input_items[0]
         return len(output_items[0])
