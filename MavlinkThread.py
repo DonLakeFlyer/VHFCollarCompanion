@@ -108,7 +108,10 @@ class MavlinkThread (threading.Thread):
 		frequency = math.floor(msg.param1 * math.pow(10, 3))
 		logging.debug("Start detect frequency %d", frequency)
 		self.tools.setFreqQueue.put(frequency)
-		self.pulseProcess = subprocess.Popen(["/usr/bin/python", "PulseDetectCmdLine.py", "--pulse-freq", str(frequency)])
+		try:
+			self.pulseProcess = subprocess.Popen(["/usr/bin/python", "/home/pi/repos/VHFCollarCompanion/PulseDetectCmdLine.py", "--pulse-freq", str(frequency)])
+		except:
+			logging.debug("subprocess.Popen exception")
 		if self.pulseProcess == None:
 			logging.debug("Failed to start PulseDetectCmdLine.py")
 		else:
