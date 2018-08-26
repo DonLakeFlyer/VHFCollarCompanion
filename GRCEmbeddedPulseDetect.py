@@ -32,8 +32,6 @@ class blk(gr.sync_block):
 	self.udpAddress = ('localhost', 10000)
 	#self.sock.bind(self.udpAddress)
 
-	self.csvFile = open("pulse.csv", "w")
-
 	if sample_rate == 0:
 		print("ERROR: Sample rate = 0")
 
@@ -44,11 +42,6 @@ class blk(gr.sync_block):
 	for pulseValue in input_items[0]:
 		if math.isnan(pulseValue):
 			continue
-
-		self.csvFile.write(str(pulseValue))
-		self.csvFile.write(",")
-		self.csvFile.write(str(self.backgroundNoise))
-		self.csvFile.write("\n")
 
 		self.sampleCount = self.sampleCount + 1
 		lastSampleSeconds = self.sampleCount / self.sample_rate
