@@ -46,8 +46,8 @@ class PulseDetectCmdLine(gr.top_block):
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
-            lna_gain=1,
-            mixer_gain=10,
+            lna_gain=11,
+            mixer_gain=11,
             pulse_freq=pulse_freq,
             vga_gain=15,
             wnT=math.pi/4.0*0+0.635,
