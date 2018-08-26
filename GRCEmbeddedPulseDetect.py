@@ -45,10 +45,10 @@ class blk(gr.sync_block):
 		if math.isnan(pulseValue):
 			continue
 
-		csvFile.write(str(pulseValue))
-		csvFile.write(",")
-		csvFile.write(str(self.backgroundNoise))
-		csvFile.write("\n")
+		self.csvFile.write(str(pulseValue))
+		self.csvFile.write(",")
+		self.csvFile.write(str(self.backgroundNoise))
+		self.csvFile.write("\n")
 
 		self.sampleCount = self.sampleCount + 1
 		lastSampleSeconds = self.sampleCount / self.sample_rate
