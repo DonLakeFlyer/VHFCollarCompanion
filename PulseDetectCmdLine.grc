@@ -168,61 +168,16 @@ class blk(gr.sync_block):
             in_sig=[np.float32],
             out_sig=[np.float32]
         )
-
-	self.sample_rate = sample_rate
-	self.backgroundNoise = 1000
-	self.snrThreshold = 5
-	self.sampleCount = 0
-	self.lastPulseSeconds = 0
-	self.pulseMax = 0
-	self.pulseSampleCount = 0
-	self.pulseTriggerValue = 0
 	self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	self.udpAddress = ('localhost', 10000)
 	#self.sock.bind(self.udpAddress)
-
-	if sample_rate == 0:
-		print("ERROR: Sample rate = 0")
-
-    def adjustBackgroundNoise(self, strength):
-        self.backgroundNoise = (self.backgroundNoise * 0.99) + (strength * 0.01)
 
     def work(self, input_items, output_items):
 	for pulseValue in input_items[0]:
 		if math.isnan(pulseValue):
 			continue
-
-		self.sampleCount = self.sampleCount + 1
-		lastSampleSeconds = self.sampleCount / self.sample_rate
-
-		pulseTriggered = False
-		if self.pulseSampleCount != 0:
-			if pulseValue &gt;= self.pulseTriggerValue:
-				pulseTriggered = True
-		else: 
-			if pulseValue &gt; self.backgroundNoise * self.snrThreshold:
-				self.pulseTriggerValue = pulseValue
-				pulseTriggered = True
-
-		if pulseTriggered:
-			self.pulseSampleCount = self.pulseSampleCount + 1
-			if pulseValue &gt; self.pulseMax:
-				self.pulseMax = pulseValue
-		elif self.pulseSampleCount != 0:
-			self.lastPulseSeconds = lastSampleSeconds
-			self.sock.sendto(struct.pack('&lt;ff', lastSampleSeconds, self.pulseMax), self.udpAddress)
-			print("True pulse detected pulseMax:secs:length:backgroundNoise")
-			print(self.pulseMax, self.lastPulseSeconds, self.pulseSampleCount / self.sample_rate * 1000, self.backgroundNoise)
-			self.pulseSampleCount = 0
-			self.pulseMax = 0
-			self.skipTrailingEdge = self.sample_rate / (1000 / 15)
-		else:
-			self.adjustBackgroundNoise(pulseValue)
-
-		if lastSampleSeconds &gt; self.lastPulseSeconds + 2.1:
-			self.lastPulseSeconds = lastSampleSeconds
-			self.sock.sendto(struct.pack('&lt;ff', lastSampleSeconds, 0), self.udpAddress)
-			print("No pulse for 2.1 seconds")
+		if pulseValue &gt; 0:
+			self.sock.sendto(struct.pack('&lt;f', pulseValue), self.udpAddress)
 
         output_items[0][:] = input_items[0]
         return len(output_items[0])
@@ -234,11 +189,11 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(272, 268)</value>
+      <value>(432, 316)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -246,11 +201,11 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>id</key>
-      <value>GRCEmbeddedPulseDetect</value>
+      <value>GRCUDPPulseOutput</value>
     </param>
     <param>
       <key>sample_rate</key>
-      <value>final_samp_rate</value>
+      <value>0</value>
     </param>
   </block>
   <block>
@@ -414,7 +369,7 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(568, 273)</value>
+      <value>(744, 329)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -582,14 +537,8 @@ class blk(gr.sync_block):
     </param>
   </block>
   <connection>
-    <source_block_id>GRCEmbeddedPulseDetect</source_block_id>
+    <source_block_id>GRCUDPPulseOutput</source_block_id>
     <sink_block_id>blocks_vector_sink_x_1</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>PulseDetectBase</source_block_id>
-    <sink_block_id>GRCEmbeddedPulseDetect</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -607,7 +556,7 @@ class blk(gr.sync_block):
   </connection>
   <connection>
     <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
-    <sink_block_id>blocks_vector_sink_x_1</sink_block_id>
+    <sink_block_id>GRCUDPPulseOutput</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
