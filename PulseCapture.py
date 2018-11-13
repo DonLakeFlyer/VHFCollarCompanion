@@ -58,7 +58,7 @@ class PulseCapture(Process):
 
             sampleRate = 3000000
             sampleCount = 9000000
-            biasTee = 1
+            biasTee = 0
             ifGain = 5
             mixerGain = 15
             lnaGain = 0

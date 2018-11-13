@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Wed Aug  1 13:47:43 2018
+# Generated: Mon Nov 12 17:07:04 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -67,8 +67,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.wnT = wnT = math.pi/4.0*0+0.635
         self.vga_gain = vga_gain = 15
         self.pulse_freq = pulse_freq = 146e6
-        self.mixer_gain = mixer_gain = 10
-        self.lna_gain = lna_gain = 1
+        self.mixer_gain = mixer_gain = 11
+        self.lna_gain = lna_gain = 11
         self.freq_shift = freq_shift = 0.0
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
@@ -81,10 +81,10 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self._vga_gain_range = Range(0, 15, 1, 15, 200)
         self._vga_gain_win = RangeWidget(self._vga_gain_range, self.set_vga_gain, "VGA Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._vga_gain_win, 0,0,1,1)
-        self._mixer_gain_range = Range(0, 15, 1, 10, 200)
+        self._mixer_gain_range = Range(0, 15, 1, 11, 200)
         self._mixer_gain_win = RangeWidget(self._mixer_gain_range, self.set_mixer_gain, "Mixer Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._mixer_gain_win, 1,0,1,1)
-        self._lna_gain_range = Range(0, 14, 1, 1, 200)
+        self._lna_gain_range = Range(0, 14, 1, 11, 200)
         self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, "LNA Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._lna_gain_win, 2,0,1,1)
         self._freq_shift_range = Range(-500e3, 500e3, 1e3, 0.0, 200)
