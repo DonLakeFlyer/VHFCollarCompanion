@@ -4,6 +4,11 @@ sudo kill ### - kill process
 sudo if config - show ip address
 
 # Bluetooth setup
+
+sudo apt-get install bluetooth
+sudo apt-get install bluez
+sudo apt-get install python-bluez
+
 https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 /etc/systemd/system/dbus-org.bluez.service
 ExecStart=/usr/lib/bluetooth/bluetoothd

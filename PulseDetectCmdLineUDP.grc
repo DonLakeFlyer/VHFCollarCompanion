@@ -46,7 +46,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>PulseDetectCmdLineBT</value>
+      <value>PulseDetectCmdLineUDP</value>
     </param>
     <param>
       <key>max_nouts</key>
@@ -238,7 +238,7 @@
     </param>
   </block>
   <block>
-    <key>VHFPulseSender_bt_sender_f</key>
+    <key>VHFPulseSender_udp_sender_f</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -265,7 +265,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>VHFPulseSender_bt_sender_f_0</value>
+      <value>VHFPulseSender_udp_sender_f_0</value>
     </param>
   </block>
   <block>
@@ -469,7 +469,7 @@
   </connection>
   <connection>
     <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
-    <sink_block_id>VHFPulseSender_bt_sender_f_0</sink_block_id>
+    <sink_block_id>VHFPulseSender_udp_sender_f_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
