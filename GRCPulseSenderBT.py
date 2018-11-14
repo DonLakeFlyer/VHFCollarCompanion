@@ -20,7 +20,6 @@ class blk(gr.sync_block):
         self.factor = factor
         self.serverSocket = None
 
-
     def work(self, input_items, output_items):
         if not self.serverSocket:
                 # Setup bluetooth socket
@@ -41,7 +40,5 @@ class blk(gr.sync_block):
                 #print("Accepted connection from ", clientInfo)
                 #self.clientSocket.setblocking(False)
 
-        print "length of input vector =",  len(input_items[0])
-        print "length of output vector =",  len(output_items[0])
         output_items[0][:] = input_items[0]
         return len(output_items[0])

@@ -3,6 +3,19 @@ ps aux - list processes
 sudo kill ### - kill process
 sudo if config - show ip address
 
+# Bluetooth setup
+https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
+/etc/systemd/system/dbus-org.bluez.service
+ExecStart=/usr/lib/bluetooth/bluetoothd
+to this
+ExecStart=/usr/lib/bluetooth/bluetoothd --compat
+sudo systemctl daemon-reload
+sudo systemctl restart bluetooth
+sudo chmod 777 /var/run/sdp
+sudo apt-get install blueman
+
+Make adapter discoverable
+
 # GNU Radio Install
 
 sudo apt-get install gnuradio
