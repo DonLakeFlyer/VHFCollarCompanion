@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 ##################################################
 # GNU Radio Python Flow Graph
-# Title: Pulsedetectcmdline
-# Generated: Tue Nov 13 15:59:36 2018
+# Title: Pulsedetectcmdlinebt
+# Generated: Tue Nov 13 16:22:32 2018
 ##################################################
 
 import os
 import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
 
-from GRCBTPulseOutput import blk
 from PulseDetectBase import PulseDetectBase  # grc-generated hier_block
 from epy_block_0 import blk
 from gnuradio import blocks
@@ -24,10 +23,10 @@ import cmath
 import math
 
 
-class PulseDetectCmdLine(gr.top_block):
+class PulseDetectCmdLineBT(gr.top_block):
 
     def __init__(self, pulse_freq=146e6, samp_rate=3e6):
-        gr.top_block.__init__(self, "Pulsedetectcmdline")
+        gr.top_block.__init__(self, "Pulsedetectcmdlinebt")
 
         ##################################################
         # Parameters
@@ -44,8 +43,6 @@ class PulseDetectCmdLine(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.epy_block_0 = blk(factor=1.0)
-        self.blocks_vector_sink_x_2 = blocks.vector_sink_f(1)
         self.blocks_vector_sink_x_1 = blocks.vector_sink_f(1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff()
@@ -57,17 +54,15 @@ class PulseDetectCmdLine(gr.top_block):
             vga_gain=15,
             wnT=math.pi/4.0*0+0.635,
         )
-        self.GRCBTPulseOutput = blk(airspy_index=0)
+        self.GRCPulseSenderBT = blk(factor=1.0)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.GRCBTPulseOutput, 0), (self.blocks_vector_sink_x_1, 0))    
+        self.connect((self.GRCPulseSenderBT, 0), (self.blocks_vector_sink_x_1, 0))    
         self.connect((self.PulseDetectBase, 0), (self.VHFPulseDetect_pulse_detect__ff_0, 0))    
         self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
-        self.connect((self.PulseDetectBase, 0), (self.epy_block_0, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.GRCBTPulseOutput, 0))    
-        self.connect((self.epy_block_0, 0), (self.blocks_vector_sink_x_2, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.GRCPulseSenderBT, 0))    
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -108,7 +103,7 @@ def argument_parser():
     return parser
 
 
-def main(top_block_cls=PulseDetectCmdLine, options=None):
+def main(top_block_cls=PulseDetectCmdLineBT, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
     if gr.enable_realtime_scheduling() != gr.RT_OK:

@@ -46,7 +46,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>PulseDetectCmdLine</value>
+      <value>PulseDetectCmdLineBT</value>
     </param>
     <param>
       <key>max_nouts</key>
@@ -143,7 +143,7 @@
     </param>
     <param>
       <key>_io_cache</key>
-      <value>('Embedded Python Block', 'blk', [('sample_rate', '0')], [('0', 'float')], [('0', 'float')], '')</value>
+      <value>('Embedded Python Block', 'blk', [('factor', '1.0')], [('0', 'float')], [('0', 'float')], '')</value>
     </param>
     <param>
       <key>_source_code</key>
@@ -154,31 +154,44 @@ Each this file is saved, GRC will instantiate the first class it finds to get
 ports and parameters of your block. The arguments to __init__  will be the
 parameters. All of them are required to have default values!
 """
-import socket
-import struct
-import math
 import numpy as np
+import bluetooth
 from gnuradio import gr
 
 class blk(gr.sync_block):
-    def __init__(self, sample_rate=0):  # only default arguments here
+    def __init__(self, factor=1.0):  # only default arguments here
         gr.sync_block.__init__(
             self,
             name='Embedded Python Block',
             in_sig=[np.float32],
             out_sig=[np.float32]
         )
-	self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	self.udpAddress = ('localhost', 10000)
-	#self.sock.bind(self.udpAddress)
+        self.factor = factor
+        self.serverSocket = None
+
 
     def work(self, input_items, output_items):
-	for pulseValue in input_items[0]:
-		if math.isnan(pulseValue):
-			continue
-		if pulseValue &gt; 0:
-			self.sock.sendto(struct.pack('&lt;f', pulseValue), self.udpAddress)
+        if not self.serverSocket:
+                # Setup bluetooth socket
+                self.serverSocket = bluetooth.BluetoothSocket (bluetooth.RFCOMM)
+                self.serverSocket.bind(("", 0x1001))
+                self.serverSocket.listen(1)
 
+                # Advertise service
+                uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+                bluetooth.advertise_service(
+				self.serverSocket,
+				"PulseServer",
+				service_id = uuid,
+				service_classes = [ uuid, SERIAL_PORT_CLASS ],
+				profiles = [ SERIAL_PORT_PROFILE ])
+                #logging.debug("Waiting for bluetooth connection")
+                #self.clientSocket, clientInfo = self.serverSocket.accept()
+                #print("Accepted connection from ", clientInfo)
+                #self.clientSocket.setblocking(False)
+
+        print "length of input vector =",  len(input_items[0])
+        print "length of output vector =",  len(output_items[0])
         output_items[0][:] = input_items[0]
         return len(output_items[0])
 </value>
@@ -189,11 +202,15 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
+    </param>
+    <param>
+      <key>factor</key>
+      <value>1.0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(432, 316)</value>
+      <value>(480, 324)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -201,11 +218,7 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>id</key>
-      <value>GRCUDPPulseOutput</value>
-    </param>
-    <param>
-      <key>sample_rate</key>
-      <value>0</value>
+      <value>GRCPulseSenderBT</value>
     </param>
   </block>
   <block>
@@ -537,7 +550,7 @@ class blk(gr.sync_block):
     </param>
   </block>
   <connection>
-    <source_block_id>GRCUDPPulseOutput</source_block_id>
+    <source_block_id>GRCPulseSenderBT</source_block_id>
     <sink_block_id>blocks_vector_sink_x_1</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
@@ -556,7 +569,7 @@ class blk(gr.sync_block):
   </connection>
   <connection>
     <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
-    <sink_block_id>GRCUDPPulseOutput</sink_block_id>
+    <sink_block_id>GRCPulseSenderBT</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

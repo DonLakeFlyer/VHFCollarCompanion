@@ -24,6 +24,7 @@ class blk(gr.sync_block):
 	#self.sock.bind(self.udpAddress)
 
     def work(self, input_items, output_items):
+	print "Here"
 	for pulseValue in input_items[0]:
 		if math.isnan(pulseValue):
 			continue
