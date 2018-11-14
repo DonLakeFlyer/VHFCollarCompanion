@@ -3,15 +3,15 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectcmdlinebt
-# Generated: Tue Nov 13 16:22:32 2018
+# Generated: Tue Nov 13 16:28:35 2018
 ##################################################
 
 import os
 import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
 
+from GRCPulseSenderBT import blk
 from PulseDetectBase import PulseDetectBase  # grc-generated hier_block
-from epy_block_0 import blk
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import gr
