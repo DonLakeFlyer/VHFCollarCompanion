@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#wget https://raw.githubusercontent.com/DonLakeFlyer/rpi_setup.sh
+#wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
 # Bluetooth
 sudo apt-get install bluetooth bluez python-bluez blueman -y
