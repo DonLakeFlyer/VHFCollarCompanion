@@ -1,7 +1,7 @@
 Editor - nano
 ps aux - list processes
 sudo kill ### - kill process
-sudo if config - show ip address
+sudo ifconfig - show ip address
 
 # Bluetooth setup
 
