@@ -155,7 +155,7 @@ ports and parameters of your block. The arguments to __init__  will be the
 parameters. All of them are required to have default values!
 """
 import numpy as np
-import bluetooth
+from bluetooth import *
 from gnuradio import gr
 
 class blk(gr.sync_block):
@@ -173,13 +173,13 @@ class blk(gr.sync_block):
     def work(self, input_items, output_items):
         if not self.serverSocket:
                 # Setup bluetooth socket
-                self.serverSocket = bluetooth.BluetoothSocket (bluetooth.RFCOMM)
-                self.serverSocket.bind(("", 0x1001))
+                self.serverSocket = BluetoothSocket (RFCOMM)
+                self.serverSocket.bind(("", PORT_ANY))
                 self.serverSocket.listen(1)
 
                 # Advertise service
                 uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-                bluetooth.advertise_service(
+                advertise_service(
 				self.serverSocket,
 				"PulseServer",
 				service_id = uuid,
