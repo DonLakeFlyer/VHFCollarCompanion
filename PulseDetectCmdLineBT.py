@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectcmdlinebt
-# Generated: Tue Nov 13 20:10:26 2018
+# Generated: Wed Nov 14 13:44:12 2018
 ##################################################
 
 import os
@@ -91,7 +91,7 @@ class PulseDetectCmdLineBT(gr.top_block):
 
 
 def argument_parser():
-    parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
+    parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
         "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
         help="Set pulse_freq [default=%default]")

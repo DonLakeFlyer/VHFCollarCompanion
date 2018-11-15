@@ -2,26 +2,26 @@
 
 #wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
-# Bluetooth
+echo "*** Install Bluetooth"
 sudo apt-get install bluetooth bluez python-bluez blueman -y
 
-# GNU Radio Install
+echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 
-# Support for open file system from OSX
+echo "*** Install OSX APF support"
 sudo apt-get install netatalk -y
 
-# Custom GNU Radio Blocks
+echo "*** Install tools for build Custom GNU Radio blocks"
 sudo apt-get install cmake libairspy0 libairspy-dev swig -y
 
-# Setup for repos
+echo "*** Create repos directory"
 cd ~
 if [ ! -d repos ]; then
 	mkdir repos
 fi
 cd ~/repos
 
-# Airspy block
+echo "*** Install Airspy block"
 cd ~/repos
 if [ ! -d gr-airspysdr ]; then
 	git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
@@ -34,7 +34,7 @@ if [ ! -d gr-airspysdr ]; then
 	sudo ldconfig
 fi
 
-# Pulse Sender block - UDP/BT
+echo "*** Install Pulse Sender block - UDP/BT"
 cd ~/repos
 if [ ! -d gr-VHFPulseSender ]; then
 	git clone https://github.com/DonLakeFlyer/gr-VHFPulseSender.git
@@ -47,7 +47,7 @@ if [ ! -d gr-VHFPulseSender ]; then
 	sudo ldconfig
 fi
 
-# Pulse Detect block
+echo "*** Install Pulse Detect block"
 cd ~/repos
 if [ ! -d gr-VHFPulseDetect ]; then
 	git clone https://github.com/DonLakeFlyer/gr-VHFPulseDetect.git
@@ -60,6 +60,7 @@ if [ ! -d gr-VHFPulseDetect ]; then
 	sudo ldconfig
 fi
 
+echo "*** Clone VHFCollarCompanion"
 cd ~/repos
 if [ ! -d VHFCollarCompanion ]; then
 	git clone https://github.com/DonLakeFlyer/VHFCollarCompanion.git
