@@ -14,9 +14,10 @@ https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-s
 ExecStart=/usr/lib/bluetooth/bluetoothd
 to this
 ExecStart=/usr/lib/bluetooth/bluetoothd --compat
+ExecStartPost=/bin/chmod 777 /var/run/sdp
+
 sudo systemctl daemon-reload
 sudo systemctl restart bluetooth
-sudo chmod 777 /var/run/sdp
 sudo apt-get install blueman
 
 Make adapter discoverable
