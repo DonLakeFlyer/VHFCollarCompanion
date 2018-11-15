@@ -1,14 +1,8 @@
-Editor - nano
-ps aux - list processes
-sudo kill ### - kill process
-sudo ifconfig - show ip address
+# Missing scripted hardware setup
+Turn on SSH/Serial Port
+Make adapter discoverable using bluetoothctl
 
-# Bluetooth setup
-
-sudo apt-get install bluetooth
-sudo apt-get install bluez
-sudo apt-get install python-bluez
-
+- Fixed screwed up bluez install
 https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 /etc/systemd/system/dbus-org.bluez.service
 ExecStart=/usr/lib/bluetooth/bluetoothd
@@ -20,27 +14,13 @@ sudo systemctl daemon-reload
 sudo systemctl restart bluetooth
 sudo apt-get install blueman
 
-Make adapter discoverable
 
-# GNU Radio Install
+# Misc info
 
-sudo apt-get install gnuradio
-
-# Custom AirSpy GNU Radio plugin
-
-https://osmocom.org/projects/gr-osmosdr/wiki
-
-sudo apt-get install cmake libairspy0 libairspy-dev swig
-
-cd ~/repos
-git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
-cd gr-airspysdr
-mkdir build
-cd build/
-cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
-make
-sudo make install
-sudo ldconfig
+Editor - nano
+ps aux - list processes
+sudo kill ### - kill process
+sudo ifconfig - show ip address
 
 # rPi service setup
 cp vhf.service /lib/systemd/system

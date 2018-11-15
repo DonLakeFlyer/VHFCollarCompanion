@@ -2,8 +2,18 @@
 
 #wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
-echo "*** Install Bluetooth"
-sudo apt-get install bluetooth bluez python-bluez blueman -y
+echo "*** Install Bluetooth (y/n)"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+	sudo apt-get install bluetooth bluez python-bluez blueman -y
+	# Fixed screwed up bluez install
+	# https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
+	sed 's|ExecStart=/usr/lib/bluetooth/bluetoothd|ExecStart=/usr/lib/bluetooth/bluetoothd -C\nExecStartPost=/bin/chmod 777 /var/run/sdp|' /etc/systemd/system/dbus-org.bluez.service >fixed.service
+	cp fixed.service /etc/systemd/system/dbus-org.bluez.service
+	rm fixed.service
+	sudo systemctl daemon-reload
+	sudo systemctl restart bluetooth
+fi
 
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
