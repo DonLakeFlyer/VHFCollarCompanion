@@ -38,11 +38,16 @@ if [ ! -d repos ]; then
 fi
 cd ~/repos
 
+echo "*** Git setup"
+git config --global user.email "don@thegagnes.com"
+git config --global user.name "DonLakeFlyer"
+
 echo "*** Install Airspy block"
 cd ~/repos
 if [ ! -d gr-airspysdr ]; then
 	git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
 	cd gr-airspysdr
+	git config credential.helper store
 	mkdir build
 	cd build/
 	cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
@@ -56,6 +61,7 @@ cd ~/repos
 if [ ! -d gr-VHFPulseSender ]; then
 	git clone https://github.com/DonLakeFlyer/gr-VHFPulseSender.git
 	cd gr-VHFPulseSender
+	git config credential.helper store
 	mkdir build
 	cd build/
 	cmake ../
@@ -69,6 +75,7 @@ cd ~/repos
 if [ ! -d gr-VHFPulseDetect ]; then
 	git clone https://github.com/DonLakeFlyer/gr-VHFPulseDetect.git
 	cd gr-VHFPulseDetect
+	git config credential.helper store
 	mkdir build
 	cd build/
 	cmake ../
@@ -81,5 +88,7 @@ echo "*** Clone VHFCollarCompanion"
 cd ~/repos
 if [ ! -d VHFCollarCompanion ]; then
 	git clone https://github.com/DonLakeFlyer/VHFCollarCompanion.git
+	cd VHFCollarCompanion
+	git config credential.helper store
 fi
 
