@@ -15,11 +15,6 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 	rm fixed.service
 	sudo systemctl daemon-reload
 	sudo systemctl restart bluetooth
-	echo "*** Making bluetooth discoverable"
-	wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/bluetoothctl.sh
-	chmod +x bluetoothctl.sh
-	./bluetoothctl.sh
-	rm bluetoothctl.sh
 fi
 
 echo "**  Install GNU Radio"
