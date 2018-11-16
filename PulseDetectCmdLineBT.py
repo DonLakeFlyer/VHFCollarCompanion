@@ -62,7 +62,9 @@ class PulseDetectCmdLineBT(gr.top_block):
         ##################################################
         self.connect((self.PulseDetectBase, 0), (self.VHFPulseDetect_pulse_detect__ff_0, 0))    
         self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.VHFPulseSender_bt_sender_f_0, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.VHFPulseSender_bt_sender_f_0, 0))
+
+        self.VHFPulseSender_bt_sender_f_0.setPulseDetectBase(self.PulseDetectBase)
 
     def get_pulse_freq(self):
         return self.pulse_freq
