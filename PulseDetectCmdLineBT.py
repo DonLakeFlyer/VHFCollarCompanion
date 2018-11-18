@@ -21,6 +21,7 @@ import VHFPulseDetect
 import VHFPulseSender
 import cmath
 import math
+import signal
 
 
 class PulseDetectCmdLineBT(gr.top_block):
@@ -132,10 +133,8 @@ def main(top_block_cls=PulseDetectCmdLineBT, options=None):
 
     tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate, channel_index=options.channel_index, vga_gain=options.vga_gain)
     tb.start()
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass
+    while True:
+        signal.pause()
     tb.stop()
     tb.wait()
 

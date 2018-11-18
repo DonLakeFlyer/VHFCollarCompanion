@@ -1,5 +1,6 @@
 # Missing scripted hardware setup
-Turn on SSH/Serial Port
+
+- Turn on SSH/Serial Port
 Make adapter discoverable using bluetoothctl
 
 - Fixed screwed up bluez install
@@ -9,10 +10,13 @@ ExecStart=/usr/lib/bluetooth/bluetoothd
 to this
 ExecStart=/usr/lib/bluetooth/bluetoothd --compat
 ExecStartPost=/bin/chmod 777 /var/run/sdp
-
 sudo systemctl daemon-reload
 sudo systemctl restart bluetooth
 sudo apt-get install blueman
+
+- Add startup to crond
+@reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineBT.py > /home/pi/service.log 2>&1
+@reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineBT.py
 
 
 # Misc info
