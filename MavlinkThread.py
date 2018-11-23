@@ -63,10 +63,13 @@ class MavlinkThread (threading.Thread):
 				waiting = False
 
 	def wait_command(self):
-		rgTypes = ['VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT', 'HOME_POSITION', 'GPS_RAW_INT', 'ATTITUDE']
+		rgTypes = ['HEARTBEAT', 'VFR_HUD' , 'COMMAND_LONG', 'COMMAND_ACK', 'STATUSTEXT', 'HOME_POSITION', 'GPS_RAW_INT', 'ATTITUDE']
 		msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
 		self.tools.vehicle.mavlinkMessage(msg)
+		if msg.get_type() == 'HEARTBEAT':
+			logging.debug("Heartbeat")	
 		if msg.get_type() == 'COMMAND_LONG':
+			logging.debug("COMMAND_LONG %d" % (msg.command))
 			self.handleCommandLong(msg)
 
 	def handleCommandLong(self, msg):
@@ -109,7 +112,7 @@ class MavlinkThread (threading.Thread):
 		logging.debug("Start detect frequency %d", frequency)
 		self.tools.setFreqQueue.put(frequency)
 		try:
-			self.pulseProcess = subprocess.Popen(["/usr/bin/python", "/home/pi/repos/VHFCollarCompanion/PulseDetectCmdLine.py", "--pulse-freq", str(frequency)])
+			self.pulseProcess = subprocess.Popen(["/usr/bin/python", "/home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py", "--pulse-freq", str(frequency)])
 		except:
 			logging.debug("subprocess.Popen exception")
 		if self.pulseProcess == None:
