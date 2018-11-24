@@ -62,6 +62,10 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.VHFPulseSender_udp_sender_f_0, 0))    
 
+        # The following line is modified from the .grc output. It connects the two objects
+        # such that udp_sender can change parameters in PulseDetectBase.
+        self.VHFPulseSender_udp_sender_f_0.setPulseDetectBase(self.PulseDetectBase)
+
     def get_pulse_freq(self):
         return self.pulse_freq
 
