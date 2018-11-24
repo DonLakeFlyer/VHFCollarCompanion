@@ -52,11 +52,9 @@ class PulseCaptureUDP(Process):
             #   Pulse value
             data, address = self.udpSocket.recvfrom(4 * 2)
 
-            floats = struct.unpack('<ff', data)
-            pulseTime = floats[0]
-            pulseValue = floats[1]
-
-            print(pulseTime, pulseValue)
+            floats = struct.unpack('<f', data)
+            pulseValue = floats[0]
+            logging.debug("PulseCapture pulseValue %d", pulseValue)
 
             if self.pulseQueue:
                 self.pulseQueue.put(pulseValue)
