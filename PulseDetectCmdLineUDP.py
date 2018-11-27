@@ -21,7 +21,7 @@ import VHFPulseDetect
 import VHFPulseSender
 import cmath
 import math
-
+import signal
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
@@ -113,10 +113,13 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
 
     tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
     tb.start()
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass
+    #try:
+    #    raw_input('Press Enter to quit: ')
+    #except EOFError:
+    #    pass
+    while True:
+        signal.pause()
+
     tb.stop()
     tb.wait()
 

@@ -8,9 +8,9 @@ import DirectionFinder
 
 from pymavlink import mavutil
 
-DEBUG_TS_COMMAND_ACK = 			0
-DEBUG_INDEX_COMMAND_ACK_START =	0
-DEBUG_INDEX_COMMAND_ACK_STOP =	1
+DEBUG_TS_COMMAND_ACK = 				0
+DEBUG_INDEX_COMMAND_ACK_SET_GAIN =	0
+DEBUG_INDEX_COMMAND_ACK_SET_FREQ =	1
 
 DEBUG_TS_PULSE = 	1
 DEBUG_INDEX_PULSE =	0
@@ -45,6 +45,9 @@ class MavlinkThread (threading.Thread):
 		# Close initial connection and start new one with correct source_system id
 		self.mavlink.close()
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.targetSystemId)
+		# We broadcast all our messages so they route through the firmware
+		self.target_system = 0
+		self.target_component = 0
 		while True:
 			if self.exitFlag:
 				break
@@ -74,20 +77,18 @@ class MavlinkThread (threading.Thread):
 	def handleCommandLong(self, msg):
 		commandHandled = False
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
-		if msg.command == COMMAND_CHANGE_GAIN:
+		if msg.command == COMMAND_SET_GAIN:
 			commandHandled = True
 			gain = math.floor(msg.param1)
 			logging.debug("Set gain command received gain(%d)", gain)
 			self.tools.setGainQueue.put(gain)
-		elif msg.command == COMMAND_CHANGE_FREQ:
+			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_SET_GAIN, gain)
+		elif msg.command == COMMAND_SET_FREQ:
 			commandHandled = True
 			freq = math.floor(msg.param1)
 			logging.debug("Set frequency command received freq(%d)", freq)
 			self.tools.setFreqQueue.put(freq)
-		if commandHandled:
-			self.sendMessageLock.acquire()
-			#self.mavlink.mav.command_ack_send(msg.command, commandAck) 
-			self.sendMessageLock.release()
+			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_SET_FREQ, freq)
 
 	def sendMemoryVect(self, rgValues):
 		logging.debug("sendMemoryVect %s", string(rgValues))
