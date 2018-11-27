@@ -11,13 +11,12 @@ NFFT = 64
 NUM_SAMPLES_PER_SCAN = 1024 # NFFT * 16
 
 class PulseDetector(Process):
-    def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
+    def __init__(self, pulseQueue, setFreqQueue, setGainQueue):
         Process.__init__(self)
         self.amp = True
         self.pulseQueue = pulseQueue
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
-        self.setAmpQueue = setAmpQueue
         self.backgroundNoise = 1000
         self.minBackgroundNoise = 5.0
         self.minPulseCaptureCount = 3
@@ -86,15 +85,6 @@ class PulseDetector(Process):
             else:
                 sdr.gain = newGain
                 logging.debug("Changing gain %d:%f", newGain, sdr.gain)
-
-            # Handle change in amp
-            try:
-                newAmp = self.setAmpQueue.get_nowait()
-            except Exception as e:
-                pass
-            else:
-                self.amp = newAmp
-                logging.debug("Changing amp %s", self.amp)
 
             # Adjust noise threshold
             sdrReopen = False

@@ -23,7 +23,6 @@ def main():
 	parser.add_argument("--logDir", help="log directory", default="")
 	parser.add_argument("--workDir", help="work directory", default="")
 	parser.add_argument("--gain", type=int, default="21")
-	parser.add_argument("--amp", default=False)
 	parser.add_argument("--freq", type=int, default=146)
 	args = parser.parse_args()
 
@@ -54,7 +53,6 @@ def main():
 		pulseCapture = PulseCaptureUDP.PulseCaptureUDP(tools)
 		pulseCapture.start()
 
-	tools.setAmpQueue.put(args.amp)
 	tools.setGainQueue.put(args.gain)
 	tools.setFreqQueue.put(args.freq)
 

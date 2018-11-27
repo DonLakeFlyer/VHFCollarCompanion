@@ -5,13 +5,12 @@ from queue import Queue
 
 # Base class for real and simulated pulse handling
 class PulseBase(Process):
-    def __init__(self, pulseQueue, setFreqQueue, setGainQueue, setAmpQueue):
+    def __init__(self, pulseQueue, setFreqQueue, setGainQueue):
         Process.__init__(self)
         self.amp = False
         self.pulseQueue = pulseQueue
         self.setFreqQueue = setFreqQueue
         self.setGainQueue = setGainQueue
-        self.setAmpQueue = setAmpQueue
         self.minNoiseThresholdAmp = 15
         self.maxNoiseThresholdAmp = 110
         self.minNoiseThreshold = 1
@@ -45,12 +44,3 @@ class PulseBase(Process):
         else:
             logging.debug("Changing gain %d", newGain)
             self.changeGain(newGain)
-
-        # Handle change in amp
-        try:
-            newAmp = self.setAmpQueue.get_nowait()
-        except Exception as e:
-            pass
-        else:
-            self.amp = newAmp
-            logging.debug("Changing amp %s", self.amp)

@@ -12,7 +12,7 @@ BPM = 45
 
 class PulseDetectorSimulator (PulseBase):
     def __init__(self, tools):
-        PulseBase.__init__(self, tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue, tools.setAmpQueue)
+        PulseBase.__init__(self, tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
         self.vehicle = tools.vehicle
         self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()

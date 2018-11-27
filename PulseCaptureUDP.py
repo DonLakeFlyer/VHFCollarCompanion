@@ -11,7 +11,6 @@ class PulseCaptureUDP(Process):
         self.pulseQueue = tools.pulseQueue
         self.setFreqQueue = tools.setFreqQueue
         self.setGainQueue = tools.setGainQueue
-        self.setAmpQueue = tools.setAmpQueue
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.bind(('localhost', 10000))
 
@@ -22,6 +21,7 @@ class PulseCaptureUDP(Process):
             pass
         else:
             logging.debug("Changing frequency %f", self.freq)
+            self.udpSocket.send("freq " + self.freq)
 
     def processGainQueue(self):
         try:
@@ -30,14 +30,7 @@ class PulseCaptureUDP(Process):
             pass
         else:
             logging.debug("Changing gain %d", self.gain)
-
-    def processAmpQueue(self):
-        try:
-            self.amp = self.setAmpQueue.get_nowait()
-        except Exception as e:
-            pass
-        else:
-            logging.debug("Changing amp %s", self.amp)
+            self.udpSocket.send("gain " + self.gain)
 
     def run(self):
         logging.debug("PulseCapture.run")
@@ -45,7 +38,6 @@ class PulseCaptureUDP(Process):
         while True:
             self.processFreqQueue()
             self.processGainQueue()
-            self.processAmpQueue()
 
             # GRC script pushes two floats:
             #   Time in seconds

@@ -16,9 +16,8 @@ DEBUG_TS_PULSE = 	1
 DEBUG_INDEX_PULSE =	0
 
 # param1 frequency
-COMMAND_START_CAPTURE = mavutil.mavlink.MAV_CMD_USER_1
-
-COMMAND_STOP_CAPTURE = mavutil.mavlink.MAV_CMD_USER_2
+COMMAND_SET_GAIN = mavutil.mavlink.MAV_CMD_USER_1
+COMMAND_SET_FREQ = mavutil.mavlink.MAV_CMD_USER_2
 
 class MavlinkThread (threading.Thread):
 	exitFlag = False
@@ -75,18 +74,16 @@ class MavlinkThread (threading.Thread):
 	def handleCommandLong(self, msg):
 		commandHandled = False
 		commandAck = mavutil.mavlink.MAV_RESULT_FAILED
-		if msg.command == COMMAND_START_CAPTURE:
-			commandHandled = True
-			self.handleStartCapture(msg)
-		elif msg.command == COMMAND_STOP_CAPTURE:
-			commandHandled = True
-			self.handleStopCapture(msg)
-		elif False: #msg.command == mavutil.mavlink.MAV_CMD_USER_2:
-			# Set gain
+		if msg.command == COMMAND_CHANGE_GAIN:
 			commandHandled = True
 			gain = math.floor(msg.param1)
-			logging.debug("Set gain %d", gain)
+			logging.debug("Set gain command received gain(%d)", gain)
 			self.tools.setGainQueue.put(gain)
+		elif msg.command == COMMAND_CHANGE_FREQ:
+			commandHandled = True
+			freq = math.floor(msg.param1)
+			logging.debug("Set frequency command received freq(%d)", freq)
+			self.tools.setFreqQueue.put(freq)
 		if commandHandled:
 			self.sendMessageLock.acquire()
 			#self.mavlink.mav.command_ack_send(msg.command, commandAck) 
@@ -105,26 +102,6 @@ class MavlinkThread (threading.Thread):
 		self.sendMessageLock.acquire()
 		self.mavlink.mav.debug_send(DEBUG_TS_PULSE, DEBUG_INDEX_PULSE, strength)
 		self.sendMessageLock.release()
-
-	def handleStartCapture(self, msg):
-		# New frequency is in param 1 as int ###### which reads as ###.###
-		frequency = math.floor(msg.param1 * math.pow(10, 3))
-		logging.debug("Start detect frequency %d", frequency)
-		self.tools.setFreqQueue.put(frequency)
-		try:
-			self.pulseProcess = subprocess.Popen(["/usr/bin/python", "/home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py", "--pulse-freq", str(frequency)])
-		except:
-			logging.debug("subprocess.Popen exception")
-		if self.pulseProcess == None:
-			logging.debug("Failed to start PulseDetectCmdLine.py")
-		else:
-			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_START, msg.param1)
-
-	def handleStopCapture(self, msg):
-		if self.pulseProcess:
-			self.pulseProcess.terminate()
-			self.pulseProcess = None
-			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_STOP, 0)
 
 	def sendCommandAck(self, command, value):
 		self.sendMessageLock.acquire()

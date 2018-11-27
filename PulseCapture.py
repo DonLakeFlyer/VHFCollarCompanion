@@ -17,7 +17,6 @@ class PulseCapture(Process):
         self.pulseQueue = tools.pulseQueue
         self.setFreqQueue = tools.setFreqQueue
         self.setGainQueue = tools.setGainQueue
-        self.setAmpQueue = tools.setAmpQueue
         self.workDir = tools.workDir
         self.pyDir = tools.pyDir
         self.freq = 146
@@ -40,21 +39,12 @@ class PulseCapture(Process):
         else:
             logging.debug("Changing gain %d", self.gain)
 
-    def processAmpQueue(self):
-        try:
-            self.amp = self.setAmpQueue.get_nowait()
-        except Exception as e:
-            pass
-        else:
-            logging.debug("Changing amp %s", self.amp)
-
     def run(self):
         logging.debug("PulseCapture.run")
 
         while True:
             self.processFreqQueue()
             self.processGainQueue()
-            self.processAmpQueue()
 
             sampleRate = 3000000
             sampleCount = 9000000

@@ -11,7 +11,6 @@ class Tools:
         self.pulseQueue = Queue()
         self.setFreqQueue = Queue()
         self.setGainQueue = Queue()
-        self.setAmpQueue = Queue()
         self.logDir = None
         self.workDir = None
         self.pyDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
