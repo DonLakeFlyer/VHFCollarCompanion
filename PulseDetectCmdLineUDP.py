@@ -25,7 +25,7 @@ import signal
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
-    def __init__(self, pulse_freq=146e6, samp_rate=3e6):
+    def __init__(self, pulse_freq=146e6, samp_rate=3e6, vga_gain=15):
         gr.top_block.__init__(self, "Pulsedetectcmdlineudp")
 
         ##################################################
@@ -33,6 +33,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         self.pulse_freq = pulse_freq
         self.samp_rate = samp_rate
+        self.vga_gain = vga_gain
 
         ##################################################
         # Variables
@@ -51,7 +52,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
             lna_gain=11,
             mixer_gain=11,
             pulse_freq=pulse_freq,
-            vga_gain=15,
+            vga_gain=vga_gain,
             wnT=math.pi/4.0*0+0.635,
         )
 
@@ -102,6 +103,9 @@ def argument_parser():
     parser.add_option(
         "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
         help="Set samp_rate [default=%default]")
+    parser.add_option(
+        "", "--vga-gain", dest="vga_gain", type="int", default=15,
+        help="Set vga_gain [default=%default]")
     return parser
 
 
@@ -111,7 +115,7 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print "Error: failed to enable real-time scheduling."
 
-    tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
+    tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate, vga_gain=options.vga_gain)
     tb.start()
     #try:
     #    raw_input('Press Enter to quit: ')
