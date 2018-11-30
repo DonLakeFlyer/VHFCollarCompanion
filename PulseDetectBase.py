@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Thu Nov 29 16:49:28 2018
+# Generated: Thu Nov 29 16:54:38 2018
 ##################################################
 
 from gnuradio import analog
@@ -79,6 +79,7 @@ class PulseDetectBase(gr.hier_block2):
         self.fir_filter_xxx_0_0 = filter.fir_filter_ccf(decimate_2, (taps2))
         self.fir_filter_xxx_0_0.declare_sample_delay(0)
         self.blocks_multiply_conjugate_cc_0 = blocks.multiply_conjugate_cc(1)
+        self.blocks_moving_average_xx_0_0 = blocks.moving_average_cc(int(samp_rate4*pulse_duration), 1, int(samp_rate4*inter_pulse_duration/10.0))
         self.blocks_complex_to_mag_0_0 = blocks.complex_to_mag(1)
         self.analog_pll_refout_cc_0 = analog.pll_refout_cc(wnT, math.pi/(samp_rate4/2.0)*fmax, math.pi/(samp_rate4/2.0)*fmin)
 
@@ -87,7 +88,8 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         self.connect((self.analog_pll_refout_cc_0, 0), (self.blocks_multiply_conjugate_cc_0, 1))    
         self.connect((self.blocks_complex_to_mag_0_0, 0), (self, 0))    
-        self.connect((self.blocks_multiply_conjugate_cc_0, 0), (self.blocks_complex_to_mag_0_0, 0))    
+        self.connect((self.blocks_moving_average_xx_0_0, 0), (self.blocks_complex_to_mag_0_0, 0))    
+        self.connect((self.blocks_multiply_conjugate_cc_0, 0), (self.blocks_moving_average_xx_0_0, 0))    
         self.connect((self.fir_filter_xxx_0_0, 0), (self.fir_filter_xxx_0_0_0, 0))    
         self.connect((self.fir_filter_xxx_0_0_0, 0), (self.analog_pll_refout_cc_0, 0))    
         self.connect((self.fir_filter_xxx_0_0_0, 0), (self.blocks_multiply_conjugate_cc_0, 0))    
