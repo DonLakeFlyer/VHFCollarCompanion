@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Thu Nov 29 15:24:04 2018
+# Generated: Thu Nov 29 16:47:12 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -76,19 +76,19 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
         self._wnT_range = Range(0.001, math.pi, 0.001, math.pi/4.0*0+0.635, 200)
-        self._wnT_win = RangeWidget(self._wnT_range, self.set_wnT, 'PLL Loop BW', "counter_slider", float)
+        self._wnT_win = RangeWidget(self._wnT_range, self.set_wnT, "PLL Loop BW", "counter_slider", float)
         self.top_grid_layout.addWidget(self._wnT_win, 8,0,1,1)
         self._vga_gain_range = Range(0, 15, 1, 15, 200)
-        self._vga_gain_win = RangeWidget(self._vga_gain_range, self.set_vga_gain, 'VGA Gain', "counter_slider", int)
+        self._vga_gain_win = RangeWidget(self._vga_gain_range, self.set_vga_gain, "VGA Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._vga_gain_win, 0,0,1,1)
         self._mixer_gain_range = Range(0, 15, 1, 11, 200)
-        self._mixer_gain_win = RangeWidget(self._mixer_gain_range, self.set_mixer_gain, 'Mixer Gain', "counter_slider", int)
+        self._mixer_gain_win = RangeWidget(self._mixer_gain_range, self.set_mixer_gain, "Mixer Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._mixer_gain_win, 1,0,1,1)
         self._lna_gain_range = Range(0, 14, 1, 11, 200)
-        self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, 'LNA Gain', "counter_slider", int)
+        self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, "LNA Gain", "counter_slider", int)
         self.top_grid_layout.addWidget(self._lna_gain_win, 2,0,1,1)
         self._freq_shift_range = Range(-500e3, 500e3, 1e3, 0.0, 200)
-        self._freq_shift_win = RangeWidget(self._freq_shift_range, self.set_freq_shift, 'Frequency Shift', "counter_slider", float)
+        self._freq_shift_win = RangeWidget(self._freq_shift_range, self.set_freq_shift, "Frequency Shift", "counter_slider", float)
         self.top_grid_layout.addWidget(self._freq_shift_win, 3,0,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	int(final_samp_rate*10.0), #size
@@ -99,20 +99,19 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_update_time(0.10)
         self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
         
-        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
+        self.qtgui_time_sink_x_0.set_y_label("Amplitude", "")
         
         self.qtgui_time_sink_x_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(True)
         self.qtgui_time_sink_x_0.enable_grid(True)
-        self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
         
         if not True:
           self.qtgui_time_sink_x_0.disable_legend()
         
-        labels = ['Pulse', 'Im{Filtered}', 'Re{Downconverted}', 'Im{Downconverted}', '|Correlation|',
-                  'zero', 'Re{Ref Out}', 'Im{Ref Out}', 'Ref Frequency', 'zero']
+        labels = ["Pulse", "Im{Filtered}", "Re{Downconverted}", "Im{Downconverted}", "|Correlation|",
+                  "zero", "Re{Ref Out}", "Im{Ref Out}", "Ref Frequency", "zero"]
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "magenta",
@@ -146,10 +145,10 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.qtgui_number_sink_0.set_update_time(0.005)
         self.qtgui_number_sink_0.set_title("Pulse Indicator")
         
-        labels = ['Raw', 'Raw RO PLL', '', '', '',
-                  '', '', '', '', '']
-        units = ['', '', '', '', '',
-                 '', '', '', '', '']
+        labels = ["Raw", "Raw RO PLL", "", "", "",
+                  "", "", "", "", ""]
+        units = ["", "", "", "", "",
+                 "", "", "", "", ""]
         colors = [("blue", "red"), ("blue", "red"), ("black", "black"), ("black", "black"), ("black", "black"),
                   ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
         factor = [1, 1, 1, 1, 1,
@@ -178,12 +177,10 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         )
         self.qtgui_freq_sink_x_0.set_update_time(0.01)
         self.qtgui_freq_sink_x_0.set_y_axis(-140, -40)
-        self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_AUTO, -65.0, 0, "")
         self.qtgui_freq_sink_x_0.enable_autoscale(False)
         self.qtgui_freq_sink_x_0.enable_grid(True)
         self.qtgui_freq_sink_x_0.set_fft_average(1.0)
-        self.qtgui_freq_sink_x_0.enable_axis_labels(True)
         self.qtgui_freq_sink_x_0.enable_control_panel(False)
         
         if not True:
@@ -192,8 +189,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         if "complex" == "float" or "complex" == "msg_float":
           self.qtgui_freq_sink_x_0.set_plot_pos_half(not True)
         
-        labels = ['Spectrum', '', '', '', '',
-                  '', '', '', '', '']
+        labels = ["Spectrum", "", "", "", "",
+                  "", "", "", "", ""]
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "cyan",
@@ -232,6 +229,7 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
+
     def get_total_decimation(self):
         return self.total_decimation
 
@@ -265,8 +263,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
 
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
         self.PulseDetectBase.set_pulse_freq(self.pulse_freq)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
 
     def get_mixer_gain(self):
         return self.mixer_gain
@@ -294,8 +292,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
 
     def set_final_samp_rate(self, final_samp_rate):
         self.final_samp_rate = final_samp_rate
-        self.qtgui_time_sink_x_0.set_samp_rate(self.final_samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.final_samp_rate)
 
 
 def main(top_block_cls=PulseDetectGUI, options=None):
