@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Fri Nov 30 13:32:43 2018
+# Generated: Fri Nov 30 13:59:12 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -130,7 +130,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
             lna_gain=11,
             mixer_gain=11,
             pulse_freq=pulse_freq,
-            vga_gain=1,
+            vga_gain=15,
             wnT=math.pi/4.0*0+0.635,
         )
 
