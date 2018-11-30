@@ -44,7 +44,12 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
+        self.blocks_vector_sink_PulseDetectBase_raw = blocks.vector_sink_c(1)
+        self.VHFPulseDetect_pulse_detect_sink_0 = blocks.vector_sink_f(1)
+        self.VHFPulseDetect_pulse_detect_sink_1 = blocks.vector_sink_f(1)
+        self.VHFPulseDetect_pulse_detect_sink_2 = blocks.vector_sink_f(1)
+        self.VHFPulseDetect_pulse_detect_sink_3 = blocks.vector_sink_f(1)
+        self.VHFPulseDetect_pulse_detect_sink_4 = blocks.vector_sink_f(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
         self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff()
         self.PulseDetectBase = PulseDetectBase(
@@ -60,8 +65,13 @@ class PulseDetectCmdLineUDP(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.PulseDetectBase, 0), (self.VHFPulseDetect_pulse_detect__ff_0, 0))    
-        self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
+        self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_PulseDetectBase_raw, 0))    
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.VHFPulseSender_udp_sender_f_0, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 1), (self.VHFPulseDetect_pulse_detect_sink_0, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 2), (self.VHFPulseDetect_pulse_detect_sink_1, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 3), (self.VHFPulseDetect_pulse_detect_sink_2, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 4), (self.VHFPulseDetect_pulse_detect_sink_3, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 5), (self.VHFPulseDetect_pulse_detect_sink_4, 0))    
 
         # The following line is modified from the .grc output. It connects the two objects
         # such that udp_sender can change parameters in PulseDetectBase.
