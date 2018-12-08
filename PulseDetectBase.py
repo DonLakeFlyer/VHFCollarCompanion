@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Thu Nov 29 16:54:38 2018
+# Generated: Sat Dec  8 15:14:00 2018
 ##################################################
 
 from gnuradio import analog
@@ -18,7 +18,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, freq_shift=0, lna_gain=11, mixer_gain=11, pulse_freq=146, vga_gain=15, wnT=0.001):
+    def __init__(self, freq_shift=0, gain=21, pulse_freq=146, wnT=0.001):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),
@@ -29,10 +29,8 @@ class PulseDetectBase(gr.hier_block2):
         # Parameters
         ##################################################
         self.freq_shift = freq_shift
-        self.lna_gain = lna_gain
-        self.mixer_gain = mixer_gain
+        self.gain = gain
         self.pulse_freq = pulse_freq
-        self.vga_gain = vga_gain
         self.wnT = wnT
 
         ##################################################
@@ -59,7 +57,7 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "airspy,bias=0" )
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "airspy" )
         self.osmosdr_source_0.set_clock_source("gpsdo", 0)
         self.osmosdr_source_0.set_sample_rate(samp_rate)
         self.osmosdr_source_0.set_center_freq(pulse_freq-freq_shift, 0)
@@ -67,9 +65,7 @@ class PulseDetectBase(gr.hier_block2):
         self.osmosdr_source_0.set_dc_offset_mode(0, 0)
         self.osmosdr_source_0.set_iq_balance_mode(0, 0)
         self.osmosdr_source_0.set_gain_mode(False, 0)
-        self.osmosdr_source_0.set_vga_gain(vga_gain, 0)
-        self.osmosdr_source_0.set_mixer_gain(mixer_gain, 0)
-        self.osmosdr_source_0.set_lna_gain(lna_gain, 0)
+        self.osmosdr_source_0.set_gain(gain, 0)
         self.osmosdr_source_0.set_antenna("", 0)
         self.osmosdr_source_0.set_bandwidth(0, 0)
           
@@ -105,19 +101,12 @@ class PulseDetectBase(gr.hier_block2):
         self.freq_xlating_fir_filter_xxx_0.set_center_freq(self.freq_shift)
         self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
 
-    def get_lna_gain(self):
-        return self.lna_gain
+    def get_gain(self):
+        return self.gain
 
-    def set_lna_gain(self, lna_gain):
-        self.lna_gain = lna_gain
-        self.osmosdr_source_0.set_lna_gain(self.lna_gain, 0)
-
-    def get_mixer_gain(self):
-        return self.mixer_gain
-
-    def set_mixer_gain(self, mixer_gain):
-        self.mixer_gain = mixer_gain
-        self.osmosdr_source_0.set_mixer_gain(self.mixer_gain, 0)
+    def set_gain(self, gain):
+        self.gain = gain
+        self.osmosdr_source_0.set_gain(self.gain, 0)
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -125,13 +114,6 @@ class PulseDetectBase(gr.hier_block2):
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
         self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
-
-    def get_vga_gain(self):
-        return self.vga_gain
-
-    def set_vga_gain(self, vga_gain):
-        self.vga_gain = vga_gain
-        self.osmosdr_source_0.set_vga_gain(self.vga_gain, 0)
 
     def get_wnT(self):
         return self.wnT

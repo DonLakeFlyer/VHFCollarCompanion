@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Thu Nov 29 16:47:12 2018
+# Generated: Sat Dec  8 15:14:17 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -65,10 +65,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.total_decimation = total_decimation = 4*8*8
         self.samp_rate = samp_rate = 3e6
         self.wnT = wnT = math.pi/4.0*0+0.635
-        self.vga_gain = vga_gain = 15
         self.pulse_freq = pulse_freq = 146e6
-        self.mixer_gain = mixer_gain = 11
-        self.lna_gain = lna_gain = 11
+        self.gain = gain = 21
         self.freq_shift = freq_shift = 0.0
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
@@ -77,19 +75,13 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         ##################################################
         self._wnT_range = Range(0.001, math.pi, 0.001, math.pi/4.0*0+0.635, 200)
         self._wnT_win = RangeWidget(self._wnT_range, self.set_wnT, "PLL Loop BW", "counter_slider", float)
-        self.top_grid_layout.addWidget(self._wnT_win, 8,0,1,1)
-        self._vga_gain_range = Range(0, 15, 1, 15, 200)
-        self._vga_gain_win = RangeWidget(self._vga_gain_range, self.set_vga_gain, "VGA Gain", "counter_slider", int)
-        self.top_grid_layout.addWidget(self._vga_gain_win, 0,0,1,1)
-        self._mixer_gain_range = Range(0, 15, 1, 11, 200)
-        self._mixer_gain_win = RangeWidget(self._mixer_gain_range, self.set_mixer_gain, "Mixer Gain", "counter_slider", int)
-        self.top_grid_layout.addWidget(self._mixer_gain_win, 1,0,1,1)
-        self._lna_gain_range = Range(0, 14, 1, 11, 200)
-        self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, "LNA Gain", "counter_slider", int)
-        self.top_grid_layout.addWidget(self._lna_gain_win, 2,0,1,1)
+        self.top_grid_layout.addWidget(self._wnT_win, 2,0,1,1)
+        self._gain_range = Range(0, 21, 1, 21, 200)
+        self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Gain", "counter_slider", int)
+        self.top_grid_layout.addWidget(self._gain_win, 0,0,1,1)
         self._freq_shift_range = Range(-500e3, 500e3, 1e3, 0.0, 200)
         self._freq_shift_win = RangeWidget(self._freq_shift_range, self.set_freq_shift, "Frequency Shift", "counter_slider", float)
-        self.top_grid_layout.addWidget(self._freq_shift_win, 3,0,1,1)
+        self.top_grid_layout.addWidget(self._freq_shift_win, 1,0,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	int(final_samp_rate*10.0), #size
         	final_samp_rate, #samp_rate
@@ -210,10 +202,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 7,0,1,1)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=freq_shift,
-            lna_gain=lna_gain,
-            mixer_gain=mixer_gain,
+            gain=gain,
             pulse_freq=pulse_freq,
-            vga_gain=vga_gain,
             wnT=wnT,
         )
 
@@ -251,13 +241,6 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.wnT = wnT
         self.PulseDetectBase.set_wnT(self.wnT)
 
-    def get_vga_gain(self):
-        return self.vga_gain
-
-    def set_vga_gain(self, vga_gain):
-        self.vga_gain = vga_gain
-        self.PulseDetectBase.set_vga_gain(self.vga_gain)
-
     def get_pulse_freq(self):
         return self.pulse_freq
 
@@ -266,19 +249,12 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.PulseDetectBase.set_pulse_freq(self.pulse_freq)
         self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
 
-    def get_mixer_gain(self):
-        return self.mixer_gain
+    def get_gain(self):
+        return self.gain
 
-    def set_mixer_gain(self, mixer_gain):
-        self.mixer_gain = mixer_gain
-        self.PulseDetectBase.set_mixer_gain(self.mixer_gain)
-
-    def get_lna_gain(self):
-        return self.lna_gain
-
-    def set_lna_gain(self, lna_gain):
-        self.lna_gain = lna_gain
-        self.PulseDetectBase.set_lna_gain(self.lna_gain)
+    def set_gain(self, gain):
+        self.gain = gain
+        self.PulseDetectBase.set_gain(self.gain)
 
     def get_freq_shift(self):
         return self.freq_shift

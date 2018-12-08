@@ -138,6 +138,10 @@
   <block>
     <key>PulseDetectBase</key>
     <param>
+      <key>bandwidth</key>
+      <value>0</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -195,7 +199,7 @@
     </param>
     <param>
       <key>vga_gain</key>
-      <value>15</value>
+      <value>21</value>
     </param>
   </block>
   <block>
@@ -288,7 +292,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(200, 305)</value>
+      <value>(192, 345)</value>
     </param>
     <param>
       <key>_rotation</key>

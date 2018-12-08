@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Fri Nov 30 13:59:12 2018
+# Generated: Sat Dec  8 14:57:23 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -126,11 +126,12 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
         self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff()
         self.PulseDetectBase = PulseDetectBase(
+            bandwidth=0,
             freq_shift=0,
             lna_gain=11,
             mixer_gain=11,
             pulse_freq=pulse_freq,
-            vga_gain=15,
+            vga_gain=21,
             wnT=math.pi/4.0*0+0.635,
         )
 

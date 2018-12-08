@@ -1043,6 +1043,49 @@
     </param>
   </block>
   <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(120, 559)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>gain</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Gain</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>21</value>
+    </param>
+  </block>
+  <block>
     <key>import</key>
     <param>
       <key>alias</key>
@@ -1105,92 +1148,6 @@
     </param>
   </block>
   <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(120, 711)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lna_gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>LNA Gain</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>intx</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>11</value>
-    </param>
-  </block>
-  <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(120, 615)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>mixer_gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Mixer Gain</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>intx</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>11</value>
-    </param>
-  </block>
-  <block>
     <key>osmosdr_source</key>
     <param>
       <key>alias</key>
@@ -1217,24 +1174,16 @@
       <value>pulse_freq-freq_shift</value>
     </param>
     <param>
+      <key>gain0</key>
+      <value>gain</value>
+    </param>
+    <param>
       <key>gain_mode0</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode0</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain0</key>
-      <value>lna_gain</value>
-    </param>
-    <param>
-      <key>mixer_gain0</key>
-      <value>mixer_gain</value>
-    </param>
-    <param>
-      <key>vga_gain0</key>
-      <value>vga_gain</value>
     </param>
     <param>
       <key>ant10</key>
@@ -1257,24 +1206,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain10</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode10</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode10</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain10</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain10</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain10</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant11</key>
@@ -1297,24 +1238,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain11</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode11</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode11</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain11</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain11</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain11</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant12</key>
@@ -1337,24 +1270,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain12</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode12</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode12</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain12</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain12</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain12</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant13</key>
@@ -1377,24 +1302,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain13</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode13</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode13</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain13</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain13</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain13</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant14</key>
@@ -1417,24 +1334,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain14</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode14</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode14</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain14</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain14</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain14</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant15</key>
@@ -1457,24 +1366,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain15</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode15</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode15</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain15</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain15</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain15</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant16</key>
@@ -1497,24 +1398,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain16</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode16</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode16</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain16</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain16</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain16</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant17</key>
@@ -1537,24 +1430,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain17</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode17</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode17</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain17</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain17</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain17</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant18</key>
@@ -1577,24 +1462,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain18</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode18</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode18</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain18</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain18</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain18</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant19</key>
@@ -1617,24 +1494,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain19</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode19</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode19</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain19</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain19</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain19</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant1</key>
@@ -1657,24 +1526,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain1</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode1</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode1</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain1</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain1</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain1</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant20</key>
@@ -1697,24 +1558,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain20</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode20</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode20</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain20</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain20</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain20</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant21</key>
@@ -1737,24 +1590,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain21</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode21</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode21</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain21</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain21</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain21</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant22</key>
@@ -1777,24 +1622,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain22</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode22</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode22</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain22</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain22</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain22</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant23</key>
@@ -1817,24 +1654,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain23</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode23</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode23</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain23</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain23</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain23</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant24</key>
@@ -1857,24 +1686,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain24</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode24</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode24</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain24</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain24</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain24</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant25</key>
@@ -1897,24 +1718,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain25</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode25</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode25</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain25</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain25</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain25</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant26</key>
@@ -1937,24 +1750,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain26</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode26</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode26</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain26</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain26</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain26</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant27</key>
@@ -1977,24 +1782,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain27</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode27</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode27</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain27</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain27</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain27</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant28</key>
@@ -2017,24 +1814,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain28</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode28</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode28</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain28</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain28</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain28</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant29</key>
@@ -2057,24 +1846,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain29</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode29</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode29</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain29</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain29</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain29</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant2</key>
@@ -2097,24 +1878,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain2</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode2</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode2</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain2</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain2</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain2</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant30</key>
@@ -2137,24 +1910,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain30</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode30</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode30</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain30</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain30</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain30</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant31</key>
@@ -2177,24 +1942,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain31</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode31</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode31</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain31</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain31</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain31</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant3</key>
@@ -2217,24 +1974,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain3</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode3</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode3</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain3</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain3</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain3</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant4</key>
@@ -2257,24 +2006,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain4</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode4</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode4</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain4</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain4</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain4</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant5</key>
@@ -2297,24 +2038,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain5</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode5</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode5</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain5</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain5</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain5</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant6</key>
@@ -2337,24 +2070,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain6</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode6</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode6</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain6</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain6</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain6</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant7</key>
@@ -2377,24 +2102,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain7</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode7</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode7</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain7</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain7</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain7</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant8</key>
@@ -2417,24 +2134,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain8</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode8</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode8</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain8</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain8</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain8</key>
-      <value>10</value>
     </param>
     <param>
       <key>ant9</key>
@@ -2457,24 +2166,16 @@
       <value>100e6</value>
     </param>
     <param>
+      <key>gain9</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>gain_mode9</key>
       <value>False</value>
     </param>
     <param>
       <key>iq_balance_mode9</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>lna_gain9</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>mixer_gain9</key>
-      <value>20</value>
-    </param>
-    <param>
-      <key>vga_gain9</key>
-      <value>10</value>
     </param>
     <param>
       <key>comment</key>
@@ -2486,7 +2187,7 @@
     </param>
     <param>
       <key>args</key>
-      <value>airspy,bias=0</value>
+      <value>airspy</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -2613,7 +2314,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(120, 423)</value>
+      <value>(120, 455)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2681,49 +2382,6 @@
     <param>
       <key>vlen</key>
       <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(120, 519)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>vga_gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>VGA Gain</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>intx</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>15</value>
     </param>
   </block>
   <block>

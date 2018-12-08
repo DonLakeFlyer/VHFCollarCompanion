@@ -128,7 +128,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>3,0,1,1</value>
+      <value>1,0,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -179,7 +179,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>11</value>
+      <value>21</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -187,11 +187,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(248, 161)</value>
+      <value>(8, 161)</value>
     </param>
     <param>
       <key>gui_hint</key>
-      <value>2,0,1,1</value>
+      <value>0,0,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -199,11 +199,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>lna_gain</value>
+      <value>gain</value>
     </param>
     <param>
       <key>label</key>
-      <value>LNA Gain</value>
+      <value>Gain</value>
     </param>
     <param>
       <key>min_len</key>
@@ -223,70 +223,7 @@
     </param>
     <param>
       <key>stop</key>
-      <value>14</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>int</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>11</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(128, 161)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>1,0,1,1</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>mixer_gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Mixer Gain</value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>15</value>
+      <value>21</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -386,69 +323,6 @@
     </param>
     <param>
       <key>value</key>
-      <value>15</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(8, 161)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value>0,0,1,1</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>vga_gain</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>VGA Gain</value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>15</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>int</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
       <value>math.pi/4.0*0+0.635</value>
     </param>
     <param>
@@ -461,7 +335,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>8,0,1,1</value>
+      <value>2,0,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -535,12 +409,12 @@
       <value>0</value>
     </param>
     <param>
-      <key>id</key>
-      <value>PulseDetectBase</value>
+      <key>gain</key>
+      <value>gain</value>
     </param>
     <param>
-      <key>lna_gain</key>
-      <value>lna_gain</value>
+      <key>id</key>
+      <value>PulseDetectBase</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -551,20 +425,12 @@
       <value>0</value>
     </param>
     <param>
-      <key>mixer_gain</key>
-      <value>mixer_gain</value>
-    </param>
-    <param>
       <key>wnT</key>
       <value>wnT</value>
     </param>
     <param>
       <key>pulse_freq</key>
       <value>pulse_freq</value>
-    </param>
-    <param>
-      <key>vga_gain</key>
-      <value>vga_gain</value>
     </param>
   </block>
   <block>
