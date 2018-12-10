@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Sat Dec  8 15:14:17 2018
+# Generated: Mon Dec 10 13:35:02 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -22,6 +22,7 @@ sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnura
 
 from PulseDetectBase import PulseDetectBase  # grc-generated hier_block
 from PyQt4 import Qt
+from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import gr
 from gnuradio import qtgui
@@ -159,47 +160,7 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.qtgui_number_sink_0.enable_autoscale(False)
         self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 9,1,1,1)
-        self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
-        	8192, #size
-        	firdes.WIN_BLACKMAN_hARRIS, #wintype
-        	pulse_freq, #fc
-        	final_samp_rate, #bw
-        	"Spectrum", #name
-        	1 #number of inputs
-        )
-        self.qtgui_freq_sink_x_0.set_update_time(0.01)
-        self.qtgui_freq_sink_x_0.set_y_axis(-140, -40)
-        self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_AUTO, -65.0, 0, "")
-        self.qtgui_freq_sink_x_0.enable_autoscale(False)
-        self.qtgui_freq_sink_x_0.enable_grid(True)
-        self.qtgui_freq_sink_x_0.set_fft_average(1.0)
-        self.qtgui_freq_sink_x_0.enable_control_panel(False)
-        
-        if not True:
-          self.qtgui_freq_sink_x_0.disable_legend()
-        
-        if "complex" == "float" or "complex" == "msg_float":
-          self.qtgui_freq_sink_x_0.set_plot_pos_half(not True)
-        
-        labels = ["Spectrum", "", "", "", "",
-                  "", "", "", "", ""]
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "dark blue"]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_freq_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_freq_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_freq_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_freq_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
-        
-        self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 7,0,1,1)
+        self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=freq_shift,
             gain=gain,
@@ -210,7 +171,7 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.PulseDetectBase, 1), (self.qtgui_freq_sink_x_0, 0))    
+        self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
         self.connect((self.PulseDetectBase, 0), (self.qtgui_number_sink_0, 0))    
         self.connect((self.PulseDetectBase, 0), (self.qtgui_time_sink_x_0, 0))    
 
@@ -247,7 +208,6 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
         self.PulseDetectBase.set_pulse_freq(self.pulse_freq)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
 
     def get_gain(self):
         return self.gain
@@ -268,7 +228,6 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
 
     def set_final_samp_rate(self, final_samp_rate):
         self.final_samp_rate = final_samp_rate
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.final_samp_rate)
 
 

@@ -25,7 +25,7 @@ import signal
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
-    def __init__(self, pulse_freq=146e6, samp_rate=3e6, vga_gain=15):
+    def __init__(self, pulse_freq=146e6, samp_rate=3e6, gain=21, threshold=2.5, minSamplesForPulse=130):
         gr.top_block.__init__(self, "Pulsedetectcmdlineudp")
 
         ##################################################
@@ -33,7 +33,9 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         self.pulse_freq = pulse_freq
         self.samp_rate = samp_rate
-        self.vga_gain = vga_gain
+        self.gain = gain
+        self.threshold = threshold
+        self.minSamplesForPulse = minSamplesForPulse
 
         ##################################################
         # Variables
@@ -51,13 +53,11 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.VHFPulseDetect_pulse_detect_sink_3 = blocks.vector_sink_f(1)
         self.VHFPulseDetect_pulse_detect_sink_4 = blocks.vector_sink_f(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff()
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, minSamplesForPulse)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
-            lna_gain=11,
-            mixer_gain=11,
             pulse_freq=pulse_freq,
-            vga_gain=vga_gain,
+            gain=gain,
             wnT=math.pi/4.0*0+0.635,
         )
 
@@ -114,8 +114,14 @@ def argument_parser():
         "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
         help="Set samp_rate [default=%default]")
     parser.add_option(
-        "", "--vga-gain", dest="vga_gain", type="int", default=15,
-        help="Set vga_gain [default=%default]")
+        "", "--gain", dest="gain", type="int", default=15,
+        help="Set gain [default=%default]")
+    parser.add_option(
+        "", "--threshold", dest="threshold", type="float", default=2.5,
+        help="Set threshold [default=%default]")
+    parser.add_option(
+        "", "--minSamplesForPulse", dest="minSamplesForPulse", type="int", default=130,
+        help="Set minSamplesForPulse [default=%default]")
     return parser
 
 
@@ -125,7 +131,11 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print "Error: failed to enable real-time scheduling."
 
-    tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate, vga_gain=options.vga_gain)
+    tb = top_block_cls(pulse_freq =             options.pulse_freq, 
+                        samp_rate =             options.samp_rate, 
+                        gain =                  options.gain, 
+                        threshold =             options.threshold, 
+                        minSamplesForPulse =    options.minSamplesForPulse)
     tb.start()
     #try:
     #    raw_input('Press Enter to quit: ')

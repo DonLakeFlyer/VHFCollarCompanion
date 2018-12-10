@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Dec  8 14:57:23 2018
+# Generated: Mon Dec 10 15:22:35 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -28,6 +28,7 @@ from gnuradio import gr
 from gnuradio import qtgui
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
+from gnuradio.qtgui import Range, RangeWidget
 from optparse import OptionParser
 import VHFPulseDetect
 import VHFPulseSender
@@ -71,11 +72,23 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.total_decimation = total_decimation = 4*8*8
+        self.threshold = threshold = 4.0
+        self.minSamplesForPulse = minSamplesForPulse = 150
+        self.gain = gain = 21
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
         ##################################################
         # Blocks
         ##################################################
+        self._threshold_range = Range(1.0, 10.0, 0.1, 4.0, 200)
+        self._threshold_win = RangeWidget(self._threshold_range, self.set_threshold, "Threshold", "counter_slider", float)
+        self.top_grid_layout.addWidget(self._threshold_win, 1,0,1,1)
+        self._minSamplesForPulse_range = Range(10, 300, 1, 150, 200)
+        self._minSamplesForPulse_win = RangeWidget(self._minSamplesForPulse_range, self.set_minSamplesForPulse, "Min samples for pulse", "counter_slider", int)
+        self.top_grid_layout.addWidget(self._minSamplesForPulse_win, 2,0,1,1)
+        self._gain_range = Range(0, 21, 1, 21, 200)
+        self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Gain", "counter_slider", int)
+        self.top_grid_layout.addWidget(self._gain_win, 0,0,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	int(final_samp_rate*10.0), #size
         	final_samp_rate, #samp_rate
@@ -102,7 +115,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "magenta",
                   "cyan", "dark green", "dark red", "Dark Blue", "Dark Blue"]
-        styles = [3, 1, 1, 1, 1,
+        styles = [1, 1, 1, 1, 1,
                   1, 1, 1, 3, 0]
         markers = [-1, -1, -1, -1, -1,
                    -1, -1, -1, -1, -1]
@@ -121,17 +134,14 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
         
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 9,0,1,1)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 3,0,1,1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff()
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, minSamplesForPulse)
         self.PulseDetectBase = PulseDetectBase(
-            bandwidth=0,
             freq_shift=0,
-            lna_gain=11,
-            mixer_gain=11,
+            gain=gain,
             pulse_freq=pulse_freq,
-            vga_gain=21,
             wnT=math.pi/4.0*0+0.635,
         )
 
@@ -174,6 +184,27 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
     def set_total_decimation(self, total_decimation):
         self.total_decimation = total_decimation
         self.set_final_samp_rate(self.samp_rate/self.total_decimation)
+
+    def get_threshold(self):
+        return self.threshold
+
+    def set_threshold(self, threshold):
+        self.threshold = threshold
+        self.VHFPulseDetect_pulse_detect__ff_0.set_threshold(self.threshold)
+
+    def get_minSamplesForPulse(self):
+        return self.minSamplesForPulse
+
+    def set_minSamplesForPulse(self, minSamplesForPulse):
+        self.minSamplesForPulse = minSamplesForPulse
+        self.VHFPulseDetect_pulse_detect__ff_0.set_minSamplesForPulse(self.minSamplesForPulse)
+
+    def get_gain(self):
+        return self.gain
+
+    def set_gain(self, gain):
+        self.gain = gain
+        self.PulseDetectBase.set_gain(self.gain)
 
     def get_final_samp_rate(self):
         return self.final_samp_rate
