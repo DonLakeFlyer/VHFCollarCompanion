@@ -87,3 +87,10 @@ if [ ! -d VHFCollarCompanion ]; then
 	git config credential.helper store
 fi
 
+echo "*** Settings CPUs to performance mode"
+# https://github.com/DavidM42/rpi-cpu.gov
+cd ~
+wget https://raw.githubusercontent.com/DavidM42/rpi-cpu.gov/master/install.sh && sudo chmod +x ./install.sh && sudo ./install.sh --nochown && sudo rm install.sh
+cpu.gov -g performance
+
+cd ~/repos/VHFCollarCompanion
