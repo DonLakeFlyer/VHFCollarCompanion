@@ -20,6 +20,9 @@ fi
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 
+echo "**  Install osmosdr block"
+sudo apt-get install gr-osmosdr -y
+
 echo "*** Install OSX APF support"
 sudo apt-get install netatalk -y
 
