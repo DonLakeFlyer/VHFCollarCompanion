@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# GRC Block setup is based on this discussion: https://lists.gnu.org/archive/html/discuss-gnuradio/2017-03/msg00083.html
+
 #wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
 echo "*** Install Bluetooth (y/n)"

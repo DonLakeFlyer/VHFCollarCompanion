@@ -321,7 +321,70 @@
     </param>
     <param>
       <key>value</key>
-      <value>4*8*8</value>
+      <value>6*8*8</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_range</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>math.pi/4.0*0+0.635</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(312, 809)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>3,0,1,1</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>wnT</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>PLL Loop BW</value>
+    </param>
+    <param>
+      <key>min_len</key>
+      <value>200</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.Horizontal</value>
+    </param>
+    <param>
+      <key>start</key>
+      <value>0.001</value>
+    </param>
+    <param>
+      <key>step</key>
+      <value>0.001</value>
+    </param>
+    <param>
+      <key>stop</key>
+      <value>math.pi</value>
+    </param>
+    <param>
+      <key>rangeType</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>counter_slider</value>
     </param>
   </block>
   <block>
@@ -372,7 +435,7 @@
     </param>
     <param>
       <key>wnT</key>
-      <value>math.pi/4.0*0+0.635</value>
+      <value>wnT</value>
     </param>
     <param>
       <key>pulse_freq</key>
@@ -637,7 +700,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>3,0,1,1</value>
+      <value>4,0,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
