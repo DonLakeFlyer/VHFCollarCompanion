@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Dec 22 16:03:21 2018
+# Generated: Sat Dec 22 17:36:32 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -39,7 +39,7 @@ import sip
 
 class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
 
-    def __init__(self, samp_rate=3e6, pulse_freq=146e6):
+    def __init__(self, pulse_freq=146e6, samp_rate=3e6):
         gr.top_block.__init__(self, "Pulsedetectfactorsgui")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Pulsedetectfactorsgui")
@@ -65,13 +65,13 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         ##################################################
         # Parameters
         ##################################################
-        self.samp_rate = samp_rate
         self.pulse_freq = pulse_freq
+        self.samp_rate = samp_rate
 
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 6*8*8
+        self.total_decimation = total_decimation = 16*8*8
         self.wnT = wnT = math.pi/4.0*0+0.635
         self.threshold = threshold = 2.5
         self.minSamplesForPulse = minSamplesForPulse = 130
@@ -145,8 +145,9 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
             gain=gain,
-            pulse_freq=pulse_freq,
             wnT=wnT,
+            pulse_freq=pulse_freq,
+            samp_rate=samp_rate,
         )
 
         ##################################################
@@ -168,19 +169,20 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         event.accept()
 
 
-    def get_samp_rate(self):
-        return self.samp_rate
-
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
-        self.set_final_samp_rate(self.samp_rate/self.total_decimation)
-
     def get_pulse_freq(self):
         return self.pulse_freq
 
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
         self.PulseDetectBase.set_pulse_freq(self.pulse_freq)
+
+    def get_samp_rate(self):
+        return self.samp_rate
+
+    def set_samp_rate(self, samp_rate):
+        self.samp_rate = samp_rate
+        self.set_final_samp_rate(self.samp_rate/self.total_decimation)
+        self.PulseDetectBase.set_samp_rate(self.samp_rate)
 
     def get_total_decimation(self):
         return self.total_decimation
@@ -228,11 +230,11 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
 def argument_parser():
     parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
-        help="Set samp_rate [default=%default]")
-    parser.add_option(
         "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
         help="Set pulse_freq [default=%default]")
+    parser.add_option(
+        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
+        help="Set samp_rate [default=%default]")
     return parser
 
 
@@ -248,7 +250,7 @@ def main(top_block_cls=PulseDetectFactorsGui, options=None):
         Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
-    tb = top_block_cls(samp_rate=options.samp_rate, pulse_freq=options.pulse_freq)
+    tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
     tb.start()
     tb.show()
 

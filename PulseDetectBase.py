@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Sat Dec  8 15:14:00 2018
+# Generated: Sat Dec 22 17:35:56 2018
 ##################################################
 
 from gnuradio import analog
@@ -18,7 +18,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, freq_shift=0, gain=21, pulse_freq=146, wnT=0.001):
+    def __init__(self, freq_shift=0, gain=21, pulse_freq=146, samp_rate=3e6, wnT=0.001):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),
@@ -31,13 +31,13 @@ class PulseDetectBase(gr.hier_block2):
         self.freq_shift = freq_shift
         self.gain = gain
         self.pulse_freq = pulse_freq
+        self.samp_rate = samp_rate
         self.wnT = wnT
 
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 3e6
-        self.decimate_1 = decimate_1 = 4
+        self.decimate_1 = decimate_1 = 16
         self.samp_rate2 = samp_rate2 = samp_rate/decimate_1
         self.decimate_2 = decimate_2 = 8
         self.samp_rate3 = samp_rate3 = samp_rate2/decimate_2
@@ -115,13 +115,6 @@ class PulseDetectBase(gr.hier_block2):
         self.pulse_freq = pulse_freq
         self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
 
-    def get_wnT(self):
-        return self.wnT
-
-    def set_wnT(self, wnT):
-        self.wnT = wnT
-        self.analog_pll_refout_cc_0.set_loop_bandwidth(self.wnT)
-
     def get_samp_rate(self):
         return self.samp_rate
 
@@ -130,6 +123,13 @@ class PulseDetectBase(gr.hier_block2):
         self.set_samp_rate2(self.samp_rate/self.decimate_1)
         self.set_taps1(firdes.low_pass_2(1.0, self.samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76))
         self.osmosdr_source_0.set_sample_rate(self.samp_rate)
+
+    def get_wnT(self):
+        return self.wnT
+
+    def set_wnT(self, wnT):
+        self.wnT = wnT
+        self.analog_pll_refout_cc_0.set_loop_bandwidth(self.wnT)
 
     def get_decimate_1(self):
         return self.decimate_1
