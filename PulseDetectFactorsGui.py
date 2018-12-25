@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Dec 22 17:36:32 2018
+# Generated: Sat Dec 22 19:11:31 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -74,7 +74,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.total_decimation = total_decimation = 16*8*8
         self.wnT = wnT = math.pi/4.0*0+0.635
         self.threshold = threshold = 2.5
-        self.minSamplesForPulse = minSamplesForPulse = 130
+        self.minSamplesForPulse = minSamplesForPulse = 35
         self.gain = gain = 21
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
@@ -87,7 +87,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self._threshold_range = Range(1.0, 10.0, 0.1, 2.5, 200)
         self._threshold_win = RangeWidget(self._threshold_range, self.set_threshold, "Threshold", "counter_slider", float)
         self.top_grid_layout.addWidget(self._threshold_win, 1,0,1,1)
-        self._minSamplesForPulse_range = Range(10, 300, 1, 130, 200)
+        self._minSamplesForPulse_range = Range(10, 300, 1, 35, 200)
         self._minSamplesForPulse_win = RangeWidget(self._minSamplesForPulse_range, self.set_minSamplesForPulse, "Min samples for pulse", "counter_slider", int)
         self.top_grid_layout.addWidget(self._minSamplesForPulse_win, 2,0,1,1)
         self._gain_range = Range(0, 21, 1, 21, 200)
@@ -145,9 +145,9 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
             gain=gain,
-            wnT=wnT,
             pulse_freq=pulse_freq,
             samp_rate=samp_rate,
+            wnT=wnT,
         )
 
         ##################################################

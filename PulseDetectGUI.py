@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Sat Dec 22 17:37:13 2018
+# Generated: Sat Dec 22 19:07:48 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -248,8 +248,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
 
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
         self.PulseDetectBase.set_pulse_freq(self.pulse_freq)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.pulse_freq, self.final_samp_rate)
 
     def get_gain(self):
         return self.gain
