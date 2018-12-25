@@ -22,6 +22,19 @@ fi
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 
+echo "**  Setup GRC Block Location"
+if [ -z ${GRC_HIER_PATH+x} ]; then 
+	sudo echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment 
+fi
+
+echo "*** UnInstall Deprecated Airspy block"
+cd ~/repos
+if [ -d gr-airspysdr ]; then
+	cd gr-airspysdr/build
+	sudo make uninstall
+	sudo ldconfig
+fi
+
 echo "**  Install osmosdr block"
 sudo apt-get install gr-osmosdr -y
 
@@ -41,20 +54,6 @@ cd ~/repos
 echo "*** Git setup"
 git config --global user.email "don@thegagnes.com"
 git config --global user.name "DonLakeFlyer"
-
-#echo "*** Install Airspy block"
-#cd ~/repos
-#if [ ! -d gr-airspysdr ]; then
-#	git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
-#	cd gr-airspysdr
-#	git config credential.helper store
-#	mkdir build
-#	cd build/
-#	cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
-#	make
-#	sudo make install
-#	sudo ldconfig
-#fi
 
 echo "*** Install Pulse Sender block - UDP/BT"
 cd ~/repos
