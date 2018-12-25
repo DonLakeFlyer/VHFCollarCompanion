@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectcmdlineudp
-# Generated: Tue Nov 13 20:10:31 2018
+# Generated: Tue Dec 25 13:40:14 2018
 ##################################################
 
 import os
@@ -21,11 +21,11 @@ import VHFPulseDetect
 import VHFPulseSender
 import cmath
 import math
-import signal
+
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
-    def __init__(self, pulse_freq=146e6, samp_rate=3e6, gain=21, threshold=2.5, minSamplesForPulse=130):
+    def __init__(self, pulse_freq=146e6, samp_rate=3e6):
         gr.top_block.__init__(self, "Pulsedetectcmdlineudp")
 
         ##################################################
@@ -33,31 +33,29 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         self.pulse_freq = pulse_freq
         self.samp_rate = samp_rate
-        self.gain = gain
-        self.threshold = threshold
-        self.minSamplesForPulse = minSamplesForPulse
 
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 4*8*8
+        self.total_decimation = total_decimation = 16*16*4
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
         ##################################################
         # Blocks
         ##################################################
-        self.blocks_vector_sink_PulseDetectBase_raw = blocks.vector_sink_c(1)
-        self.VHFPulseDetect_pulse_detect_sink_0 = blocks.vector_sink_f(1)
-        self.VHFPulseDetect_pulse_detect_sink_1 = blocks.vector_sink_f(1)
-        self.VHFPulseDetect_pulse_detect_sink_2 = blocks.vector_sink_f(1)
-        self.VHFPulseDetect_pulse_detect_sink_3 = blocks.vector_sink_f(1)
-        self.VHFPulseDetect_pulse_detect_sink_4 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_1_3 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_1_2 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_1_1_0 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_1_1 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_1 = blocks.vector_sink_f(1)
+        self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, minSamplesForPulse)
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(2.5, 35)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
+            gain=21,
             pulse_freq=pulse_freq,
-            gain=gain,
+            samp_rate=3e6,
             wnT=math.pi/4.0*0+0.635,
         )
 
@@ -65,17 +63,13 @@ class PulseDetectCmdLineUDP(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.PulseDetectBase, 0), (self.VHFPulseDetect_pulse_detect__ff_0, 0))    
-        self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_PulseDetectBase_raw, 0))    
+        self.connect((self.PulseDetectBase, 1), (self.blocks_vector_sink_x_0, 0))    
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 0), (self.VHFPulseSender_udp_sender_f_0, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 1), (self.VHFPulseDetect_pulse_detect_sink_0, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 2), (self.VHFPulseDetect_pulse_detect_sink_1, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 3), (self.VHFPulseDetect_pulse_detect_sink_2, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 4), (self.VHFPulseDetect_pulse_detect_sink_3, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 5), (self.VHFPulseDetect_pulse_detect_sink_4, 0))    
-
-        # The following line is modified from the .grc output. It connects the two objects
-        # such that udp_sender can change parameters in PulseDetectBase.
-        self.VHFPulseSender_udp_sender_f_0.setPulseDetectBase(self.PulseDetectBase)
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 1), (self.blocks_vector_sink_x_1, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 5), (self.blocks_vector_sink_x_1_1, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 4), (self.blocks_vector_sink_x_1_1_0, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 3), (self.blocks_vector_sink_x_1_2, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 2), (self.blocks_vector_sink_x_1_3, 0))    
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -113,15 +107,6 @@ def argument_parser():
     parser.add_option(
         "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
         help="Set samp_rate [default=%default]")
-    parser.add_option(
-        "", "--gain", dest="gain", type="int", default=15,
-        help="Set gain [default=%default]")
-    parser.add_option(
-        "", "--threshold", dest="threshold", type="float", default=2.5,
-        help="Set threshold [default=%default]")
-    parser.add_option(
-        "", "--minSamplesForPulse", dest="minSamplesForPulse", type="int", default=130,
-        help="Set minSamplesForPulse [default=%default]")
     return parser
 
 
@@ -131,19 +116,12 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print "Error: failed to enable real-time scheduling."
 
-    tb = top_block_cls(pulse_freq =             options.pulse_freq, 
-                        samp_rate =             options.samp_rate, 
-                        gain =                  options.gain, 
-                        threshold =             options.threshold, 
-                        minSamplesForPulse =    options.minSamplesForPulse)
+    tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
     tb.start()
-    #try:
-    #    raw_input('Press Enter to quit: ')
-    #except EOFError:
-    #    pass
-    while True:
-        signal.pause()
-
+    try:
+        raw_input('Press Enter to quit: ')
+    except EOFError:
+        pass
     tb.stop()
     tb.wait()
 

@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Sat Dec 22 19:08:37 2018
+# Generated: Tue Dec 25 13:50:08 2018
 ##################################################
 
 from gnuradio import analog
@@ -39,17 +39,17 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         self.decimate_1 = decimate_1 = 16
         self.samp_rate2 = samp_rate2 = samp_rate/decimate_1
-        self.decimate_2 = decimate_2 = 8
+        self.decimate_2 = decimate_2 = 16
         self.samp_rate3 = samp_rate3 = samp_rate2/decimate_2
         self.taps3 = taps3 = firdes.low_pass_2(1.0, samp_rate3, 325, 75, 30.0, firdes.WIN_KAISER, 6.76/2)
         self.taps2 = taps2 = firdes.low_pass_2(1.0, samp_rate2, 1.5e3, 16e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
         self.taps1 = taps1 = firdes.low_pass_2(1.0, samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
-        self.decimate_3 = decimate_3 = 8
+        self.decimate_3 = decimate_3 = 4
         self.taps3_len = taps3_len = len(taps3)
         self.taps2_len = taps2_len = len(taps2)
         self.taps1_len = taps1_len = len(taps1)
         self.samp_rate4 = samp_rate4 = samp_rate3/decimate_3
-        self.pulse_duration = pulse_duration = 0.010
+        self.pulse_duration = pulse_duration = 0.015
         self.inter_pulse_duration = inter_pulse_duration = 2
         self.fmin = fmin = -100
         self.fmax = fmax = 100

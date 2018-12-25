@@ -132,7 +132,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>4*8*8</value>
+      <value>16*16*4</value>
     </param>
   </block>
   <block>
@@ -166,12 +166,12 @@
       <value>0</value>
     </param>
     <param>
-      <key>id</key>
-      <value>PulseDetectBase</value>
+      <key>gain</key>
+      <value>21</value>
     </param>
     <param>
-      <key>lna_gain</key>
-      <value>11</value>
+      <key>id</key>
+      <value>PulseDetectBase</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -182,10 +182,6 @@
       <value>0</value>
     </param>
     <param>
-      <key>mixer_gain</key>
-      <value>11</value>
-    </param>
-    <param>
       <key>wnT</key>
       <value>math.pi/4.0*0+0.635</value>
     </param>
@@ -194,8 +190,8 @@
       <value>pulse_freq</value>
     </param>
     <param>
-      <key>vga_gain</key>
-      <value>15</value>
+      <key>samp_rate</key>
+      <value>3e6</value>
     </param>
   </block>
   <block>
@@ -236,6 +232,14 @@
       <key>minoutbuf</key>
       <value>0</value>
     </param>
+    <param>
+      <key>minSamplesForPulse</key>
+      <value>35</value>
+    </param>
+    <param>
+      <key>threshold</key>
+      <value>2.5</value>
+    </param>
   </block>
   <block>
     <key>VHFPulseSender_udp_sender_f</key>
@@ -257,7 +261,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(448, 321)</value>
+      <value>(560, 321)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -288,7 +292,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(280, 409)</value>
+      <value>(312, 249)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -301,6 +305,201 @@
     <param>
       <key>type</key>
       <value>complex</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 353)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 481)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1_1</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 449)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1_1_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 417)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1_2</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_vector_sink_x</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 385)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_vector_sink_x_1_3</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
     </param>
     <param>
       <key>vlen</key>
@@ -469,8 +668,38 @@
   </connection>
   <connection>
     <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1_3</sink_block_id>
+    <source_key>2</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1_1_0</sink_block_id>
+    <source_key>4</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1_2</sink_block_id>
+    <source_key>3</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1</sink_block_id>
+    <source_key>1</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
     <sink_block_id>VHFPulseSender_udp_sender_f_0</sink_block_id>
     <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>VHFPulseDetect_pulse_detect__ff_0</source_block_id>
+    <sink_block_id>blocks_vector_sink_x_1_1</sink_block_id>
+    <source_key>5</source_key>
     <sink_key>0</sink_key>
   </connection>
 </flow_graph>

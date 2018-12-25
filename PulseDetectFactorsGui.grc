@@ -321,7 +321,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>16*8*8</value>
+      <value>16*16*4</value>
     </param>
   </block>
   <block>

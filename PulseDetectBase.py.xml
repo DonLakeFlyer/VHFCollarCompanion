@@ -1,0 +1,61 @@
+<block>
+  <name>Pulsedetectbase</name>
+  <key>PulseDetectBase</key>
+  <category>[GRC Hier Blocks]</category>
+  <import>from PulseDetectBase import PulseDetectBase  # grc-generated hier_block</import>
+  <make>PulseDetectBase(
+    freq_shift=$freq_shift,
+    gain=$gain,
+    pulse_freq=$pulse_freq,
+    samp_rate=$samp_rate,
+    wnT=$wnT,
+)</make>
+  <callback>set_freq_shift($freq_shift)</callback>
+  <callback>set_gain($gain)</callback>
+  <callback>set_pulse_freq($pulse_freq)</callback>
+  <callback>set_samp_rate($samp_rate)</callback>
+  <callback>set_wnT($wnT)</callback>
+  <param>
+    <name>Freq Shift</name>
+    <key>freq_shift</key>
+    <value>0</value>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Gain</name>
+    <key>gain</key>
+    <value>21</value>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Pulse Freq</name>
+    <key>pulse_freq</key>
+    <value>146</value>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Sample Rate</name>
+    <key>samp_rate</key>
+    <value>3e6</value>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>PLL Loop BW</name>
+    <key>wnT</key>
+    <value>0.001</value>
+    <type>raw</type>
+  </param>
+  <source>
+    <name>Average Pulse Output</name>
+    <type>float</type>
+    <vlen>1</vlen>
+  </source>
+  <source>
+    <name>Decimated Spectrum</name>
+    <type>complex</type>
+    <vlen>1</vlen>
+    <optional>1</optional>
+  </source>
+  <doc>/home/parallels/repos/VHFCollarCompanion/PulseDetectBase.py</doc>
+  <grc_source>/home/parallels/repos/VHFCollarCompanion/PulseDetectBase.grc</grc_source>
+</block>
