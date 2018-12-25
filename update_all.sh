@@ -1,16 +1,16 @@
 #!/bin/bash
 
-echo "************** Update Airspy block"
-cd ~/repos
-if [ -d gr-airspysdr ]; then
-	cd gr-airspysdr
-	git pull origin master
-	cd build/
-    make clean
-	make
-	sudo make install
-	sudo ldconfig
-fi
+#echo "************** Update Airspy block"
+#cd ~/repos
+#if [ -d gr-airspysdr ]; then
+#	cd gr-airspysdr
+#	git pull origin master
+#	cd build/
+#    make clean
+#	make
+#	sudo make install
+#	sudo ldconfig
+#fi
 
 echo "************** Update Pulse Sender block - UDP/BT"
 cd ~/repos

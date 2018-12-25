@@ -42,19 +42,19 @@ echo "*** Git setup"
 git config --global user.email "don@thegagnes.com"
 git config --global user.name "DonLakeFlyer"
 
-echo "*** Install Airspy block"
-cd ~/repos
-if [ ! -d gr-airspysdr ]; then
-	git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
-	cd gr-airspysdr
-	git config credential.helper store
-	mkdir build
-	cd build/
-	cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
-	make
-	sudo make install
-	sudo ldconfig
-fi
+#echo "*** Install Airspy block"
+#cd ~/repos
+#if [ ! -d gr-airspysdr ]; then
+#	git clone https://github.com/DonLakeFlyer/gr-airspysdr.git
+#	cd gr-airspysdr
+#	git config credential.helper store
+#	mkdir build
+#	cd build/
+#	cmake ../ -DENABLE_RTL=OFF -DENABLE_REDPITAYA=OFF -DENABLE_RFSPACE=OFF -DENABLE_RTL_TCP=OFF -DENABLE_FCD=OFF -DENABLE_FCDPP=OFF
+#	make
+#	sudo make install
+#	sudo ldconfig
+#fi
 
 echo "*** Install Pulse Sender block - UDP/BT"
 cd ~/repos
