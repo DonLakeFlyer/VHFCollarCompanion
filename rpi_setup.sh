@@ -24,7 +24,7 @@ sudo apt-get install gnuradio -y
 
 echo "**  Setup GRC Block Location"
 if [ -z ${GRC_HIER_PATH+x} ]; then 
-	sudo echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment 
+	sudo sh -c 'echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment'
 fi
 
 echo "*** UnInstall Deprecated Airspy block"
