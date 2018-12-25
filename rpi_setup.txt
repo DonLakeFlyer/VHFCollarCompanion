@@ -15,7 +15,8 @@ sudo systemctl restart bluetooth
 sudo apt-get install blueman
 
 - Add startup to crond
-@reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineBT.py > /home/pi/service.log 2>&1
+crontab -e
+@reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py --channel-index 0 > /home/pi/service.log 2>&1
 @reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineBT.py
 
 

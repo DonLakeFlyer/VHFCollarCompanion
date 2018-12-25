@@ -91,8 +91,13 @@ if [ ! -d VHFCollarCompanion ]; then
 	git config credential.helper store
 fi
 
+echo "*** Setup WiFi Connections"
+cd ~/repos/VHFCollarCompanion
+sudo cp wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+
 echo "*** Settings CPUs to performance mode"
 # https://github.com/DavidM42/rpi-cpu.gov
+# cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 cd ~
 wget https://raw.githubusercontent.com/DavidM42/rpi-cpu.gov/master/install.sh && sudo chmod +x ./install.sh && sudo ./install.sh --nochown && sudo rm install.sh
 cpu.gov -g performance
