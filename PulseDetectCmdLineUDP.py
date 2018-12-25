@@ -22,6 +22,8 @@ import VHFPulseSender
 import cmath
 import math
 
+import signal
+
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
@@ -69,7 +71,11 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 5), (self.blocks_vector_sink_x_1_1, 0))    
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 4), (self.blocks_vector_sink_x_1_1_0, 0))    
         self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 3), (self.blocks_vector_sink_x_1_2, 0))    
-        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 2), (self.blocks_vector_sink_x_1_3, 0))    
+        self.connect((self.VHFPulseDetect_pulse_detect__ff_0, 2), (self.blocks_vector_sink_x_1_3, 0))
+
+        # The following line is modified from the .grc output. It connects the two objects 
+        # such that udp_sender can change parameters in PulseDetectBase. 
+        self.VHFPulseSender_udp_sender_f_0.setPulseDetectBase(self.PulseDetectBase)     
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -118,10 +124,8 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
 
     tb = top_block_cls(pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
     tb.start()
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass
+    while True: 
+        signal.pause() 
     tb.stop()
     tb.wait()
 
