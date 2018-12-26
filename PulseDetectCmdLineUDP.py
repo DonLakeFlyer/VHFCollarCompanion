@@ -22,6 +22,7 @@ import VHFPulseSender
 import cmath
 import math
 
+import signal
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
