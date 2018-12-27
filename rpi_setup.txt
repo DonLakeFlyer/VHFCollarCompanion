@@ -19,6 +19,9 @@ crontab -e
 @reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py --channel-index 0 > /home/pi/service.log 2>&1
 @reboot sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineBT.py
 
+# Find rPi on network (OSX)
+arp -na | grep -i b8:27:eb
+
 
 # Misc info
 
