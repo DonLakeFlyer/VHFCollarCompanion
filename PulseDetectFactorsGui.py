@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Tue Dec 25 13:26:58 2018
+# Generated: Thu Dec 27 13:38:45 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -140,7 +140,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 4,0,1,1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
-        self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f()
+        self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f(0)
         self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, minSamplesForPulse)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
