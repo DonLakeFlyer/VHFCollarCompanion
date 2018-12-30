@@ -25,15 +25,20 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 	cd ~
 	wget https://raw.githubusercontent.com/DavidM42/rpi-cpu.gov/master/install.sh && sudo chmod +x ./install.sh && sudo ./install.sh --nochown && sudo rm install.sh
 	cpu.gov -g performance
+
+	echo "**  Setup GRC Block Location"
+	if [ -z ${GRC_HIER_PATH+x} ]; then 
+		sudo sh -c 'echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment'
+	fi
+else
+	echo "**  Setup GRC Block Location"
+	if [ -z ${GRC_HIER_PATH+x} ]; then 
+		sudo sh -c 'echo "GRC_HIER_PATH=/home/parallels/repos/VHFCollarCompanion" > /etc/environment'
+	fi	
 fi
 
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
-
-echo "**  Setup GRC Block Location"
-if [ -z ${GRC_HIER_PATH+x} ]; then 
-	sudo sh -c 'echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment'
-fi
 
 echo "*** UnInstall Deprecated Airspy block"
 cd ~/repos
@@ -63,7 +68,7 @@ echo "*** Git setup"
 git config --global user.email "don@thegagnes.com"
 git config --global user.name "DonLakeFlyer"
 
-echo "*** Install Pulse Sender block - UDP/BT"
+echo "*** Install Pulse Sender block"
 cd ~/repos
 if [ ! -d gr-VHFPulseSender ]; then
 	git clone https://github.com/DonLakeFlyer/gr-VHFPulseSender.git
