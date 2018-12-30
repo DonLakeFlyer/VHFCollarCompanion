@@ -30,6 +30,9 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 	if [ -z ${GRC_HIER_PATH+x} ]; then 
 		sudo sh -c 'echo "GRC_HIER_PATH=/home/pi/repos/VHFCollarCompanion" > /etc/environment'
 	fi
+
+	echo "*** Install OSX APF support"
+	sudo apt-get install netatalk -y
 else
 	echo "**  Setup GRC Block Location"
 	if [ -z ${GRC_HIER_PATH+x} ]; then 
@@ -40,19 +43,8 @@ fi
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 
-echo "*** UnInstall Deprecated Airspy block"
-cd ~/repos
-if [ -d gr-airspysdr ]; then
-	cd gr-airspysdr/build
-	sudo make uninstall
-	sudo ldconfig
-fi
-
 echo "**  Install osmosdr block"
 sudo apt-get install gr-osmosdr -y
-
-echo "*** Install OSX APF support"
-sudo apt-get install netatalk -y
 
 echo "*** Install tools for build Custom GNU Radio blocks"
 sudo apt-get install cmake libairspy0 libairspy-dev swig -y
