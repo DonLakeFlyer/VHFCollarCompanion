@@ -4,19 +4,27 @@
 
 #wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
-echo "*** Install Bluetooth (y/n)"
+echo "*** Clone VHFCollarCompanion"
+cd ~/repos
+if [ ! -d VHFCollarCompanion ]; then
+	git clone https://github.com/DonLakeFlyer/VHFCollarCompanion.git
+	cd VHFCollarCompanion
+	git config credential.helper store
+fi
+
+echo "*** rPi Setup (y/n)"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-	echo "*** Installing Bluetooth packages"
-	sudo apt-get install bluetooth bluez python-bluez blueman expect -y
-	# Fixed screwed up bluez install
-	# https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
-	echo "*** Fixing bluez sdp problem"
-	sed 's|^ExecStart=/usr/lib/bluetooth/bluetoothd$|ExecStart=/usr/lib/bluetooth/bluetoothd -C\nExecStartPost=/bin/chmod 777 /var/run/sdp|' /etc/systemd/system/dbus-org.bluez.service >fixed.service
-	sudo cp fixed.service /etc/systemd/system/dbus-org.bluez.service
-	rm fixed.service
-	sudo systemctl daemon-reload
-	sudo systemctl restart bluetooth
+	echo "*** Setup WiFi Connections"
+	cd ~/repos/VHFCollarCompanion
+	sudo cp wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+	echo "*** Settings CPUs to performance mode"
+	# https://github.com/DavidM42/rpi-cpu.gov
+	# cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	cd ~
+	wget https://raw.githubusercontent.com/DavidM42/rpi-cpu.gov/master/install.sh && sudo chmod +x ./install.sh && sudo ./install.sh --nochown && sudo rm install.sh
+	cpu.gov -g performance
 fi
 
 echo "**  Install GNU Radio"
@@ -82,24 +90,5 @@ if [ ! -d gr-VHFPulseDetect ]; then
 	sudo make install
 	sudo ldconfig
 fi
-
-echo "*** Clone VHFCollarCompanion"
-cd ~/repos
-if [ ! -d VHFCollarCompanion ]; then
-	git clone https://github.com/DonLakeFlyer/VHFCollarCompanion.git
-	cd VHFCollarCompanion
-	git config credential.helper store
-fi
-
-echo "*** Setup WiFi Connections"
-cd ~/repos/VHFCollarCompanion
-sudo cp wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
-
-echo "*** Settings CPUs to performance mode"
-# https://github.com/DavidM42/rpi-cpu.gov
-# cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-cd ~
-wget https://raw.githubusercontent.com/DavidM42/rpi-cpu.gov/master/install.sh && sudo chmod +x ./install.sh && sudo ./install.sh --nochown && sudo rm install.sh
-cpu.gov -g performance
 
 cd ~/repos/VHFCollarCompanion
