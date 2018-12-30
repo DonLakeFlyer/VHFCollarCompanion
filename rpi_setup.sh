@@ -4,6 +4,9 @@
 
 #wget https://raw.githubusercontent.com/DonLakeFlyer/VHFCollarCompanion/master/rpi_setup.sh
 
+echo "*** Install git"
+sudo apt-get install git
+
 echo "*** Clone VHFCollarCompanion"
 cd ~/repos
 if [ ! -d VHFCollarCompanion ]; then
