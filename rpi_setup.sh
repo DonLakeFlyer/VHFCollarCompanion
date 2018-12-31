@@ -7,6 +7,13 @@
 echo "*** Install git"
 sudo apt-get install git
 
+echo "*** Create repos directory"
+cd ~
+if [ ! -d repos ]; then
+    mkdir repos
+fi
+cd ~/repos
+
 echo "*** Clone VHFCollarCompanion"
 cd ~/repos
 if [ ! -d VHFCollarCompanion ]; then
@@ -60,13 +67,6 @@ sudo apt-get install gr-osmosdr -y
 
 echo "*** Install tools for build Custom GNU Radio blocks"
 sudo apt-get install cmake libairspy0 libairspy-dev swig -y
-
-echo "*** Create repos directory"
-cd ~
-if [ ! -d repos ]; then
-	mkdir repos
-fi
-cd ~/repos
 
 echo "*** Git setup"
 git config --global user.email "don@thegagnes.com"
