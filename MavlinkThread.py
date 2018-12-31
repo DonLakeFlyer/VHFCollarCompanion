@@ -8,12 +8,21 @@ import DirectionFinder
 
 from pymavlink import mavutil
 
-DEBUG_TS_COMMAND_ACK = 				0
-DEBUG_INDEX_COMMAND_ACK_SET_GAIN =	0
-DEBUG_INDEX_COMMAND_ACK_SET_FREQ =	1
+# Mavlink DEBUG messages are used to communicate with QGC
+# 	DEBUG.time_boot_msg is used to hold a command id
+#	DEBUG.index/value are then command specific
 
-DEBUG_TS_PULSE = 	1
-DEBUG_INDEX_PULSE =	0
+# Ack for commands
+#	DEBUG.index - command being acked
+#	DEBUG.value - gain/freq value which was chaned to
+DEBUG_COMMAND_ID_ACK = 				0
+DEBUG_COMMAND_ACK_SET_GAIN_INDEX =	0
+DEBUG_COMMAND_ACK_SET_FREQ_INDEX =	1
+
+# Pulse value
+#	DEBUG.index - not used
+#	DEBUG.value = pulse value
+DEBUG_COMMAND_ID_PULSE = 	1
 
 # param1 frequency
 COMMAND_SET_GAIN = mavutil.mavlink.MAV_CMD_USER_1
@@ -82,13 +91,13 @@ class MavlinkThread (threading.Thread):
 			gain = math.floor(msg.param1)
 			logging.debug("Set gain command received gain(%d)", gain)
 			self.tools.setGainQueue.put(gain)
-			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_SET_GAIN, gain)
+			self.sendCommandAck(DEBUG_COMMAND_ACK_SET_GAIN_INDEX, gain)
 		elif msg.command == COMMAND_SET_FREQ:
 			commandHandled = True
 			freq = math.floor(msg.param1)
 			logging.debug("Set frequency command received freq(%d)", freq)
 			self.tools.setFreqQueue.put(freq)
-			self.sendCommandAck(DEBUG_INDEX_COMMAND_ACK_SET_FREQ, freq)
+			self.sendCommandAck(DEBUG_COMMAND_ACK_SET_FREQ_INDEX, freq)
 
 	def sendMemoryVect(self, rgValues):
 		logging.debug("sendMemoryVect %s", string(rgValues))
@@ -101,10 +110,10 @@ class MavlinkThread (threading.Thread):
 
 	def sendPulseStrength(self, strength):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_send(DEBUG_TS_PULSE, DEBUG_INDEX_PULSE, strength)
+		self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_PULSE, 0, strength)
 		self.sendMessageLock.release()
 
 	def sendCommandAck(self, command, value):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_send(DEBUG_TS_COMMAND_ACK, command, value)
+		self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_ACK, command, value)
 		self.sendMessageLock.release()

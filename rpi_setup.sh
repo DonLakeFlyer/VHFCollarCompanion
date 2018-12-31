@@ -43,6 +43,14 @@ else
 	fi	
 fi
 
+echo "*** VHF Drone setup (y/n)"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+	sudo apt-get install python-pip -y
+	sudo pip install -U pymavlink
+	sudo apt-get-install python-serial
+fi
+
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 

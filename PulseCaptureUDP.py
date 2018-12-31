@@ -13,7 +13,7 @@ class PulseCaptureUDP(Process):
         self.setGainQueue = tools.setGainQueue
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.bind(('localhost', 10000))
-        self.udpAddress = ('localhost', 10000)
+        self.sendAddress = ('localhost', 10001)
 
     def processFreqQueue(self):
         try:
@@ -22,7 +22,7 @@ class PulseCaptureUDP(Process):
             pass
         else:
             logging.debug("Changing frequency %f", self.freq)
-            self.udpSocket.sendto("freq " + str(self.freq), self.udpAddress)
+            self.udpSocket.sendto(struct.pack('<ii', 2, self.freq), self.sendAddress)
 
     def processGainQueue(self):
         try:
@@ -31,18 +31,18 @@ class PulseCaptureUDP(Process):
             pass
         else:
             logging.debug("Changing gain %d", self.gain)
-            self.udpSocket.sendto("gain " + str(self.gain), self.udpAddress)
+            self.udpSocket.sendto(struct.pack('<ii', 2, self.gain), self.sendAddress)
 
     def run(self):
-        logging.debug("PulseCapture.run")
+        logging.debug("PulseCapture udo receive loop")
 
         while True:
             self.processFreqQueue()
             self.processGainQueue()
 
-            data, address = self.udpSocket.recvfrom(4)
-            floats = struct.unpack('<f', data)
-            pulseValue = floats[0]
+            data, address = self.udpSocket.recvfrom(4*3)
+            rgPulseInfo = struct.unpack('<iff', data)
+            pulseValue = rgPulseInfo[1]
             logging.debug("PulseCapture pulseValue %d", pulseValue)
 
             if self.pulseQueue:
