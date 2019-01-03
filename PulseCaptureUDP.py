@@ -31,11 +31,10 @@ class PulseCaptureUDP(Process):
             pass
         else:
             logging.debug("Changing gain %d", self.gain)
-            self.udpSocket.sendto(struct.pack('<ii', 2, self.gain), self.sendAddress)
+            self.udpSocket.sendto(struct.pack('<ii', 1, self.gain), self.sendAddress)
 
     def run(self):
-        logging.debug("PulseCapture udo receive loop")
-
+        logging.debug("PulseCaptureUDP receive loop")
         while True:
             self.processFreqQueue()
             self.processGainQueue()
@@ -43,7 +42,7 @@ class PulseCaptureUDP(Process):
             data, address = self.udpSocket.recvfrom(4*3)
             rgPulseInfo = struct.unpack('<iff', data)
             pulseValue = rgPulseInfo[1]
-            logging.debug("PulseCapture pulseValue %d", pulseValue)
+            logging.debug("PulseCaptureUDP pulseValue %d", pulseValue)
 
             if self.pulseQueue:
                 self.pulseQueue.put(pulseValue)

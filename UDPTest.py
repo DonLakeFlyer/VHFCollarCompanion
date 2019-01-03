@@ -6,7 +6,8 @@ import time
 
 def main():
     udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udpSocket.bind(('localhost', 14540))
+    #udpSocket.bind(('localhost', 14540))
+    udpSocket.bind(('localhost', 10000))
     #udpSocket.setblocking(False)
 
     while True:

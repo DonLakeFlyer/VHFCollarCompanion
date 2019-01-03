@@ -23,7 +23,7 @@ def main():
 	parser.add_argument("--logDir", help="log directory", default="")
 	parser.add_argument("--workDir", help="work directory", default="")
 	parser.add_argument("--gain", type=int, default="21")
-	parser.add_argument("--freq", type=int, default=146)
+	parser.add_argument("--freq", type=int, default=146e6)
 	args = parser.parse_args()
 
 	CollarLogging.pruneLogs(args.logDir)
