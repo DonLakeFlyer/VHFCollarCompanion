@@ -25,9 +25,14 @@ fi
 echo "*** rPi Setup (y/n)"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-	echo "*** Setup WiFi Connections"
+	echo "*** Setup WiFi Connections: STE:y PDC:n (y/n)"
 	cd ~/repos/VHFCollarCompanion
-	sudo cp wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	read answer
+	if [ "$answer" != "${answer#[Yy]}" ] ;then
+		sudo cp wpa_supplicant_ste.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	else
+		sudo cp wpa_supplicant_pdc.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	fi
 
 	echo "*** Settings CPUs to performance mode"
 	# https://github.com/DavidM42/rpi-cpu.gov
