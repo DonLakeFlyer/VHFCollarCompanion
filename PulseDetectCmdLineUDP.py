@@ -141,13 +141,15 @@ def main(top_block_cls=PulseDetectCmdLineUDP, options=None):
     if gr.enable_realtime_scheduling() != gr.RT_OK:
         print "Error: failed to enable real-time scheduling."
 
-    tb = top_block_cls(channel_index=options.channel_index, localhost=options.localhost, pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
-    tb.start()
-    while True:
-        signal.pause()  
-    tb.stop()
-    tb.wait()
-
+    try:
+        tb = top_block_cls(channel_index=options.channel_index, localhost=options.localhost, pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
+        tb.start()
+        while True:
+            signal.pause()  
+        tb.stop()
+        tb.wait()
+    except Exception as e:
+        print("Exception in main", e)
 
 if __name__ == '__main__':
     main()
