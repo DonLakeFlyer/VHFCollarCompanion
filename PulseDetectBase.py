@@ -2,8 +2,9 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Tue Dec 25 13:50:08 2018
+# Generated: Sat Feb  2 11:04:49 2019
 ##################################################
+
 
 from gnuradio import analog
 from gnuradio import blocks
@@ -18,7 +19,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, freq_shift=0, gain=21, pulse_freq=146, samp_rate=3e6, wnT=0.001):
+    def __init__(self, freq_shift=0, gain=21, pllFreqMax=100, pulse_freq=146, samp_rate=3e6, wnT=0.001):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),
@@ -30,6 +31,7 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         self.freq_shift = freq_shift
         self.gain = gain
+        self.pllFreqMax = pllFreqMax
         self.pulse_freq = pulse_freq
         self.samp_rate = samp_rate
         self.wnT = wnT
@@ -51,14 +53,14 @@ class PulseDetectBase(gr.hier_block2):
         self.samp_rate4 = samp_rate4 = samp_rate3/decimate_3
         self.pulse_duration = pulse_duration = 0.015
         self.inter_pulse_duration = inter_pulse_duration = 2
-        self.fmin = fmin = -100
-        self.fmax = fmax = 100
+        self.fmin = fmin = -pllFreqMax
+        self.fmax = fmax = pllFreqMax
 
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "airspy" )
-        self.osmosdr_source_0.set_clock_source("gpsdo", 0)
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'airspy' )
+        self.osmosdr_source_0.set_clock_source('gpsdo', 0)
         self.osmosdr_source_0.set_sample_rate(samp_rate)
         self.osmosdr_source_0.set_center_freq(pulse_freq-freq_shift, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
@@ -66,9 +68,11 @@ class PulseDetectBase(gr.hier_block2):
         self.osmosdr_source_0.set_iq_balance_mode(0, 0)
         self.osmosdr_source_0.set_gain_mode(False, 0)
         self.osmosdr_source_0.set_gain(gain, 0)
-        self.osmosdr_source_0.set_antenna("", 0)
+        self.osmosdr_source_0.set_if_gain(20, 0)
+        self.osmosdr_source_0.set_bb_gain(20, 0)
+        self.osmosdr_source_0.set_antenna('', 0)
         self.osmosdr_source_0.set_bandwidth(0, 0)
-          
+
         self.freq_xlating_fir_filter_xxx_0 = filter.freq_xlating_fir_filter_ccc(decimate_1, (taps1), freq_shift, samp_rate)
         self.fir_filter_xxx_0_0_0 = filter.fir_filter_ccf(decimate_3, (taps3))
         self.fir_filter_xxx_0_0_0.declare_sample_delay(0)
@@ -82,24 +86,24 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_pll_refout_cc_0, 0), (self.blocks_multiply_conjugate_cc_0, 1))    
-        self.connect((self.blocks_complex_to_mag_0_0, 0), (self, 0))    
-        self.connect((self.blocks_moving_average_xx_0_0, 0), (self.blocks_complex_to_mag_0_0, 0))    
-        self.connect((self.blocks_multiply_conjugate_cc_0, 0), (self.blocks_moving_average_xx_0_0, 0))    
-        self.connect((self.fir_filter_xxx_0_0, 0), (self.fir_filter_xxx_0_0_0, 0))    
-        self.connect((self.fir_filter_xxx_0_0_0, 0), (self.analog_pll_refout_cc_0, 0))    
-        self.connect((self.fir_filter_xxx_0_0_0, 0), (self.blocks_multiply_conjugate_cc_0, 0))    
-        self.connect((self.fir_filter_xxx_0_0_0, 0), (self, 1))    
-        self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.fir_filter_xxx_0_0, 0))    
-        self.connect((self.osmosdr_source_0, 0), (self.freq_xlating_fir_filter_xxx_0, 0))    
+        self.connect((self.analog_pll_refout_cc_0, 0), (self.blocks_multiply_conjugate_cc_0, 1))
+        self.connect((self.blocks_complex_to_mag_0_0, 0), (self, 0))
+        self.connect((self.blocks_moving_average_xx_0_0, 0), (self.blocks_complex_to_mag_0_0, 0))
+        self.connect((self.blocks_multiply_conjugate_cc_0, 0), (self.blocks_moving_average_xx_0_0, 0))
+        self.connect((self.fir_filter_xxx_0_0, 0), (self.fir_filter_xxx_0_0_0, 0))
+        self.connect((self.fir_filter_xxx_0_0_0, 0), (self.analog_pll_refout_cc_0, 0))
+        self.connect((self.fir_filter_xxx_0_0_0, 0), (self.blocks_multiply_conjugate_cc_0, 0))
+        self.connect((self.fir_filter_xxx_0_0_0, 0), (self, 1))
+        self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.fir_filter_xxx_0_0, 0))
+        self.connect((self.osmosdr_source_0, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
 
     def get_freq_shift(self):
         return self.freq_shift
 
     def set_freq_shift(self, freq_shift):
         self.freq_shift = freq_shift
-        self.freq_xlating_fir_filter_xxx_0.set_center_freq(self.freq_shift)
         self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
+        self.freq_xlating_fir_filter_xxx_0.set_center_freq(self.freq_shift)
 
     def get_gain(self):
         return self.gain
@@ -107,6 +111,14 @@ class PulseDetectBase(gr.hier_block2):
     def set_gain(self, gain):
         self.gain = gain
         self.osmosdr_source_0.set_gain(self.gain, 0)
+
+    def get_pllFreqMax(self):
+        return self.pllFreqMax
+
+    def set_pllFreqMax(self, pllFreqMax):
+        self.pllFreqMax = pllFreqMax
+        self.set_fmin(-self.pllFreqMax)
+        self.set_fmax(self.pllFreqMax)
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -120,8 +132,8 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.set_samp_rate2(self.samp_rate/self.decimate_1)
         self.set_taps1(firdes.low_pass_2(1.0, self.samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76))
+        self.set_samp_rate2(self.samp_rate/self.decimate_1)
         self.osmosdr_source_0.set_sample_rate(self.samp_rate)
 
     def get_wnT(self):
@@ -143,8 +155,8 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate2(self, samp_rate2):
         self.samp_rate2 = samp_rate2
-        self.set_samp_rate3(self.samp_rate2/self.decimate_2)
         self.set_taps2(firdes.low_pass_2(1.0, self.samp_rate2, 1.5e3, 16e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76))
+        self.set_samp_rate3(self.samp_rate2/self.decimate_2)
 
     def get_decimate_2(self):
         return self.decimate_2
@@ -158,8 +170,8 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate3(self, samp_rate3):
         self.samp_rate3 = samp_rate3
-        self.set_samp_rate4(self.samp_rate3/self.decimate_3)
         self.set_taps3(firdes.low_pass_2(1.0, self.samp_rate3, 325, 75, 30.0, firdes.WIN_KAISER, 6.76/2))
+        self.set_samp_rate4(self.samp_rate3/self.decimate_3)
 
     def get_taps3(self):
         return self.taps3
@@ -215,9 +227,9 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate4(self, samp_rate4):
         self.samp_rate4 = samp_rate4
+        self.blocks_moving_average_xx_0_0.set_length_and_scale(int(self.samp_rate4*self.pulse_duration), 1)
         self.analog_pll_refout_cc_0.set_max_freq(math.pi/(self.samp_rate4/2.0)*self.fmax)
         self.analog_pll_refout_cc_0.set_min_freq(math.pi/(self.samp_rate4/2.0)*self.fmin)
-        self.blocks_moving_average_xx_0_0.set_length_and_scale(int(self.samp_rate4*self.pulse_duration), 1)
 
     def get_pulse_duration(self):
         return self.pulse_duration

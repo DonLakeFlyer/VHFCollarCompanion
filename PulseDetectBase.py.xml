@@ -6,12 +6,14 @@
   <make>PulseDetectBase(
     freq_shift=$freq_shift,
     gain=$gain,
+    pllFreqMax=$pllFreqMax,
     pulse_freq=$pulse_freq,
     samp_rate=$samp_rate,
     wnT=$wnT,
 )</make>
   <callback>set_freq_shift($freq_shift)</callback>
   <callback>set_gain($gain)</callback>
+  <callback>set_pllFreqMax($pllFreqMax)</callback>
   <callback>set_pulse_freq($pulse_freq)</callback>
   <callback>set_samp_rate($samp_rate)</callback>
   <callback>set_wnT($wnT)</callback>
@@ -25,6 +27,12 @@
     <name>Gain</name>
     <key>gain</key>
     <value>21</value>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>PLL Freq Max</name>
+    <key>pllFreqMax</key>
+    <value>100</value>
     <type>raw</type>
   </param>
   <param>
