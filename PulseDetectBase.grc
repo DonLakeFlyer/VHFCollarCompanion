@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Wed Mar 15 19:29:45 2017</timestamp>
   <block>
@@ -186,7 +186,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>100</value>
+      <value>pllFreqMax</value>
     </param>
   </block>
   <block>
@@ -213,7 +213,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>-100</value>
+      <value>-pllFreqMax</value>
     </param>
   </block>
   <block>
@@ -529,7 +529,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -721,7 +721,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -1076,6 +1076,10 @@
       <value></value>
     </param>
     <param>
+      <key>bb_gain0</key>
+      <value>20</value>
+    </param>
+    <param>
       <key>bw0</key>
       <value>0</value>
     </param>
@@ -1092,20 +1096,28 @@
       <value>pulse_freq-freq_shift</value>
     </param>
     <param>
-      <key>gain0</key>
-      <value>gain</value>
-    </param>
-    <param>
       <key>gain_mode0</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain0</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode0</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain0</key>
+      <value>gain</value>
+    </param>
+    <param>
       <key>ant10</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain10</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw10</key>
@@ -1124,20 +1136,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain10</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode10</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain10</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode10</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain10</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant11</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain11</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw11</key>
@@ -1156,20 +1176,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain11</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode11</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain11</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode11</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain11</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant12</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain12</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw12</key>
@@ -1188,20 +1216,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain12</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode12</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain12</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode12</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain12</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant13</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain13</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw13</key>
@@ -1220,20 +1256,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain13</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode13</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain13</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode13</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain13</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant14</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain14</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw14</key>
@@ -1252,20 +1296,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain14</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode14</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain14</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode14</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain14</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant15</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain15</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw15</key>
@@ -1284,20 +1336,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain15</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode15</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain15</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode15</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain15</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant16</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain16</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw16</key>
@@ -1316,20 +1376,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain16</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode16</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain16</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode16</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain16</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant17</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain17</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw17</key>
@@ -1348,20 +1416,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain17</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode17</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain17</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode17</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain17</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant18</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain18</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw18</key>
@@ -1380,20 +1456,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain18</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode18</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain18</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode18</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain18</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant19</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain19</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw19</key>
@@ -1412,20 +1496,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain19</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode19</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain19</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode19</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain19</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant1</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain1</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw1</key>
@@ -1444,20 +1536,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain1</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode1</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain1</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode1</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain1</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant20</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain20</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw20</key>
@@ -1476,20 +1576,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain20</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode20</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain20</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode20</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain20</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant21</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain21</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw21</key>
@@ -1508,20 +1616,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain21</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode21</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain21</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode21</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain21</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant22</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain22</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw22</key>
@@ -1540,20 +1656,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain22</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode22</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain22</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode22</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain22</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant23</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain23</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw23</key>
@@ -1572,20 +1696,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain23</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode23</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain23</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode23</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain23</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant24</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain24</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw24</key>
@@ -1604,20 +1736,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain24</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode24</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain24</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode24</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain24</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant25</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain25</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw25</key>
@@ -1636,20 +1776,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain25</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode25</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain25</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode25</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain25</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant26</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain26</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw26</key>
@@ -1668,20 +1816,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain26</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode26</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain26</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode26</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain26</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant27</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain27</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw27</key>
@@ -1700,20 +1856,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain27</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode27</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain27</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode27</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain27</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant28</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain28</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw28</key>
@@ -1732,20 +1896,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain28</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode28</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain28</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode28</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain28</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant29</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain29</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw29</key>
@@ -1764,20 +1936,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain29</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode29</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain29</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode29</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain29</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant2</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain2</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw2</key>
@@ -1796,20 +1976,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain2</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode2</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain2</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode2</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain2</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant30</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain30</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw30</key>
@@ -1828,20 +2016,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain30</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode30</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain30</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode30</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain30</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant31</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain31</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw31</key>
@@ -1860,20 +2056,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain31</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode31</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain31</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode31</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain31</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant3</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain3</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw3</key>
@@ -1892,20 +2096,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain3</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode3</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain3</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode3</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain3</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant4</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain4</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw4</key>
@@ -1924,20 +2136,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain4</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode4</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain4</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode4</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain4</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant5</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain5</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw5</key>
@@ -1956,20 +2176,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain5</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode5</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain5</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode5</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain5</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant6</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain6</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw6</key>
@@ -1988,20 +2216,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain6</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode6</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain6</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode6</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain6</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant7</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain7</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw7</key>
@@ -2020,20 +2256,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain7</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode7</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain7</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode7</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain7</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant8</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain8</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw8</key>
@@ -2052,20 +2296,28 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain8</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode8</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>if_gain8</key>
+      <value>20</value>
     </param>
     <param>
       <key>iq_balance_mode8</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain8</key>
+      <value>10</value>
+    </param>
+    <param>
       <key>ant9</key>
       <value></value>
+    </param>
+    <param>
+      <key>bb_gain9</key>
+      <value>20</value>
     </param>
     <param>
       <key>bw9</key>
@@ -2084,16 +2336,20 @@
       <value>100e6</value>
     </param>
     <param>
-      <key>gain9</key>
-      <value>10</value>
-    </param>
-    <param>
       <key>gain_mode9</key>
       <value>False</value>
     </param>
     <param>
+      <key>if_gain9</key>
+      <value>20</value>
+    </param>
+    <param>
       <key>iq_balance_mode9</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>gain9</key>
+      <value>10</value>
     </param>
     <param>
       <key>comment</key>
@@ -2214,6 +2470,49 @@
     <param>
       <key>sync</key>
       <value></value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1240, 548)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pllFreqMax</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>PLL Freq Max</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>100</value>
     </param>
   </block>
   <block>

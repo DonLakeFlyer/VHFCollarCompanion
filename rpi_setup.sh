@@ -7,6 +7,13 @@
 echo "*** Install git"
 sudo apt-get install git -y
 
+echo "*** Create repos directory"
+cd ~
+if [ ! -d repos ]; then
+    mkdir repos
+fi
+cd ~/repos
+
 echo "*** Clone VHFCollarCompanion"
 cd ~/repos
 if [ ! -d VHFCollarCompanion ]; then
@@ -18,9 +25,14 @@ fi
 echo "*** rPi Setup (y/n)"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-	echo "*** Setup WiFi Connections"
+	echo "*** Setup WiFi Connections: STE:y PDC:n (y/n)"
 	cd ~/repos/VHFCollarCompanion
-	sudo cp wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	read answer
+	if [ "$answer" != "${answer#[Yy]}" ] ;then
+		sudo cp wpa_supplicant_ste.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	else
+		sudo cp wpa_supplicant_pdc.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	fi
 
 	echo "*** Settings CPUs to performance mode"
 	# https://github.com/DavidM42/rpi-cpu.gov
@@ -43,6 +55,15 @@ else
 	fi	
 fi
 
+echo "*** VHF Drone setup (y/n)"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+	sudo apt-get install python-pip -y
+    sudo apt-get install libxml2-dev libxslt-dev python-dev -y
+    sudo pip install -U pymavlink
+    sudo pip install pyserial
+fi
+
 echo "**  Install GNU Radio"
 sudo apt-get install gnuradio -y
 
@@ -51,13 +72,6 @@ sudo apt-get install gr-osmosdr -y
 
 echo "*** Install tools for build Custom GNU Radio blocks"
 sudo apt-get install cmake libairspy0 libairspy-dev swig -y
-
-echo "*** Create repos directory"
-cd ~
-if [ ! -d repos ]; then
-	mkdir repos
-fi
-cd ~/repos
 
 echo "*** Git setup"
 git config --global user.email "don@thegagnes.com"

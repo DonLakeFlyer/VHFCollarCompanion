@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Wed Mar 15 19:29:45 2017</timestamp>
   <block>
@@ -242,6 +242,69 @@
     </param>
     <param>
       <key>value</key>
+      <value>100</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(472, 812)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>4,0,1,1</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pllFreqMax</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>PLL Freq Max</value>
+    </param>
+    <param>
+      <key>min_len</key>
+      <value>200</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.Horizontal</value>
+    </param>
+    <param>
+      <key>start</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>step</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>stop</key>
+      <value>1000</value>
+    </param>
+    <param>
+      <key>rangeType</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>counter_slider</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_range</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
       <value>2.5</value>
     </param>
     <param>
@@ -434,6 +497,10 @@
       <value>0</value>
     </param>
     <param>
+      <key>pllFreqMax</key>
+      <value>pllFreqMax</value>
+    </param>
+    <param>
       <key>wnT</key>
       <value>wnT</value>
     </param>
@@ -526,6 +593,10 @@
     <param>
       <key>id</key>
       <value>VHFPulseSender_udp_sender_f_0</value>
+    </param>
+    <param>
+      <key>localhost</key>
+      <value>0</value>
     </param>
   </block>
   <block>
@@ -679,6 +750,10 @@
       <value>True</value>
     </param>
     <param>
+      <key>axislabels</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -708,7 +783,7 @@
     </param>
     <param>
       <key>gui_hint</key>
-      <value>4,0,1,1</value>
+      <value>5,0,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -981,6 +1056,10 @@
     <param>
       <key>srate</key>
       <value>final_samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>

@@ -1,3 +1,5 @@
+# GRC Block setup is based on this discussion: https://lists.gnu.org/archive/html/discuss-gnuradio/2017-03/msg00083.html
+
 # Missing scripted hardware setup
 
 - Turn on SSH/Serial Port
