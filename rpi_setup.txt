@@ -54,6 +54,7 @@ hdmi_cvt 800 480 60 6 0 0 0
 
 make posix iris
 python3 main.py --sitl True
+python PulseDetectCmdLineUDP.py --localhost 1 (1 for Drone)
 
 Modify posix-configs/SITL/init/ekf2/typhoon_h480
 mavlink start -x -u 14557 -r 4000000 -m onboard -o 14540 -f
