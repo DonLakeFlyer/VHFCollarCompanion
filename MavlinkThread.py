@@ -8,28 +8,28 @@ import DirectionFinder
 
 from pymavlink import mavutil
 
-# Mavlink DEBUG messages are used to communicate with QGC in both directions.
-# 	DEBUG.time_boot_msg is used to hold a command id
-#	DEBUG.index/value are then command specific
+# Mavlink DEBUG_VECT messages are used to communicate with QGC in both directions.
+# 	DEBUG_VECT.x is used to hold a command id
+#	DEBUG.y/z are then command specific
 
 # Pulse value
-#	DEBUG.index - not used
-#	DEBUG.value = pulse value
+#	DEBUG.y = pulse value
+#	DEBUG.z - not used
 DEBUG_COMMAND_ID_PULSE = 	0
 
 # Set gain
-#	DEBUG.index - new gain
-#	DEBUG.value = not used
+#	DEBUG.y - new gain
+#	DEBUG.z = not used
 DEBUG_COMMAND_ID_SET_GAIN = 1
 
 # Set frequency
-#	DEBUG.index - new frequency
-#	DEBUG.value = not used
+#	DEBUG.y - new frequency
+#	DEBUG.z = not used
 DEBUG_COMMAND_ID_SET_FREQ = 2
 
 # Ack for SET commands
-#	DEBUG.index - command being acked
-#	DEBUG.value - gain/freq value which was chaned to
+#	DEBUG.y - command being acked
+#	DEBUG.z - gain/freq value which was chaned to
 DEBUG_COMMAND_ID_ACK = 				3
 DEBUG_COMMAND_ACK_SET_GAIN_INDEX =	0
 DEBUG_COMMAND_ACK_SET_FREQ_INDEX =	1
@@ -103,5 +103,5 @@ class MavlinkThread (threading.Thread):
 	def sendPulseStrength(self, strength):
 		self.sendMessageLock.acquire()
 		print("MavlinkThread debug_send", strength)
-		self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_PULSE, 0, strength)
+		self.mavlink.mav.debug_vect_send("", 0, DEBUG_COMMAND_ID_PULSE, strength, 0)
 		self.sendMessageLock.release()
