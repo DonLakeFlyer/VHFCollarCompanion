@@ -3,7 +3,6 @@ import MavlinkThread
 import PulseCaptureUDP
 import PulseDetectorSimulator
 import Vehicle
-import DirectionFinder
 import PulseSender
 import CollarLogging
 
@@ -40,7 +39,6 @@ def main():
 	if not args.testPulse:
 		tools.mavlinkThread = MavlinkThread.MavlinkThread(tools, args)
 		tools.vehicle = Vehicle.Vehicle(tools)
-		tools.directionFinder = DirectionFinder.DirectionFinder(tools)
 		tools.pulseSender = PulseSender.PulseSender(tools)
 		tools.pulseSender.start()
 		tools.mavlinkThread.start()

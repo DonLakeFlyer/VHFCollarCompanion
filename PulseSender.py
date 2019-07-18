@@ -8,7 +8,8 @@ class PulseSender (threading.Thread):
 
 	def run(self):
 		while True:
-			pulseStrength = self.tools.pulseQueue.get(True)
-			logging.debug("Sending pulse %d", pulseStrength)
-			self.tools.mavlinkThread.sendPulseStrength(pulseStrength)
-			self.tools.directionFinder.pulse(pulseStrength)
+			rgPulseInfo = self.tools.pulseQueue.get(True)
+			pulseStrength = rgPulseInfo[0]
+			freq = rgPulseInfo[1]
+			logging.debug("Sending pulse %d freq %d", pulseStrength, freq)
+			self.tools.mavlinkThread.sendPulseStrength(pulseStrength, freq)

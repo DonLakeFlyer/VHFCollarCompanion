@@ -4,7 +4,6 @@ import logging
 import subprocess
 
 import Vehicle
-import DirectionFinder
 
 from pymavlink import mavutil
 
@@ -14,7 +13,7 @@ from pymavlink import mavutil
 
 # Pulse value
 #	DEBUG.y = pulse value
-#	DEBUG.z - not used
+#	DEBUG.z - frequence
 DEBUG_COMMAND_ID_PULSE = 	0
 
 # Set gain
@@ -77,31 +76,29 @@ class MavlinkThread (threading.Thread):
 			waiting = False
 
 	def wait_command(self):
-		rgTypes = ['DEBUG']
+		rgTypes = ['DEBUG_VECT']
 		msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
 		self.tools.vehicle.mavlinkMessage(msg)
-		if msg.get_type() == 'DEBUG':
-			print("DEBUG", msg.time_boot_ms, msg.ind, msg.value)
-			commandId = msg.time_boot_ms
-			commandIndex = msg.ind
-			commandValue = msg.value
+		if msg.get_type() == 'DEBUG_VECT':
+			print("DEBUG_VECT", msg.x, msg.y, msg.z)
+			commandId = msg.x
 			if commandId == DEBUG_COMMAND_ID_SET_GAIN:
-				gain = commandIndex
+				gain = int(msg.y)
 				logging.debug("Set gain command received gain(%d)", gain)
 				self.tools.setGainQueue.put(gain)
 				self.sendMessageLock.acquire()
 				self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_ACK, DEBUG_COMMAND_ACK_SET_GAIN_INDEX, gain)
 				self.sendMessageLock.release()
 			elif commandId == DEBUG_COMMAND_ID_SET_FREQ:
-				freq = commandIndex
+				freq = int(msg.y)
 				logging.debug("Set frequency command received freq(%d)", freq)
 				self.tools.setFreqQueue.put(freq)
 				self.sendMessageLock.acquire()
 				self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_ACK, DEBUG_COMMAND_ACK_SET_GAIN_INDEX, freq)
 				self.sendMessageLock.release()
 
-	def sendPulseStrength(self, strength):
+	def sendPulseStrength(self, strength, freq):
 		self.sendMessageLock.acquire()
 		print("MavlinkThread debug_send", strength)
-		self.mavlink.mav.debug_vect_send("", 0, DEBUG_COMMAND_ID_PULSE, strength, 0)
+		self.mavlink.mav.debug_vect_send("", 0, DEBUG_COMMAND_ID_PULSE, strength, freq)
 		self.sendMessageLock.release()

@@ -53,7 +53,7 @@ hdmi_cvt 800 480 60 6 0 0 0
 # SITL testing
 
 make posix iris
-python3 main.py --sitl True
+python main.py --sitl True
 python PulseDetectCmdLineUDP.py --localhost 1 (1 for Drone)
 
 Modify posix-configs/SITL/init/ekf2/typhoon_h480
