@@ -8,30 +8,33 @@ import Vehicle
 from pymavlink import mavutil
 
 # Mavlink DEBUG_VECT messages are used to communicate with QGC in both directions.
-# 	DEBUG_VECT.x is used to hold a command id
-#	DEBUG.y/z are then command specific
+# 	DEBUG_VECT.name is used to hold a command type
+#	DEBUG_VECT.x/y/z are then command specific
 
 # Pulse value
-#	DEBUG.y = pulse value
-#	DEBUG.z - frequence
-DEBUG_COMMAND_ID_PULSE = 	0
+#	DEBUG_VECT.name = "PULSE"
+#	DEBUG_VECT.x = pulse value
+#	DEBUG_VECT.y - frequency
+#	DEBUG_VECT.z - temp
+DEBUG_COMMAND_ID_PULSE = "PULSE"
 
 # Set gain
-#	DEBUG.y - new gain
-#	DEBUG.z = not used
-DEBUG_COMMAND_ID_SET_GAIN = 1
+#	DEBUG_VECT.name = "GAIN"
+#	DEBUG_VECT.x - new gain
+DEBUG_COMMAND_ID_SET_GAIN = "SET-GAIN"
 
 # Set frequency
-#	DEBUG.y - new frequency
-#	DEBUG.z = not used
-DEBUG_COMMAND_ID_SET_FREQ = 2
+#	DEBUG_VECT.name = "FREQ"
+#	DEBUG_VECT.x - new frequency
+DEBUG_COMMAND_ID_SET_FREQ = "SET-FREQ"
 
 # Ack for SET commands
-#	DEBUG.y - command being acked
-#	DEBUG.z - gain/freq value which was chaned to
-DEBUG_COMMAND_ID_ACK = 				3
-DEBUG_COMMAND_ACK_SET_GAIN_INDEX =	0
-DEBUG_COMMAND_ACK_SET_FREQ_INDEX =	1
+#	DEBUG_VECT.name = "CMD-ACK"
+#	DEBUG_VECT.x - command being acked (DEBUG_COMMAND_ACK_SET_*)
+#	DEBUG_VECT.y - gain/freq value which was changed to
+DEBUG_COMMAND_ID_ACK = "CMD-ACK"
+DEBUG_COMMAND_ACK_SET_GAIN =	0
+DEBUG_COMMAND_ACK_SET_FREQ =	1
 
 class MavlinkThread (threading.Thread):
 	exitFlag = False
@@ -80,25 +83,24 @@ class MavlinkThread (threading.Thread):
 		msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
 		self.tools.vehicle.mavlinkMessage(msg)
 		if msg.get_type() == 'DEBUG_VECT':
-			print("DEBUG_VECT", msg.x, msg.y, msg.z)
-			commandId = msg.x
+			print("DEBUG_VECT", msg.name, msg.x, msg.y, msg.z)
+			commandId = msg.name
 			if commandId == DEBUG_COMMAND_ID_SET_GAIN:
-				gain = int(msg.y)
+				gain = int(msg.x)
 				logging.debug("Set gain command received gain(%d)", gain)
 				self.tools.setGainQueue.put(gain)
 				self.sendMessageLock.acquire()
-				self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_ACK, DEBUG_COMMAND_ACK_SET_GAIN_INDEX, gain)
+				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_GAIN, gain, 0)
 				self.sendMessageLock.release()
 			elif commandId == DEBUG_COMMAND_ID_SET_FREQ:
-				freq = int(msg.y)
+				freq = int(msg.x)
 				logging.debug("Set frequency command received freq(%d)", freq)
 				self.tools.setFreqQueue.put(freq)
 				self.sendMessageLock.acquire()
-				self.mavlink.mav.debug_send(DEBUG_COMMAND_ID_ACK, DEBUG_COMMAND_ACK_SET_GAIN_INDEX, freq)
+				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_FREQ, freq, 0)
 				self.sendMessageLock.release()
 
-	def sendPulseStrength(self, strength, freq):
+	def sendPulseStrength(self, strength, freq, temp):
 		self.sendMessageLock.acquire()
-		print("MavlinkThread debug_send", strength)
-		self.mavlink.mav.debug_vect_send("", 0, DEBUG_COMMAND_ID_PULSE, strength, freq)
+		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq, temp)
 		self.sendMessageLock.release()

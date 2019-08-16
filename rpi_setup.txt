@@ -52,7 +52,7 @@ hdmi_cvt 800 480 60 6 0 0 0
 
 # SITL testing
 
-make posix iris
+HEADLESS=1 make posix gazebo_iris
 python main.py --sitl True
 python PulseDetectCmdLineUDP.py --localhost 1 (1 for Drone)
 

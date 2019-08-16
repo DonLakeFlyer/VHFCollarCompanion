@@ -11,5 +11,6 @@ class PulseSender (threading.Thread):
 			rgPulseInfo = self.tools.pulseQueue.get(True)
 			pulseStrength = rgPulseInfo[0]
 			freq = rgPulseInfo[1]
-			logging.debug("Sending pulse %d freq %d", pulseStrength, freq)
-			self.tools.mavlinkThread.sendPulseStrength(pulseStrength, freq)
+			temp = rgPulseInfo[2]
+			logging.debug("Sending pulse %d freq %d temp %f", pulseStrength, freq, temp)
+			self.tools.mavlinkThread.sendPulseStrength(pulseStrength, freq, temp)
