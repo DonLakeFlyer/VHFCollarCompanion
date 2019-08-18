@@ -483,7 +483,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>firdes.low_pass_2(1.0, samp_rate3, 325, 75, 30.0, firdes.WIN_KAISER, 6.76/2)</value>
+      <value>firdes.low_pass_2(1.0, samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2)</value>
     </param>
   </block>
   <block>
