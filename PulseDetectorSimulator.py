@@ -14,6 +14,7 @@ class PulseDetectorSimulator (PulseBase):
     def __init__(self, tools):
         PulseBase.__init__(self, tools.pulseQueue, tools.setFreqQueue, tools.setGainQueue)
         self.vehicle = tools.vehicle
+        self.freq = 146000000
         self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
         self.simulationTimer.start()
 
@@ -21,6 +22,26 @@ class PulseDetectorSimulator (PulseBase):
 #        logging.debug("PulseDetectorSimulator run")
 
     def simulatePulse(self):
+        self.checkQueues()
+        if self.vehicle.homePositionSet:
+            headingToCollar = 80.0
+            pulseStrength = 20.0 # max
+            headingDifference = abs(self.vehicle.heading - headingToCollar)
+            if headingDifference > 180.0:
+                headingDifference = 180 - (headingDifference - 180.0)
+            headingDifference = abs(headingDifference - 180.0)
+            pctOfFullStrength = 0
+            if self.vehicle.altRel > 10:
+                pctOfFullStrength = headingDifference / 180.0
+                altDiff = max(0, 121.0 - self.vehicle.altRel)
+                altDiff = abs(altDiff - 121.0)
+                pctOfFullStrength *= altDiff / 121
+            pulseStrength *= pctOfFullStrength
+            self.pulseQueue.put([pulseStrength, self.freq, 31.0])
+        self.simulationTimer = threading.Timer(60.0 / BPM, self.simulatePulse)
+        self.simulationTimer.start()
+
+    def simulatePulseOld(self):
         self.checkQueues()
         if self.vehicle.homePositionSet:
             if self.vehicle.homePosition == self.vehicle.position:
@@ -55,6 +76,7 @@ class PulseDetectorSimulator (PulseBase):
 
     def changeFrequency(self, frequency):
         logging.debug("Simulate frequency change %f", frequency)
+        self.freq = frequency
 
     def changeGain(self, gain):
         logging.debug("Simulate gain change %d", gain)

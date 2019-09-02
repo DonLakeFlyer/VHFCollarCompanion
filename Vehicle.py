@@ -7,6 +7,7 @@ class Vehicle:
 	def __init__(self, tools):
 		self.mavlink = tools.mavlinkThread
 		self.heading = float('NaN')
+		self.altRel = float('NaN')
 		self.targetHeadingRadians = float('NaN')
 		self.position = geo.xyz(0, 0)
 		self.homePositionSet = False
@@ -16,8 +17,8 @@ class Vehicle:
 		msgType = msg.get_type()
 		if msgType == "VFR_HUD":
 			self.handleVfrHud(msg)
-		elif msgType == "GPS_RAW_INT":
-			self.handleGpsRawInt(msg)
+		elif msgType == "GLOBAL_POSITION_INT":
+			self.handleGlobalPositionInt(msg)
 		elif msgType == "HOME_POSITION":
 			self.handleHomePosition(msg)
 		elif msgType == "ATTITUDE":
@@ -26,9 +27,9 @@ class Vehicle:
 	def handleVfrHud(self, msg):
 		self.heading = msg.heading
 
-	def handleGpsRawInt(self, msg):
-		if msg.fix_type == mavutil.mavlink.GPS_FIX_TYPE_3D_FIX:
-			self.position = geo.xyz(msg.lat / 1E7, msg.lon / 1E7)
+	def handleGlobalPositionInt(self, msg):
+		self.position = geo.xyz(msg.lat / 1E7, msg.lon / 1E7)
+		self.altRel = msg.relative_alt / 1000 # millimeters to meters
 
 	def handleHomePosition(self, msg):
 		self.homePositionSet = True

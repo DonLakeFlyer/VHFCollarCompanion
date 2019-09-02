@@ -59,7 +59,7 @@ hdmi_cvt 800 480 60 6 0 0 0
 # SITL testing
 
 HEADLESS=1 make posix gazebo_iris
-python main.py --sitl True
+python main.py --sitl True --simulatePulse True
 python PulseDetectCmdLineUDP.py --localhost 1 (1 for Drone)
 
 Modify posix-configs/SITL/init/ekf2/typhoon_h480
