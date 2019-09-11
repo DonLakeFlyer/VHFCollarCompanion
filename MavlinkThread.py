@@ -56,11 +56,11 @@ class MavlinkThread (threading.Thread):
 
 	def run(self):
 		# Start a mavlink connectin to get the system id from the heartbeat
-		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate)
-		self.wait_heartbeat()
+		#self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate)
+		#self.wait_heartbeat()
 		# Close initial connection and start new one with correct source_system id
-		self.mavlink.close()
-		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.targetSystemId)
+		#self.mavlink.close()
+		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1) #self.targetSystemId)
 		# We broadcast all our messages so they route through the firmware
 		self.target_system = 0
 		self.target_component = 0
