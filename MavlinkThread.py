@@ -54,7 +54,6 @@ class MavlinkThread (threading.Thread):
 		self.cancelCommand = False
 		self.sendMessageLock = threading.Lock()
 		self.pulseProcess = None
-		self.mavlink = None
 
 	def run(self):
 		# Delay to prevent mavlink connection from getting hosed at startup
@@ -63,10 +62,10 @@ class MavlinkThread (threading.Thread):
 		# Start a mavlink connection to get the system id from the heartbeat
 		haveHeartbeat = False
 		while not haveHeartbeat:
-			logging.debug("Waiting for heartbeat")
-			mavlinkHeartbeat = mavutil.mavlink_connection(self.device, baud=self.baudrate)
-			haveHeartbeat = self.wait_heartbeat(mavlinkHeartbeat)
-			mavlinkHeartbeat.close()
+			print("Waiting for heartbeat")
+			self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate)
+			haveHeartbeat = self.wait_heartbeat()
+			self.mavlink.close()
 
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.targetSystemId)
 		# We broadcast all our messages so they route through the firmware
@@ -77,9 +76,9 @@ class MavlinkThread (threading.Thread):
 				break
 			self.wait_command()
 
-	def wait_heartbeat(self, mavlink):
+	def wait_heartbeat(self):
 		logging.debug("Waiting for heartbeat from Vehicle autopilot component")
-		msg = mavlink.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
+		msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
 		if msg == None:
 			return False
 		else:
@@ -110,7 +109,6 @@ class MavlinkThread (threading.Thread):
 				self.sendMessageLock.release()
 
 	def sendPulseStrength(self, strength, freq, temp):
-		if self.mavlink != None:
-			self.sendMessageLock.acquire()
-			self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq, temp)
-			self.sendMessageLock.release()
+		self.sendMessageLock.acquire()
+		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq, temp)
+		self.sendMessageLock.release()
