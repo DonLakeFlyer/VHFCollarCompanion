@@ -55,14 +55,11 @@ class MavlinkThread (threading.Thread):
 		self.pulseProcess = None
 
 	def run(self):
-		# Start a mavlink connection to get the system id from the heartbeat
-		haveHeartbeat = False
-		while not haveHeartbeat:
-			print("Waiting for heartbeat")
-			self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate)
-			haveHeartbeat = self.wait_heartbeat()
-			self.mavlink.close()
-
+		# Start a mavlink connectin to get the system id from the heartbeat
+		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate)
+		self.wait_heartbeat()
+		# Close initial connection and start new one with correct source_system id
+		self.mavlink.close()
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=self.targetSystemId)
 		# We broadcast all our messages so they route through the firmware
 		self.target_system = 0
@@ -74,13 +71,12 @@ class MavlinkThread (threading.Thread):
 
 	def wait_heartbeat(self):
 		logging.debug("Waiting for heartbeat from Vehicle autopilot component")
-		msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
-		if msg == None:
-			return False
-		else:
+		waiting = True
+		while waiting:
+			msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
 			logging.debug("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
 			self.targetSystemId = self.mavlink.target_system
-			return True
+			waiting = False
 
 	def wait_command(self):
 		rgTypes = ["DEBUG_VECT", "VFR_HUD", "HOME_POSITION", "GLOBAL_POSITION_INT"]
