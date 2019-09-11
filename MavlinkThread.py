@@ -58,12 +58,12 @@ class MavlinkThread (threading.Thread):
 
 	def run(self):
 		# Delay to prevent mavlink connection from getting hosed at startup
-		print("Startup delay")
+		logging.debug("Startup delay")
 		time.sleep(20)
 		# Start a mavlink connection to get the system id from the heartbeat
 		haveHeartbeat = False
 		while not haveHeartbeat:
-			print("Waiting for heartbeat")
+			logging.debug("Waiting for heartbeat")
 			mavlinkHeartbeat = mavutil.mavlink_connection(self.device, baud=self.baudrate)
 			haveHeartbeat = self.wait_heartbeat(mavlinkHeartbeat)
 			mavlinkHeartbeat.close()
