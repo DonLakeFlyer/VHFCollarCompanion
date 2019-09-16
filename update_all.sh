@@ -4,7 +4,8 @@ echo "************** Update VHFCollarCompanion"
 cd ~/repos
 if [ -d VHFCollarCompanion ]; then
 	cd VHFCollarCompanion
-	git pull origin master
+	git fetch origin master
+	git reset --hard origin/master
 fi
 
 cd ~/repos/VHFCollarCompanion
