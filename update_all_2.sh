@@ -7,7 +7,7 @@ if [ -d gr-VHFPulseSender ]; then
 	git pull origin master
 	cd build/
     make clean
-	make
+	make -j4
 	sudo make install
 	sudo ldconfig
 fi
@@ -19,7 +19,7 @@ if [ -d gr-VHFPulseDetect ]; then
 	git pull origin master
 	cd build/
     make clean
-	make
+	make -j4
 	sudo make install
 	sudo ldconfig
 fi
