@@ -4,7 +4,8 @@ echo "************** Update Pulse Sender block - UDP/BT"
 cd ~/repos
 if [ -d gr-VHFPulseSender ]; then
 	cd gr-VHFPulseSender
-	git pull origin master
+	git fetch origin master
+	git reset --hard origin/master
 	cd build/
     make clean
 	make -j4
@@ -16,7 +17,8 @@ echo "************** Install Pulse Detect block"
 cd ~/repos
 if [ -d gr-VHFPulseDetect ]; then
 	cd gr-VHFPulseDetect
-	git pull origin master
+	git fetch origin master
+	git reset --hard origin/master
 	cd build/
     make clean
 	make -j4
