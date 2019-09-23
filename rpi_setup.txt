@@ -21,7 +21,7 @@ crontab -e
 
 # PDC Drone crontab
 @reboot if [ -f /home/pi/detect.log ]; then cp -f /home/pi/detect.log /home/pi/detect.log.prev; rm -f /home/pi/detect.log; fi; sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py --localhost 1 > /home/pi/detect.log 2>&1
-@reboot if [ -f /home/pi/main.log ]; then cp -f /home/pi/main.log /home/pi/main.log.prev; rm -f /home/pi/main.log; fi; sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/main.py > /home/pi/main.log 2>&1
+@reboot if [ -f /home/pi/main.log ]; then cp -f /home/pi/main.log /home/pi/main.log.prev; rm -f /home/pi/main.log; fi; sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/main.py --device /dev/ttyPixhawk > /home/pi/main.log 2>&1
 
 # STE Tracker crontab
 @reboot if [ -f /home/pi/detect.log ]; then cp -f /home/pi/detect.log /home/pi/detect.log.prev; rm -f /home/pi/detect.log; fi; sudo /usr/bin/python /home/pi/repos/VHFCollarCompanion/PulseDetectCmdLineUDP.py --channel-index 0 > /home/pi/detect.log 2>&1
