@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.11'?>
 <flow_graph>
   <timestamp>Wed Mar 15 19:29:45 2017</timestamp>
   <block>
@@ -312,7 +312,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>16*8*8</value>
+      <value>16*16*4</value>
     </param>
   </block>
   <block>
@@ -423,6 +423,10 @@
     <param>
       <key>minoutbuf</key>
       <value>0</value>
+    </param>
+    <param>
+      <key>pllFreqMax</key>
+      <value>100</value>
     </param>
     <param>
       <key>wnT</key>
@@ -547,6 +551,10 @@
     <param>
       <key>average</key>
       <value>1.0</value>
+    </param>
+    <param>
+      <key>axislabels</key>
+      <value>True</value>
     </param>
     <param>
       <key>bw</key>
@@ -817,12 +825,20 @@
       <value>firdes.WIN_BLACKMAN_hARRIS</value>
     </param>
     <param>
+      <key>label</key>
+      <value>Relative Gain</value>
+    </param>
+    <param>
       <key>ymax</key>
       <value>-40</value>
     </param>
     <param>
       <key>ymin</key>
       <value>-140</value>
+    </param>
+    <param>
+      <key>units</key>
+      <value>dB</value>
     </param>
   </block>
   <block>
@@ -1060,6 +1076,10 @@
     <key>qtgui_time_sink_x</key>
     <param>
       <key>autoscale</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>axislabels</key>
       <value>True</value>
     </param>
     <param>
@@ -1365,6 +1385,10 @@
     <param>
       <key>srate</key>
       <value>final_samp_rate</value>
+    </param>
+    <param>
+      <key>stemplot</key>
+      <value>False</value>
     </param>
     <param>
       <key>tr_chan</key>
