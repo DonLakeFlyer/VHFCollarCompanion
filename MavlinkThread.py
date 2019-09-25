@@ -69,7 +69,7 @@ class MavlinkThread (threading.Thread):
 		while True:
 			if self.exitFlag:
 				break
-			if !self.wait_command():
+			if not self.wait_command():
 				logging.debug("Lost communication from firmware")
 				self.mavlink.close()
 				self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1)
