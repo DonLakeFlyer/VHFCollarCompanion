@@ -41,7 +41,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 16*16*4
+        self.total_decimation = total_decimation = 16*16*8
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
         ##################################################
