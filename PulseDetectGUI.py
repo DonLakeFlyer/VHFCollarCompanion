@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Wed Sep 25 14:35:46 2019
+# Generated: Wed Sep 25 14:36:57 2019
 ##################################################
 
 from distutils.version import StrictVersion
@@ -71,7 +71,7 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 16*16*4
+        self.total_decimation = total_decimation = 16*16*8
         self.samp_rate = samp_rate = 3e6
         self.wnT = wnT = math.pi/4.0*0+0.635
         self.pulse_freq = pulse_freq = 146e6
