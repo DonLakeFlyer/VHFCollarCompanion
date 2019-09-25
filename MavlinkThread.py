@@ -2,6 +2,7 @@ import threading
 import math
 import logging
 import subprocess
+import time
 
 import Vehicle
 
@@ -53,6 +54,7 @@ class MavlinkThread (threading.Thread):
 		self.cancelCommand = False
 		self.sendMessageLock = threading.Lock()
 		self.pulseProcess = None
+		self.lastHeartbeatTime = None
 
 	def run(self):
 		# Start a mavlink connectin to get the system id from the heartbeat
@@ -67,7 +69,10 @@ class MavlinkThread (threading.Thread):
 		while True:
 			if self.exitFlag:
 				break
-			self.wait_command()
+			if !self.wait_command():
+				logging.debug("Lost communication from firmware")
+				self.mavlink.close()
+				self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1)
 
 	def wait_heartbeat(self):
 		logging.debug("Waiting for heartbeat from Vehicle autopilot component")
@@ -75,13 +80,16 @@ class MavlinkThread (threading.Thread):
 		while waiting:
 			msg = self.mavlink.recv_match(type='HEARTBEAT', blocking=True)
 			logging.debug("Heartbeat from (system %u component %u mav_type %u)" % (self.mavlink.target_system, self.mavlink.target_component, msg.type))
+			self.lastHeartbeatTime = time.time()
 			self.targetSystemId = self.mavlink.target_system
 			waiting = False
 
 	def wait_command(self):
-		#rgTypes = ["DEBUG_VECT", "VFR_HUD", "HOME_POSITION", "GLOBAL_POSITION_INT"]
-		msg = self.mavlink.recv_match(blocking=True)
-        #msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
+		rgTypes = ["DEBUG_VECT", "VFR_HUD", "HOME_POSITION", "GLOBAL_POSITION_INT", "HEARTBEAT"]
+		#msg = self.mavlink.recv_match(blocking=True)
+		msg = self.mavlink.recv_match(type=rgTypes, blocking=True, timeout=4)
+		if msg == None:
+			return False
 		self.tools.vehicle.mavlinkMessage(msg)
 		if msg.get_type() == 'DEBUG_VECT':
 			#print("DEBUG_VECT", msg.name, msg.x, msg.y, msg.z)
@@ -100,6 +108,9 @@ class MavlinkThread (threading.Thread):
 				self.sendMessageLock.acquire()
 				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_FREQ, freq, 0)
 				self.sendMessageLock.release()
+		elif msg.get_type() == 'HEARTBEAT':
+			self.lastHeartbeatTime = time.time()
+		return True
 
 	def sendPulseStrength(self, strength, freq, temp):
 		self.sendMessageLock.acquire()
