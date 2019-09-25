@@ -5,6 +5,15 @@
 - Turn on SSH/Serial Port
 Make adapter discoverable using bluetoothctl
 
+# Disable Bluetooth
+sudo nano /boot/config.txt
+`# Disable Bluetooth
+`dtoverlay=pi3-disable-bt
+sudo systemctl disable hciuart.service
+sudo systemctl disable bluealsa.service
+sudo systemctl disable bluetooth.service
+sudo reboot
+
 - Fixed screwed up bluez install
 https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 /etc/systemd/system/dbus-org.bluez.service
