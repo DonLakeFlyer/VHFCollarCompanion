@@ -39,7 +39,7 @@ class PulseCaptureUDP(Process):
             self.processFreqQueue()
             self.processGainQueue()
 
-            data, address = self.udpSocket.recvfrom(4*5)
+            data, address = self.udpSocket.recvfrom(4*6)
             rgPulseInfo = struct.unpack('<iiffii', data)
             channelIndex = rgPulseInfo[1]
             pulseValue = rgPulseInfo[2]
