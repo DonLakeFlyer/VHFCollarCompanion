@@ -80,8 +80,8 @@ class MavlinkThread (threading.Thread):
 
 	def wait_command(self):
 		#rgTypes = ["DEBUG_VECT", "VFR_HUD", "HOME_POSITION", "GLOBAL_POSITION_INT"]
-		#msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
-        msg = self.mavlink.recv_match(blocking=True)
+		msg = self.mavlink.recv_match(blocking=True)
+        #msg = self.mavlink.recv_match(type=rgTypes, blocking=True)
 		self.tools.vehicle.mavlinkMessage(msg)
 		if msg.get_type() == 'DEBUG_VECT':
 			#print("DEBUG_VECT", msg.name, msg.x, msg.y, msg.z)
