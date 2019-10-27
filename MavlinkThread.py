@@ -8,9 +8,16 @@ import Vehicle
 
 from pymavlink import mavutil
 
+
 # Mavlink DEBUG_VECT messages are used to communicate with QGC in both directions.
 # 	DEBUG_VECT.name is used to hold a command type
 #	DEBUG_VECT.x/y/z are then command specific
+
+# We can't store the full 9 digit frequency value in a DEBUG_VECT.* value without
+# running into floating point precision problems changing the integer value to an incorrect
+# value. So all frequency values sent in DEBUG_VECT are only 7 digits with the last two
+# assumed to be 00: NNNNNNN00
+FREQ_DIVIDER = 100
 
 # Pulse value
 #	DEBUG_VECT.name = "PULSE"
@@ -102,7 +109,7 @@ class MavlinkThread (threading.Thread):
 				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_GAIN, gain, 0)
 				self.sendMessageLock.release()
 			elif commandId == DEBUG_COMMAND_ID_SET_FREQ:
-				freq = int(msg.x)
+				freq = int(msg.x) * FREQ_DIVIDER
 				logging.debug("Set frequency command received freq(%d)", freq)
 				self.tools.setFreqQueue.put(freq)
 				self.sendMessageLock.acquire()
@@ -114,5 +121,5 @@ class MavlinkThread (threading.Thread):
 
 	def sendPulseStrength(self, strength, freq, temp):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq, temp)
+		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq / FREQ_DIVIDER, temp)
 		self.sendMessageLock.release()
