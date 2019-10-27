@@ -39,6 +39,9 @@ crontab -e
 # Find rPi on network (OSX)
 arp -na | grep -i b8:27:eb
 
+# Open file server (OSX)
+sudo apt-get install netatalk
+open afp://ip
 
 # Misc info
 
