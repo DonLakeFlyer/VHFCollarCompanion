@@ -13,11 +13,11 @@ from pymavlink import mavutil
 # 	DEBUG_VECT.name is used to hold a command type
 #	DEBUG_VECT.x/y/z are then command specific
 
-# We can't store the full 9 digit frequency value in a DEBUG_VECT.* value without
+# We can't store the full 9 digit frequency values in a DEBUG_VECT.* value without
 # running into floating point precision problems changing the integer value to an incorrect
-# value. So all frequency values sent in DEBUG_VECT are only 7 digits with the last two
-# assumed to be 00: NNNNNNN00
-FREQ_DIVIDER = 100
+# value. So all frequency values sent in DEBUG_VECT are only 6 digits with the last three
+# assumed to be 0: NNN.NNN000 mHz
+FREQ_DIVIDER = 1000
 
 # Pulse value
 #	DEBUG_VECT.name = "PULSE"
@@ -109,11 +109,12 @@ class MavlinkThread (threading.Thread):
 				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_GAIN, gain, 0)
 				self.sendMessageLock.release()
 			elif commandId == DEBUG_COMMAND_ID_SET_FREQ:
-				freq = int(msg.x) * FREQ_DIVIDER
-				logging.debug("Set frequency command received freq(%d)", freq)
-				self.tools.setFreqQueue.put(freq)
+				freqShort = int(msg.x)
+				freqLong = freqShort * FREQ_DIVIDER
+				logging.debug("Set frequency command received freq(%d)", freqLong)
+				self.tools.setFreqQueue.put(freqLong)
 				self.sendMessageLock.acquire()
-				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_FREQ, freq, 0)
+				self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_ACK, 0, DEBUG_COMMAND_ACK_SET_FREQ, freqShort, 0)
 				self.sendMessageLock.release()
 		elif msg.get_type() == 'HEARTBEAT':
 			self.lastHeartbeatTime = time.time()
