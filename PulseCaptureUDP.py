@@ -46,7 +46,7 @@ class PulseCaptureUDP(Process):
             temp = rgPulseInfo[3]
             freq = rgPulseInfo[4]
             gain = rgPulseInfo[5]
-            logging.debug("PulseCaptureUDP pulseValue %d temp %f freq %d gain %d", pulseValue, temp, freq, gain)
+            logging.debug("PulseCaptureUDP pulseValue %f temp %f freq %d gain %d", pulseValue, temp, freq, gain)
 
             if self.pulseQueue:
                 self.pulseQueue.put([pulseValue, freq, temp])
