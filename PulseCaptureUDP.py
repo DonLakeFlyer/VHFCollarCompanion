@@ -41,12 +41,13 @@ class PulseCaptureUDP(Process):
 
             data, address = self.udpSocket.recvfrom(4*6)
             rgPulseInfo = struct.unpack('<iiffii', data)
+            sendIndex = rgPulseInfo[0]
             channelIndex = rgPulseInfo[1]
             pulseValue = rgPulseInfo[2]
             temp = rgPulseInfo[3]
             freq = rgPulseInfo[4]
             gain = rgPulseInfo[5]
-            logging.debug("PulseCaptureUDP pulseValue %f temp %f freq %d gain %d", pulseValue, temp, freq, gain)
+            logging.debug("PulseCaptureUDP pulseValue %f sendIndex %d temp %f freq %d gain %d", pulseValue, sendIndex, temp, freq, gain)
 
             if self.pulseQueue:
-                self.pulseQueue.put([pulseValue, freq, temp])
+                self.pulseQueue.put([pulseValue, freq, temp, sendIndex])

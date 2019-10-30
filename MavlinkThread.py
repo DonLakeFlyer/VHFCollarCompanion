@@ -23,7 +23,7 @@ FREQ_DIVIDER = 1000
 #	DEBUG_VECT.name = "PULSE"
 #	DEBUG_VECT.x = pulse value
 #	DEBUG_VECT.y - frequency
-#	DEBUG_VECT.z - temp
+#	DEBUG_VECT.z - pulse send index
 DEBUG_COMMAND_ID_PULSE = "PULSE"
 
 # Set gain
@@ -120,7 +120,7 @@ class MavlinkThread (threading.Thread):
 			self.lastHeartbeatTime = time.time()
 		return True
 
-	def sendPulseStrength(self, strength, freq, temp):
+	def sendPulseStrength(self, strength, sendIndex, freq):
 		self.sendMessageLock.acquire()
-		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq / FREQ_DIVIDER, temp)
+		self.mavlink.mav.debug_vect_send(DEBUG_COMMAND_ID_PULSE, 0, strength, freq / FREQ_DIVIDER, sendIndex)
 		self.sendMessageLock.release()
