@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Sat Feb  2 11:04:49 2019
+# Generated: Fri Nov  1 03:06:50 2019
 ##################################################
 
 
@@ -46,7 +46,7 @@ class PulseDetectBase(gr.hier_block2):
         self.taps3 = taps3 = firdes.low_pass_2(1.0, samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2)
         self.taps2 = taps2 = firdes.low_pass_2(1.0, samp_rate2, 1.5e3, 16e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
         self.taps1 = taps1 = firdes.low_pass_2(1.0, samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
-        self.decimate_3 = decimate_3 = 4
+        self.decimate_3 = decimate_3 = 16
         self.taps3_len = taps3_len = len(taps3)
         self.taps2_len = taps2_len = len(taps2)
         self.taps1_len = taps1_len = len(taps1)
@@ -170,7 +170,7 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate3(self, samp_rate3):
         self.samp_rate3 = samp_rate3
-        self.set_taps3(firdes.low_pass_2(1.0, self.samp_rate3, 325, 75, 30.0, firdes.WIN_KAISER, 6.76/2))
+        self.set_taps3(firdes.low_pass_2(1.0, self.samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2))
         self.set_samp_rate4(self.samp_rate3/self.decimate_3)
 
     def get_taps3(self):

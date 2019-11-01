@@ -41,7 +41,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 16*16*4
+        self.total_decimation = total_decimation = 16*16*16
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
         ##################################################
@@ -54,7 +54,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.blocks_vector_sink_x_1 = blocks.vector_sink_f(1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f(channel_index, localhost)
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(2.5, 35)
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(2.5, 35/4)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
             gain=21,
