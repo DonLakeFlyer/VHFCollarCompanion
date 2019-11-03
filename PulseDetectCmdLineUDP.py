@@ -54,7 +54,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.blocks_vector_sink_x_1 = blocks.vector_sink_f(1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f(channel_index, localhost)
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(2.5, 35/4)
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(2.5, 4)
         self.PulseDetectBase = PulseDetectBase(
             freq_shift=0,
             gain=21,
