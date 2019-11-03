@@ -3,6 +3,7 @@ import math
 import logging
 import subprocess
 import time
+import sys
 
 import Vehicle
 
@@ -69,6 +70,7 @@ class MavlinkThread (threading.Thread):
 		#self.wait_heartbeat()
 		# Close initial connection and start new one with correct source_system id
 		#self.mavlink.close()
+		self.mavlink = None
 		self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1) #self.targetSystemId)
 		# We broadcast all our messages so they route through the firmware
 		self.target_system = 0
@@ -76,10 +78,17 @@ class MavlinkThread (threading.Thread):
 		while True:
 			if self.exitFlag:
 				break
-			if not self.wait_command():
+			if self.mavlink is None or not self.wait_command():
 				logging.debug("LOST COMMUNICATION WITH FIRMWARE")
-				self.mavlink.close()
-				self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1)
+				if self.mavlink is not None:
+					self.mavlink.close()
+					self.mavlink = None
+				try:
+					self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1)
+				except
+					self.mavlink = None
+					e = sys.exc_info()[0]
+					logging.debug("mavutil.mavlink_connection exception: %s" % e)
 
 	def wait_heartbeat(self):
 		logging.debug("Waiting for heartbeat from Vehicle autopilot component")
