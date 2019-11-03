@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Feb  2 11:04:57 2019
+# Generated: Sun Nov  3 03:36:16 2019
 ##################################################
 
 from distutils.version import StrictVersion
@@ -43,7 +43,7 @@ from gnuradio import qtgui
 
 class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
 
-    def __init__(self, pulse_freq=146e6, samp_rate=3e6):
+    def __init__(self, pulse_freq=146776000, samp_rate=3000000):
         gr.top_block.__init__(self, "Pulsedetectfactorsgui")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Pulsedetectfactorsgui")
@@ -80,11 +80,12 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 16*16*4
+        self.final_decimation = final_decimation = 16
+        self.total_decimation = total_decimation = 16*16*final_decimation
         self.wnT = wnT = math.pi/4.0*0+0.635
         self.threshold = threshold = 2.5
+        self.pulse_duration = pulse_duration = 0.015
         self.pllFreqMax = pllFreqMax = 100
-        self.minSamplesForPulse = minSamplesForPulse = 35
         self.gain = gain = 21
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
@@ -105,11 +106,6 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self._pllFreqMax_win = RangeWidget(self._pllFreqMax_range, self.set_pllFreqMax, 'PLL Freq Max', "counter_slider", float)
         self.top_grid_layout.addWidget(self._pllFreqMax_win, 4, 0, 1, 1)
         [self.top_grid_layout.setRowStretch(r,1) for r in range(4,5)]
-        [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
-        self._minSamplesForPulse_range = Range(10, 300, 1, 35, 200)
-        self._minSamplesForPulse_win = RangeWidget(self._minSamplesForPulse_range, self.set_minSamplesForPulse, 'Min samples for pulse', "counter_slider", int)
-        self.top_grid_layout.addWidget(self._minSamplesForPulse_win, 2, 0, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(2,3)]
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self._gain_range = Range(0, 21, 1, 21, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, 'Gain', "counter_slider", int)
@@ -168,11 +164,13 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f(0, 0)
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, minSamplesForPulse)
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, pulse_duration, final_samp_rate)
         self.PulseDetectBase = PulseDetectBase(
+            final_decimation=4,
             freq_shift=0,
             gain=gain,
             pllFreqMax=pllFreqMax,
+            pulse_duration=pulse_duration,
             pulse_freq=pulse_freq,
             samp_rate=samp_rate,
             wnT=wnT,
@@ -211,6 +209,13 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.set_final_samp_rate(self.samp_rate/self.total_decimation)
         self.PulseDetectBase.set_samp_rate(self.samp_rate)
 
+    def get_final_decimation(self):
+        return self.final_decimation
+
+    def set_final_decimation(self, final_decimation):
+        self.final_decimation = final_decimation
+        self.set_total_decimation(16*16*self.final_decimation)
+
     def get_total_decimation(self):
         return self.total_decimation
 
@@ -232,19 +237,20 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.threshold = threshold
         self.VHFPulseDetect_pulse_detect__ff_0.set_threshold(self.threshold)
 
+    def get_pulse_duration(self):
+        return self.pulse_duration
+
+    def set_pulse_duration(self, pulse_duration):
+        self.pulse_duration = pulse_duration
+        self.VHFPulseDetect_pulse_detect__ff_0.set_pulseDuration(self.pulse_duration)
+        self.PulseDetectBase.set_pulse_duration(self.pulse_duration)
+
     def get_pllFreqMax(self):
         return self.pllFreqMax
 
     def set_pllFreqMax(self, pllFreqMax):
         self.pllFreqMax = pllFreqMax
         self.PulseDetectBase.set_pllFreqMax(self.pllFreqMax)
-
-    def get_minSamplesForPulse(self):
-        return self.minSamplesForPulse
-
-    def set_minSamplesForPulse(self, minSamplesForPulse):
-        self.minSamplesForPulse = minSamplesForPulse
-        self.VHFPulseDetect_pulse_detect__ff_0.set_minSamplesForPulse(self.minSamplesForPulse)
 
     def get_gain(self):
         return self.gain
@@ -259,15 +265,16 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
     def set_final_samp_rate(self, final_samp_rate):
         self.final_samp_rate = final_samp_rate
         self.qtgui_time_sink_x_0.set_samp_rate(self.final_samp_rate)
+        self.VHFPulseDetect_pulse_detect__ff_0.set_sampleRate(self.final_samp_rate)
 
 
 def argument_parser():
     parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
-        "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
+        "", "--pulse-freq", dest="pulse_freq", type="intx", default=146776000,
         help="Set pulse_freq [default=%default]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
+        "", "--samp-rate", dest="samp_rate", type="intx", default=3000000,
         help="Set samp_rate [default=%default]")
     return parser
 

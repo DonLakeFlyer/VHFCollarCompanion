@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Fri Nov  1 03:06:50 2019
+# Generated: Sun Nov  3 03:04:53 2019
 ##################################################
 
 
@@ -19,7 +19,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, freq_shift=0, gain=21, pllFreqMax=100, pulse_freq=146, samp_rate=3e6, wnT=0.001):
+    def __init__(self, final_decimation=4, freq_shift=0, gain=21, pllFreqMax=100, pulse_duration=0.015, pulse_freq=146000000, samp_rate=3e6, wnT=0.001):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),
@@ -29,9 +29,11 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         # Parameters
         ##################################################
+        self.final_decimation = final_decimation
         self.freq_shift = freq_shift
         self.gain = gain
         self.pllFreqMax = pllFreqMax
+        self.pulse_duration = pulse_duration
         self.pulse_freq = pulse_freq
         self.samp_rate = samp_rate
         self.wnT = wnT
@@ -46,12 +48,11 @@ class PulseDetectBase(gr.hier_block2):
         self.taps3 = taps3 = firdes.low_pass_2(1.0, samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2)
         self.taps2 = taps2 = firdes.low_pass_2(1.0, samp_rate2, 1.5e3, 16e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
         self.taps1 = taps1 = firdes.low_pass_2(1.0, samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
-        self.decimate_3 = decimate_3 = 16
+        self.decimate_3 = decimate_3 = final_decimation
         self.taps3_len = taps3_len = len(taps3)
         self.taps2_len = taps2_len = len(taps2)
         self.taps1_len = taps1_len = len(taps1)
         self.samp_rate4 = samp_rate4 = samp_rate3/decimate_3
-        self.pulse_duration = pulse_duration = 0.015
         self.inter_pulse_duration = inter_pulse_duration = 2
         self.fmin = fmin = -pllFreqMax
         self.fmax = fmax = pllFreqMax
@@ -97,6 +98,13 @@ class PulseDetectBase(gr.hier_block2):
         self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.fir_filter_xxx_0_0, 0))
         self.connect((self.osmosdr_source_0, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
 
+    def get_final_decimation(self):
+        return self.final_decimation
+
+    def set_final_decimation(self, final_decimation):
+        self.final_decimation = final_decimation
+        self.set_decimate_3(self.final_decimation)
+
     def get_freq_shift(self):
         return self.freq_shift
 
@@ -119,6 +127,13 @@ class PulseDetectBase(gr.hier_block2):
         self.pllFreqMax = pllFreqMax
         self.set_fmin(-self.pllFreqMax)
         self.set_fmax(self.pllFreqMax)
+
+    def get_pulse_duration(self):
+        return self.pulse_duration
+
+    def set_pulse_duration(self, pulse_duration):
+        self.pulse_duration = pulse_duration
+        self.blocks_moving_average_xx_0_0.set_length_and_scale(int(self.samp_rate4*self.pulse_duration), 1)
 
     def get_pulse_freq(self):
         return self.pulse_freq
@@ -230,13 +245,6 @@ class PulseDetectBase(gr.hier_block2):
         self.blocks_moving_average_xx_0_0.set_length_and_scale(int(self.samp_rate4*self.pulse_duration), 1)
         self.analog_pll_refout_cc_0.set_max_freq(math.pi/(self.samp_rate4/2.0)*self.fmax)
         self.analog_pll_refout_cc_0.set_min_freq(math.pi/(self.samp_rate4/2.0)*self.fmin)
-
-    def get_pulse_duration(self):
-        return self.pulse_duration
-
-    def set_pulse_duration(self, pulse_duration):
-        self.pulse_duration = pulse_duration
-        self.blocks_moving_average_xx_0_0.set_length_and_scale(int(self.samp_rate4*self.pulse_duration), 1)
 
     def get_inter_pulse_duration(self):
         return self.inter_pulse_duration

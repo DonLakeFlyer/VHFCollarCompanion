@@ -7,6 +7,13 @@ import signal
         # such that udp_sender can change parameters in PulseDetectBase.  
         self.VHFPulseSender_udp_sender_f_0.setPulseDetectBase(self.PulseDetectBase)      
 
-# This going into main
-    while True:
-        signal.pause()  
+# main should look like this
+    try:
+        tb = top_block_cls(channel_index=options.channel_index, final_decimation=options.final_decimation, gain=options.gain, localhost=options.localhost, pulse_duration=options.pulse_duration, pulse_freq=options.pulse_freq, samp_rate=options.samp_rate)
+        tb.start()
+        while True:
+            signal.pause()  
+        tb.stop()
+        tb.wait()
+    except Exception as e:
+        print("Exception in main", e)

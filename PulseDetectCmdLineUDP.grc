@@ -132,7 +132,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>16*16*4</value>
+      <value>16*16*final_decimation</value>
     </param>
   </block>
   <block>
@@ -154,6 +154,10 @@
       <value>True</value>
     </param>
     <param>
+      <key>final_decimation</key>
+      <value>final_decimation</value>
+    </param>
+    <param>
       <key>freq_shift</key>
       <value>0</value>
     </param>
@@ -167,7 +171,7 @@
     </param>
     <param>
       <key>gain</key>
-      <value>21</value>
+      <value>gain</value>
     </param>
     <param>
       <key>id</key>
@@ -182,6 +186,10 @@
       <value>0</value>
     </param>
     <param>
+      <key>pllFreqMax</key>
+      <value>100</value>
+    </param>
+    <param>
       <key>wnT</key>
       <value>math.pi/4.0*0+0.635</value>
     </param>
@@ -190,8 +198,12 @@
       <value>pulse_freq</value>
     </param>
     <param>
+      <key>pulse_duration</key>
+      <value>pulse_duration</value>
+    </param>
+    <param>
       <key>samp_rate</key>
-      <value>3e6</value>
+      <value>samp_rate</value>
     </param>
   </block>
   <block>
@@ -233,8 +245,12 @@
       <value>0</value>
     </param>
     <param>
-      <key>minSamplesForPulse</key>
-      <value>35</value>
+      <key>pulseDuration</key>
+      <value>pulse_duration</value>
+    </param>
+    <param>
+      <key>sampleRate</key>
+      <value>int(final_samp_rate)</value>
     </param>
     <param>
       <key>threshold</key>
@@ -558,6 +574,92 @@
     </param>
   </block>
   <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(424, 100)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>final_decimation</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>4</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(552, 100)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>gain</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>21</value>
+    </param>
+  </block>
+  <block>
     <key>import</key>
     <param>
       <key>alias</key>
@@ -660,6 +762,49 @@
     <param>
       <key>value</key>
       <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(648, 100)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pulse_duration</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>eng_float</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0.015</value>
     </param>
   </block>
   <block>
