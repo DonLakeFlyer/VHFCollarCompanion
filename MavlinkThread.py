@@ -85,7 +85,7 @@ class MavlinkThread (threading.Thread):
 					self.mavlink = None
 				try:
 					self.mavlink = mavutil.mavlink_connection(self.device, baud=self.baudrate, source_system=1)
-				except
+				except:
 					self.mavlink = None
 					e = sys.exc_info()[0]
 					logging.debug("mavutil.mavlink_connection exception: %s" % e)
