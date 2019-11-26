@@ -45,7 +45,7 @@ class PulseDetectBase(gr.hier_block2):
         self.samp_rate2 = samp_rate2 = samp_rate/decimate_1
         self.decimate_2 = decimate_2 = 16
         self.samp_rate3 = samp_rate3 = samp_rate2/decimate_2
-        self.taps3 = taps3 = firdes.low_pass_2(1.0, samp_rate3, 1.5e3, 0.3e3, 30.0, firdes.WIN_KAISER, 6.76/2)
+        self.taps3 = taps3 = firdes.low_pass_2(1.0, samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2)
         self.taps2 = taps2 = firdes.low_pass_2(1.0, samp_rate2, 1.5e3, 16e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
         self.taps1 = taps1 = firdes.low_pass_2(1.0, samp_rate, 1.5e3, 128e3-1.5e3, 60.0, firdes.WIN_BLACKMAN_HARRIS, 6.76)
         self.decimate_3 = decimate_3 = final_decimation
@@ -185,7 +185,7 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_samp_rate3(self, samp_rate3):
         self.samp_rate3 = samp_rate3
-        self.set_taps3(firdes.low_pass_2(1.0, self.samp_rate3, 1.5e3, 0.3e3, 30.0, firdes.WIN_KAISER, 6.76/2))
+        self.set_taps3(firdes.low_pass_2(1.0, self.samp_rate3, 325*8, 75*8, 30.0, firdes.WIN_KAISER, 6.76/2))
         self.set_samp_rate4(self.samp_rate3/self.decimate_3)
 
     def get_taps3(self):
