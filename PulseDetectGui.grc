@@ -285,7 +285,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>3e6</value>
+      <value>6e6</value>
     </param>
   </block>
   <block>
@@ -312,7 +312,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>16*8*8</value>
+      <value>16*16*8</value>
     </param>
   </block>
   <block>
@@ -398,7 +398,7 @@
     </param>
     <param>
       <key>final_decimation</key>
-      <value>4</value>
+      <value>8</value>
     </param>
     <param>
       <key>freq_shift</key>
