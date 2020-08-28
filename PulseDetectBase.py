@@ -19,7 +19,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, final_decimation=4, freq_shift=0, gain=21, pllFreqMax=100, pulse_duration=0.015, pulse_freq=146000000, samp_rate=3e6, wnT=0.001):
+    def __init__(self, final_decimation=4, freq_shift=0, gain=21, pllFreqMax=100, pulse_duration=0.015, pulse_freq=146000000, samp_rate=6e6, wnT=math.pi/4.0*0+0.635):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),

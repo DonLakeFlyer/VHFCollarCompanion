@@ -27,7 +27,7 @@ import math
 
 class PulseDetectCmdLineUDP(gr.top_block):
 
-    def __init__(self, channel_index=0, final_decimation=4, gain=21, localhost=0, pulse_duration=0.015, pulse_freq=146e6, samp_rate=3e6):
+    def __init__(self, channel_index=0, final_decimation=8, gain=21, localhost=0, pulse_duration=0.015, pulse_freq=146e6, samp_rate=6e6):
         gr.top_block.__init__(self, "Pulsedetectcmdlineudp")
 
         ##################################################
@@ -155,7 +155,7 @@ def argument_parser():
         "", "--channel-index", dest="channel_index", type="intx", default=0,
         help="Set channel_index [default=%default]")
     parser.add_option(
-        "", "--final-decimation", dest="final_decimation", type="intx", default=4,
+        "", "--final-decimation", dest="final_decimation", type="intx", default=8,
         help="Set final_decimation [default=%default]")
     parser.add_option(
         "", "--gain", dest="gain", type="intx", default=21,
@@ -170,7 +170,7 @@ def argument_parser():
         "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
         help="Set pulse_freq [default=%default]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
+        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(6e6),
         help="Set samp_rate [default=%default]")
     return parser
 
