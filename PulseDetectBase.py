@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Sat Nov 16 09:40:51 2019
+# Generated: Sat Aug 29 09:29:08 2020
 ##################################################
 
 
@@ -19,7 +19,7 @@ import time
 
 class PulseDetectBase(gr.hier_block2):
 
-    def __init__(self, final_decimation=4, freq_shift=0, gain=21, pllFreqMax=100, pulse_duration=0.015, pulse_freq=146000000, samp_rate=6e6, wnT=math.pi/4.0*0+0.635):
+    def __init__(self, final_decimation=4, gain=21, pllFreqMax=100, pulse_duration=0.015, pulse_freq=146000000, samp_rate=3e6, wnT=math.pi/4.0*0+0.635):
         gr.hier_block2.__init__(
             self, "Pulsedetectbase",
             gr.io_signature(0, 0, 0),
@@ -30,7 +30,6 @@ class PulseDetectBase(gr.hier_block2):
         # Parameters
         ##################################################
         self.final_decimation = final_decimation
-        self.freq_shift = freq_shift
         self.gain = gain
         self.pllFreqMax = pllFreqMax
         self.pulse_duration = pulse_duration
@@ -63,7 +62,7 @@ class PulseDetectBase(gr.hier_block2):
         self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'airspy' )
         self.osmosdr_source_0.set_clock_source('gpsdo', 0)
         self.osmosdr_source_0.set_sample_rate(samp_rate)
-        self.osmosdr_source_0.set_center_freq(pulse_freq-freq_shift, 0)
+        self.osmosdr_source_0.set_center_freq(pulse_freq, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
         self.osmosdr_source_0.set_dc_offset_mode(0, 0)
         self.osmosdr_source_0.set_iq_balance_mode(0, 0)
@@ -74,7 +73,7 @@ class PulseDetectBase(gr.hier_block2):
         self.osmosdr_source_0.set_antenna('', 0)
         self.osmosdr_source_0.set_bandwidth(0, 0)
 
-        self.freq_xlating_fir_filter_xxx_0 = filter.freq_xlating_fir_filter_ccc(decimate_1, (taps1), freq_shift, samp_rate)
+        self.freq_xlating_fir_filter_xxx_0 = filter.freq_xlating_fir_filter_ccc(decimate_1, (taps1), 0, samp_rate)
         self.fir_filter_xxx_0_0_0 = filter.fir_filter_ccf(decimate_3, (taps3))
         self.fir_filter_xxx_0_0_0.declare_sample_delay(0)
         self.fir_filter_xxx_0_0 = filter.fir_filter_ccf(decimate_2, (taps2))
@@ -105,14 +104,6 @@ class PulseDetectBase(gr.hier_block2):
         self.final_decimation = final_decimation
         self.set_decimate_3(self.final_decimation)
 
-    def get_freq_shift(self):
-        return self.freq_shift
-
-    def set_freq_shift(self, freq_shift):
-        self.freq_shift = freq_shift
-        self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
-        self.freq_xlating_fir_filter_xxx_0.set_center_freq(self.freq_shift)
-
     def get_gain(self):
         return self.gain
 
@@ -140,7 +131,7 @@ class PulseDetectBase(gr.hier_block2):
 
     def set_pulse_freq(self, pulse_freq):
         self.pulse_freq = pulse_freq
-        self.osmosdr_source_0.set_center_freq(self.pulse_freq-self.freq_shift, 0)
+        self.osmosdr_source_0.set_center_freq(self.pulse_freq, 0)
 
     def get_samp_rate(self):
         return self.samp_rate
