@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Aug 29 09:42:43 2020
+# Generated: Sat Aug 29 11:07:47 2020
 ##################################################
 
 from distutils.version import StrictVersion
@@ -91,7 +91,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self._threshold_range = Range(1.0, 10.0, 0.1, 3.74, 200)
+        self._threshold_range = Range(1.0, 10.0, 0.05, 3.74, 200)
         self._threshold_win = RangeWidget(self._threshold_range, self.set_threshold, 'Threshold', "counter_slider", float)
         self.top_grid_layout.addWidget(self._threshold_win, 2, 0, 1, 1)
         [self.top_grid_layout.setRowStretch(r,1) for r in range(2,3)]
