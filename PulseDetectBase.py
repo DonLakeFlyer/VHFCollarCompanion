@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectbase
-# Generated: Sat Aug 29 09:29:08 2020
+# Generated: Sat Aug 29 11:04:18 2020
 ##################################################
 
 
@@ -59,7 +59,7 @@ class PulseDetectBase(gr.hier_block2):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'airspy' )
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'airspy=0,sensitivity' )
         self.osmosdr_source_0.set_clock_source('gpsdo', 0)
         self.osmosdr_source_0.set_sample_rate(samp_rate)
         self.osmosdr_source_0.set_center_freq(pulse_freq, 0)

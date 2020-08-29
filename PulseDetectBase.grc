@@ -2444,7 +2444,7 @@
     </param>
     <param>
       <key>args</key>
-      <value>airspy</value>
+      <value>airspy=0,sensitivity</value>
     </param>
     <param>
       <key>_enabled</key>
