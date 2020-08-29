@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectgui
-# Generated: Thu Aug 27 10:58:33 2020
+# Generated: Fri Aug 28 12:43:56 2020
 ##################################################
 
 from distutils.version import StrictVersion
@@ -73,29 +73,17 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         ##################################################
         self.total_decimation = total_decimation = 16*16*8
         self.samp_rate = samp_rate = 6e6
-        self.wnT = wnT = math.pi/4.0*0+0.635
         self.pulse_freq = pulse_freq = 146e6
         self.gain = gain = 21
-        self.freq_shift = freq_shift = 0.0
         self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
 
         ##################################################
         # Blocks
         ##################################################
-        self._wnT_range = Range(0.001, math.pi, 0.001, math.pi/4.0*0+0.635, 200)
-        self._wnT_win = RangeWidget(self._wnT_range, self.set_wnT, 'PLL Loop BW', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._wnT_win, 2, 0, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(2,3)]
-        [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self._gain_range = Range(0, 21, 1, 21, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, 'Gain', "counter_slider", int)
         self.top_grid_layout.addWidget(self._gain_win, 0, 0, 1, 1)
         [self.top_grid_layout.setRowStretch(r,1) for r in range(0,1)]
-        [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
-        self._freq_shift_range = Range(-500e3, 500e3, 1e3, 0.0, 200)
-        self._freq_shift_win = RangeWidget(self._freq_shift_range, self.set_freq_shift, 'Frequency Shift', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._freq_shift_win, 1, 0, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(1,2)]
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	int(final_samp_rate*10.0), #size
@@ -144,8 +132,8 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 9, 0, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(9,10)]
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 2, 0, 1, 1)
+        [self.top_grid_layout.setRowStretch(r,1) for r in range(2,3)]
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self.qtgui_number_sink_0 = qtgui.number_sink(
             gr.sizeof_float,
@@ -175,10 +163,10 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
             self.qtgui_number_sink_0.set_unit(i, units[i])
             self.qtgui_number_sink_0.set_factor(i, factor[i])
 
-        self.qtgui_number_sink_0.enable_autoscale(False)
+        self.qtgui_number_sink_0.enable_autoscale(True)
         self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 9, 1, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(9,10)]
+        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 0, 1, 3, 1)
+        [self.top_grid_layout.setRowStretch(r,1) for r in range(0,3)]
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(1,2)]
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
         	8192, #size
@@ -222,18 +210,17 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
             self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 7, 0, 1, 1)
-        [self.top_grid_layout.setRowStretch(r,1) for r in range(7,8)]
+        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 1, 0, 1, 1)
+        [self.top_grid_layout.setRowStretch(r,1) for r in range(1,2)]
         [self.top_grid_layout.setColumnStretch(c,1) for c in range(0,1)]
         self.PulseDetectBase = PulseDetectBase(
             final_decimation=8,
-            freq_shift=freq_shift,
             gain=gain,
             pllFreqMax=100,
             pulse_duration=0.015,
             pulse_freq=pulse_freq,
             samp_rate=samp_rate,
-            wnT=wnT,
+            wnT=math.pi/4.0*0+0.635,
         )
 
         ##################################################
@@ -263,13 +250,6 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
         self.set_final_samp_rate(self.samp_rate/self.total_decimation)
         self.PulseDetectBase.set_samp_rate(self.samp_rate)
 
-    def get_wnT(self):
-        return self.wnT
-
-    def set_wnT(self, wnT):
-        self.wnT = wnT
-        self.PulseDetectBase.set_wnT(self.wnT)
-
     def get_pulse_freq(self):
         return self.pulse_freq
 
@@ -284,13 +264,6 @@ class PulseDetectGUI(gr.top_block, Qt.QWidget):
     def set_gain(self, gain):
         self.gain = gain
         self.PulseDetectBase.set_gain(self.gain)
-
-    def get_freq_shift(self):
-        return self.freq_shift
-
-    def set_freq_shift(self, freq_shift):
-        self.freq_shift = freq_shift
-        self.PulseDetectBase.set_freq_shift(self.freq_shift)
 
     def get_final_samp_rate(self):
         return self.final_samp_rate
