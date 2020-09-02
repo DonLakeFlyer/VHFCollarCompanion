@@ -44,8 +44,8 @@ class PulseDetectCmdLineUDP(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.total_decimation = total_decimation = 16*16*final_decimation
-        self.final_samp_rate = final_samp_rate = samp_rate/total_decimation
+        self.total_decimation = 16 * 16 * self.final_decimation
+        self.final_samp_rate = samp_rate / self.total_decimation
 
         ##################################################
         # Blocks
@@ -57,7 +57,7 @@ class PulseDetectCmdLineUDP(gr.top_block):
         self.blocks_vector_sink_x_1 = blocks.vector_sink_f(1)
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseSender_udp_sender_f_0 = VHFPulseSender.udp_sender_f(channel_index, localhost)
-        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(3.57, pulse_duration, int(final_samp_rate))
+        self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(3.57, pulse_duration, int(self.final_samp_rate))
         self.PulseDetectBase = PulseDetectBase(
             final_decimation=final_decimation,
             gain=gain,
@@ -154,7 +154,7 @@ def argument_parser():
         "", "--channel-index", dest="channel_index", type="intx", default=0,
         help="Set channel_index [default=%default]")
     parser.add_option(
-        "", "--final-decimation", dest="final_decimation", type="intx", default=8,
+        "", "--final-decimation", dest="final_decimation", type="intx", default=4,
         help="Set final_decimation [default=%default]")
     parser.add_option(
         "", "--gain", dest="gain", type="intx", default=21,
@@ -169,7 +169,7 @@ def argument_parser():
         "", "--pulse-freq", dest="pulse_freq", type="eng_float", default=eng_notation.num_to_str(146e6),
         help="Set pulse_freq [default=%default]")
     parser.add_option(
-        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(6e6),
+        "", "--samp-rate", dest="samp_rate", type="eng_float", default=eng_notation.num_to_str(3e6),
         help="Set samp_rate [default=%default]")
     return parser
 
