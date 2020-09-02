@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Pulsedetectfactorsgui
-# Generated: Sat Aug 29 11:07:47 2020
+# Generated: Wed Sep  2 09:54:46 2020
 ##################################################
 
 from distutils.version import StrictVersion
@@ -159,7 +159,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
         self.blocks_vector_sink_x_0 = blocks.vector_sink_c(1)
         self.VHFPulseDetect_pulse_detect__ff_0 = VHFPulseDetect.pulse_detect__ff(threshold, pulse_duration, final_samp_rate)
         self.PulseDetectBase = PulseDetectBase(
-            final_decimation=4,
+            final_decimation=final_decimation,
             gain=gain,
             pllFreqMax=100,
             pulse_duration=pulse_duration,
@@ -206,6 +206,7 @@ class PulseDetectFactorsGui(gr.top_block, Qt.QWidget):
     def set_final_decimation(self, final_decimation):
         self.final_decimation = final_decimation
         self.set_total_decimation(16*16*self.final_decimation)
+        self.PulseDetectBase.set_final_decimation(self.final_decimation)
 
     def get_total_decimation(self):
         return self.total_decimation

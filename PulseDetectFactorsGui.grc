@@ -425,7 +425,7 @@
     </param>
     <param>
       <key>final_decimation</key>
-      <value>4</value>
+      <value>final_decimation</value>
     </param>
     <param>
       <key>_coordinate</key>

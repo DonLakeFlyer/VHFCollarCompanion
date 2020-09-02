@@ -25,3 +25,5 @@ if [ -d gr-VHFPulseDetect ]; then
 	sudo make install
 	sudo ldconfig
 fi
+
+cd ~/repos/VHFCollarCompanion
